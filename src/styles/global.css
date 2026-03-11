@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:root {
+  --page-bg: #f3f6f4;
+  --card-bg: rgba(255, 255, 255, 0.72);
+  --text-main: #101815;
+  --text-muted: #46524c;
+  --line: #d8e1db;
+  --accent: #0f766e;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(60rem 24rem at 8% 0%, rgba(15, 118, 110, 0.18), transparent 55%),
+    radial-gradient(52rem 22rem at 92% 0%, rgba(180, 83, 9, 0.18), transparent 50%),
+    var(--page-bg);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+}
+
+/* Cards */
+
+.surface {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(8px);
+}
+
+.card-hover {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  border-color: #b8c4bc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* 3D Buttons */
+
+.btn-3d {
+  position: relative;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 0 var(--btn-shadow);
+  cursor: pointer;
+}
+
+.btn-3d:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--btn-shadow);
+}
+
+.btn-3d:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--btn-shadow);
+}
+
+.btn-3d-dark {
+  --btn-shadow: #3a3f3d;
+  background: #101815;
+  border: 1px solid #5a6360;
+  color: #fff;
+}
+
+.btn-3d-light {
+  --btn-shadow: #b8c4bc;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--line);
+  color: var(--text-main);
+}
+
+.btn-3d-white {
+  --btn-shadow: #c7d4ce;
+  background: #fff;
+  color: var(--text-main);
+}
+
+/* Focus styles */
+
+.btn-3d:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Reveal animation */
+
+.reveal-up {
+  animation: reveal-up 550ms ease both;
+}
+
+.reveal-up:nth-child(1) { animation-delay: 0ms; }
+.reveal-up:nth-child(2) { animation-delay: 80ms; }
+.reveal-up:nth-child(3) { animation-delay: 160ms; }
+.reveal-up:nth-child(4) { animation-delay: 240ms; }
+.reveal-up:nth-child(5) { animation-delay: 320ms; }
+.reveal-up:nth-child(6) { animation-delay: 400ms; }
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal-up {
+    animation: none;
+  }
+
+  .card-hover:hover {
+    transform: none;
+  }
+
+  .btn-3d,
+  .btn-3d:hover,
+  .btn-3d:active {
+    transition: none;
+    transform: none;
+  }
+}

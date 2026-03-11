@@ -1,23 +1,91 @@
+---
+import "../styles/global.css";
+
+const title = "Jan-Marlon Leibl · PHP & TypeScript Developer";
+const description =
+  "Jan-Marlon Leibl is a PHP and TypeScript developer specializing in React, Next.js, and TYPO3. Based in Bremen, Germany — open for full-time roles and freelance projects.";
+const url = "https://itsjan.dev";
+const image = `${url}/jan.jpg`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Jan-Marlon Leibl",
+  url,
+  image,
+  jobTitle: "Software Developer",
+  description,
+  email: "hi@itsjan.dev",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Bremen",
+    addressCountry: "DE",
+  },
+  worksFor: {
+    "@type": "Organization",
+    name: "team neusta",
+    url: "https://www.team-neusta.de",
+  },
+  sameAs: [
+    "https://www.linkedin.com/in/janmarlonleibl/",
+    "https://github.com/AtomicWasTaken",
+  ],
+  knowsAbout: [
+    "PHP",
+    "TypeScript",
+    "React",
+    "Next.js",
+    "TYPO3",
+    "Angular",
+    "Vue",
+  ],
+};
+---
+
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Jan-Marlon Leibl" />
+    <meta name="theme-color" content="#f3f6f4" />
+    <link rel="canonical" href={url} />
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/jan.jpg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
