@@ -8,15 +8,15 @@
 }
 
 :root {
-  --page-bg: #f5f7f6;
+  --page-bg: #f2f5f3;
   --card-bg: rgba(255, 255, 255, 0.8);
   --text-main: #0f1714;
   --text-muted: #4d5a54;
   --line: #d7e1db;
   --line-strong: #c5d1ca;
   --accent: #0f766e;
-  --grid-size: 48px;
-  --grid-line: rgba(15, 23, 20, 0.06);
+  --grid-size: 46px;
+  --grid-line: rgba(15, 23, 20, 0.05);
   --panel-shadow: 0 1px 0 rgba(16, 24, 21, 0.04), 0 14px 30px rgba(16, 24, 21, 0.07);
 }
 
@@ -29,31 +29,41 @@ body {
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(56rem 22rem at 8% 0%, rgba(15, 118, 110, 0.1), transparent 60%),
-    radial-gradient(46rem 18rem at 92% 0%, rgba(180, 83, 9, 0.08), transparent 58%),
-    repeating-linear-gradient(
-      to right,
-      transparent 0,
-      transparent calc(var(--grid-size) - 1px),
-      var(--grid-line) calc(var(--grid-size) - 1px),
-      var(--grid-line) var(--grid-size)
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent calc(var(--grid-size) - 1px),
-      var(--grid-line) calc(var(--grid-size) - 1px),
-      var(--grid-line) var(--grid-size)
-    ),
+    radial-gradient(70rem 30rem at 50% -12%, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 62%),
+    radial-gradient(52rem 20rem at 9% 0%, rgba(15, 118, 110, 0.07), transparent 62%),
+    radial-gradient(42rem 16rem at 92% 0%, rgba(180, 83, 9, 0.06), transparent 58%),
     var(--page-bg);
   color: var(--text-main);
   font-family: var(--font-sans);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% 100%, rgba(15, 23, 20, 0.06), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.25;
+  background-image: radial-gradient(rgba(16, 24, 21, 0.16) 0.45px, transparent 0.45px);
+  background-size: 3px 3px;
 }
 
 .hero-name {
   font-family: var(--font-label);
   font-weight: 600;
   letter-spacing: 0.16em;
+  line-height: 1;
 }
 
 .hero-display {
