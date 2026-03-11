@@ -3,6 +3,8 @@
 @theme {
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: "Newsreader", "Times New Roman", serif;
+  --font-label: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -26,6 +28,19 @@ body {
     var(--page-bg);
   color: var(--text-main);
   font-family: var(--font-sans);
+}
+
+.hero-name {
+  font-family: var(--font-label);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.hero-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
 }
 
 /* Cards */
