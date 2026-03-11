@@ -1,0 +1,17 @@
+---
+interface Props {
+  href: string;
+  variant?: "dark" | "light" | "white";
+  external?: boolean;
+}
+
+const { href, variant = "light", external = false } = Astro.props;
+const extraAttrs = external
+  ? { target: "_blank", rel: "noopener noreferrer" }
+  : {};
+---
+
+<a href={href} class={`btn-3d btn-3d-${variant}`} {...extraAttrs}>
+  <slot />
+  {external && <span class="inline-block text-[0.7em] opacity-50" aria-hidden="true">&#8599;</span>}
+</a>

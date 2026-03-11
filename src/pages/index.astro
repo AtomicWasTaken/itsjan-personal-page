@@ -1,5 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Button from "../components/Button.astro";
+import { Image } from "astro:assets";
+import portrait from "../assets/jan.jpg";
 ---
 
 <Layout>
@@ -25,28 +28,16 @@ import Layout from "../layouts/Layout.astro";
         </p>
 
         <div class="flex flex-wrap gap-3 self-start lg:col-start-1 lg:row-start-3">
-          <a href="mailto:hi@itsjan.dev" class="btn-3d btn-3d-dark">
-            Contact me
-          </a>
-          <a
-            href="https://www.linkedin.com/in/janmarlonleibl/"
-            target="_blank" rel="noopener noreferrer"
-            class="btn-3d btn-3d-light"
-          >
-            LinkedIn <span class="inline-block text-[0.7em] opacity-50" aria-hidden="true">&#8599;</span>
-          </a>
-          <a
-            href="https://github.com/AtomicWasTaken"
-            target="_blank" rel="noopener noreferrer"
-            class="btn-3d btn-3d-light"
-          >
-            GitHub <span class="inline-block text-[0.7em] opacity-50" aria-hidden="true">&#8599;</span>
-          </a>
+          <Button href="mailto:hi@itsjan.dev" variant="dark">Contact me</Button>
+          <Button href="https://www.linkedin.com/in/janmarlonleibl/" variant="light" external>LinkedIn</Button>
+          <Button href="https://github.com/AtomicWasTaken" variant="light" external>GitHub</Button>
         </div>
 
-        <img
-          src="/jan.jpg"
+        <Image
+          src={portrait}
           alt="Jan-Marlon Leibl"
+          width={600}
+          quality={80}
           class="aspect-square w-full rounded-2xl object-cover object-[center_20%] lg:col-start-2 lg:row-start-1 lg:row-span-2"
         />
 
@@ -140,9 +131,7 @@ import Layout from "../layouts/Layout.astro";
         <a href="mailto:hi@itsjan.dev" class="mt-1 block text-lg font-bold text-white hover:underline">hi@itsjan.dev</a>
         <p class="text-sm text-[#c7d4ce]">Open for full-time roles and project collaborations</p>
       </div>
-      <a href="mailto:hi@itsjan.dev" class="btn-3d btn-3d-white">
-        Start a conversation
-      </a>
+      <Button href="mailto:hi@itsjan.dev" variant="white">Start a conversation</Button>
     </footer>
   </main>
 </Layout>
