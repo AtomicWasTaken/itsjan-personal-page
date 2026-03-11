@@ -1,43 +1,76 @@
 ---
 import "../styles/global.css";
 
-const title = "Jan-Marlon Leibl · PHP & TypeScript Developer";
+const siteName = "itsjan.dev";
+const title = "Jan-Marlon Leibl | PHP & TypeScript Developer in Bremen";
 const description =
-  "Jan-Marlon Leibl is a PHP and TypeScript developer specializing in React, Next.js, and TYPO3. Based in Bremen, Germany — open for full-time roles and freelance projects.";
+  "Jan-Marlon Leibl is a PHP and TypeScript developer in Bremen, Germany, building reliable products with React, Next.js, and TYPO3. Open for full-time roles and freelance projects.";
 const url = "https://itsjan.dev";
 const image = `${url}/jan.jpg`;
+const imageAlt = "Portrait of Jan-Marlon Leibl";
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Jan-Marlon Leibl",
-  url,
-  image,
-  jobTitle: "Software Developer",
-  description,
-  email: "hi@itsjan.dev",
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Bremen",
-    addressCountry: "DE",
-  },
-  worksFor: {
-    "@type": "Organization",
-    name: "team neusta",
-    url: "https://www.team-neusta.de",
-  },
-  sameAs: [
-    "https://www.linkedin.com/in/janmarlonleibl/",
-    "https://github.com/AtomicWasTaken",
-  ],
-  knowsAbout: [
-    "PHP",
-    "TypeScript",
-    "React",
-    "Next.js",
-    "TYPO3",
-    "Angular",
-    "Vue",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${url}/#person`,
+      name: "Jan-Marlon Leibl",
+      url,
+      image,
+      jobTitle: "Software Developer",
+      description,
+      email: "hi@itsjan.dev",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bremen",
+        addressCountry: "DE",
+      },
+      worksFor: {
+        "@type": "Organization",
+        name: "team neusta",
+        url: "https://www.team-neusta.de",
+      },
+      sameAs: [
+        "https://www.linkedin.com/in/janmarlonleibl/",
+        "https://github.com/AtomicWasTaken",
+      ],
+      knowsAbout: [
+        "PHP",
+        "TypeScript",
+        "React",
+        "Next.js",
+        "TYPO3",
+        "Angular",
+        "Vue",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${url}/#website`,
+      url,
+      name: siteName,
+      description,
+      inLanguage: "en",
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${url}/#webpage`,
+      url,
+      name: title,
+      description,
+      isPartOf: {
+        "@id": `${url}/#website`,
+      },
+      about: {
+        "@id": `${url}/#person`,
+      },
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: image,
+      },
+      inLanguage: "en",
+    },
   ],
 };
 ---
@@ -50,19 +83,27 @@ const jsonLd = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Jan-Marlon Leibl" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#f3f6f4" />
     <link rel="canonical" href={url} />
 
     <!-- Favicons -->
     <link rel="icon" type="image/jpeg" href="/jan.jpg" />
     <link rel="apple-touch-icon" href="/jan.jpg" />
+    <link rel="me" href="https://www.linkedin.com/in/janmarlonleibl/" />
+    <link rel="me" href="https://github.com/AtomicWasTaken" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
     <meta property="og:url" content={url} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={image} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:image:width" content="2408" />
+    <meta property="og:image:height" content="2408" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card -->
@@ -70,6 +111,7 @@ const jsonLd = {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={image} />
+    <meta name="twitter:image:alt" content={imageAlt} />
 
     <!-- Structured Data -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
