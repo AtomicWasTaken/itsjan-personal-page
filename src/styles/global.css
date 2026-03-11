@@ -32,7 +32,7 @@ body {
     radial-gradient(40rem 18rem at 94% 4%, rgba(17, 21, 22, 0.04), transparent 60%),
     var(--page-bg);
   color: var(--text-main);
-  font-family: var(--font-sans);
+  font-family: var(--font-sans), sans-serif;
   line-height: 1.5;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -61,14 +61,14 @@ body::after {
 }
 
 .hero-name {
-  font-family: var(--font-label);
+  font-family: var(--font-label), sans-serif;
   font-weight: 600;
   letter-spacing: 0.16em;
   line-height: 1;
 }
 
 .hero-display {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-weight: 700;
   letter-spacing: -0.02em;
   text-wrap: balance;
@@ -88,7 +88,7 @@ body::after {
 }
 
 .section-heading {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: clamp(1.65rem, 2.3vw, 2.45rem);
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -126,7 +126,7 @@ body::after {
 }
 
 .kicker {
-  font-family: var(--font-mono);
+  font-family: var(--font-mono), monospace;
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
