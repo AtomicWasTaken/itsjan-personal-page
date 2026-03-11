@@ -1,138 +1,142 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Button from "../components/Button.astro";
-import { Image } from "astro:assets";
 import portrait from "../assets/jan.jpg";
 ---
 
 <Layout>
-  <main class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 md:px-8 md:py-10">
-    <section class="surface reveal-up rounded-3xl p-6 md:p-10">
-      <header class="mb-8 flex flex-wrap items-center justify-between gap-3">
-        <p class="hero-name text-xs text-[#46524c] uppercase">Jan-Marlon Leibl</p>
-        <div class="flex items-center gap-2 rounded-full border border-[#d8e1db] bg-white/70 px-3 py-1.5">
-          <span class="h-2 w-2 rounded-full bg-emerald-600"></span>
-          <span class="font-mono text-xs text-[#46524c]">Open for jobs and projects</span>
-        </div>
-      </header>
-
-      <div class="grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-start">
-        <div class="space-y-5">
-          <h1 class="hero-display max-w-4xl text-4xl leading-[1.03] text-[#101815] md:text-6xl">
-            PHP and TypeScript developer with strong React and Next.js focus.
-          </h1>
-
-          <p class="max-w-3xl text-base leading-relaxed text-[#46524c] md:text-lg">
-            I am an apprentice software developer at team neusta in Bremen (expected completion: June 2026).
-            I specialize in PHP, TypeScript, React, Next.js, and TYPO3, and I also know Angular and Vue.
-            I like building products that are easy to use, easy to maintain, and easy to hand over.
-          </p>
-
-          <div class="flex flex-wrap gap-3">
-            <Button href="mailto:hi@itsjan.dev" variant="dark">Contact me</Button>
-            <Button href="https://www.linkedin.com/in/janmarlonleibl/" variant="light" external>LinkedIn</Button>
-            <Button href="https://github.com/AtomicWasTaken" variant="light" external>GitHub</Button>
+  <main class="mx-auto w-full max-w-7xl px-4 py-6 md:px-8 md:py-10">
+    <section class="app-shell reveal-up overflow-hidden rounded-3xl">
+      <div class="grid lg:grid-cols-12">
+        <header class="panel-divider col-span-12 border-b px-6 py-4 md:px-8">
+          <div class="flex h-10 flex-wrap items-center justify-between gap-x-6 gap-y-2">
+            <p class="hero-name muted flex h-full items-center text-xs leading-none uppercase">Jan-Marlon Leibl</p>
+            <p class="muted flex h-full items-center text-sm leading-none">Available for full-time roles and freelance projects.</p>
           </div>
+        </header>
+
+        <div class="col-span-12 grid lg:grid-cols-12 lg:items-start">
+          <article class="panel panel-divider col-span-12 border-b p-6 md:p-8 lg:col-span-9 lg:border-r lg:border-b-0">
+            <h1 class="hero-display max-w-4xl text-4xl leading-[1.03] text-[#101815] md:text-6xl">
+              PHP and TypeScript developer with strong React and Next.js focus.
+            </h1>
+            <p class="muted mt-6 max-w-3xl text-base leading-relaxed md:text-lg">
+              I am an apprentice software developer at team neusta in Bremen (expected completion: June 2026).
+              I specialize in PHP, TypeScript, React, Next.js, and TYPO3, and I also know Angular and Vue.
+              I like building products that are easy to use, easy to maintain, and easy to hand over.
+            </p>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <Button href="mailto:hi@itsjan.dev" variant="dark">Contact me</Button>
+              <Button href="https://www.linkedin.com/in/janmarlonleibl/" variant="light" external>LinkedIn</Button>
+              <Button href="https://github.com/AtomicWasTaken" variant="light" external>GitHub</Button>
+            </div>
+          </article>
+
+          <aside class="panel col-span-12 p-4 md:p-6 lg:col-span-3 lg:self-stretch">
+            <div class="panel-divider relative h-full min-h-[20rem] overflow-hidden rounded-xl border bg-white">
+              <img
+                src={portrait.src}
+                alt="Jan-Marlon Leibl"
+                class="block h-full w-full object-cover object-[center_12%]"
+                loading="eager"
+                decoding="async"
+              />
+            </div>
+          </aside>
         </div>
 
-        <div class="space-y-3">
-          <Image
-            src={portrait}
-            alt="Jan-Marlon Leibl"
-            width={600}
-            quality={80}
-            class="aspect-square w-full rounded-2xl object-cover object-[center_20%]"
-          />
-          <div class="card-hover rounded-2xl border border-[#d8e1db] bg-white/85 p-4">
-            <p class="font-mono text-[11px] tracking-[0.12em] text-[#46524c] uppercase">Current Role</p>
+        <div class="panel-divider col-span-12 grid border-t lg:grid-cols-12">
+          <article class="panel panel-divider col-span-12 p-6 md:p-8 lg:col-span-4 lg:border-r">
+            <p class="kicker">Current Role</p>
             <p class="mt-1 text-sm font-semibold text-[#101815]">Apprentice Software Developer</p>
-            <p class="text-sm text-[#46524c]">team neusta · Bremen</p>
-          </div>
-          <div class="card-hover rounded-2xl border border-[#d8e1db] bg-white/85 p-4">
-            <p class="font-mono text-[11px] tracking-[0.12em] text-[#46524c] uppercase">Core Stack</p>
+            <p class="muted text-sm">team neusta · Bremen</p>
+          </article>
+          <article class="panel panel-divider col-span-12 border-t p-6 md:p-8 lg:col-span-4 lg:border-t-0 lg:border-r">
+            <p class="kicker">Core Stack</p>
             <p class="mt-1 text-sm font-semibold text-[#101815]">PHP · TypeScript · React · Next.js · TYPO3</p>
-          </div>
-          <div class="card-hover rounded-2xl border border-[#d8e1db] bg-white/85 p-4">
-            <p class="font-mono text-[11px] tracking-[0.12em] text-[#46524c] uppercase">Availability</p>
+          </article>
+          <article class="panel col-span-12 border-t p-6 md:p-8 lg:col-span-4 lg:border-t-0">
+            <p class="kicker">Availability</p>
             <p class="mt-1 text-sm font-semibold text-[#101815]">Full-time jobs and freelance projects</p>
-          </div>
+          </article>
+        </div>
+
+        <div class="panel-divider col-span-12 grid border-t lg:grid-cols-12">
+          <article class="panel panel-divider col-span-12 p-6 md:p-8 lg:col-span-4 lg:border-r">
+            <p class="kicker">About Me</p>
+            <h2 class="mt-2 text-2xl font-bold text-[#101815]">I care about shipping software people trust.</h2>
+            <p class="muted mt-3">
+              Personally, I am structured, calm under pressure, and straightforward in communication.
+              I enjoy working in teams where quality and ownership matter.
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <span class="panel-divider rounded-full border bg-white px-3 py-1 font-mono text-xs">Reliable execution</span>
+              <span class="panel-divider rounded-full border bg-white px-3 py-1 font-mono text-xs">Clear communication</span>
+              <span class="panel-divider rounded-full border bg-white px-3 py-1 font-mono text-xs">Team mindset</span>
+            </div>
+          </article>
+
+          <article class="panel panel-divider col-span-12 border-t p-6 md:p-8 lg:col-span-4 lg:border-t-0 lg:border-r">
+            <p class="kicker">Frontend</p>
+            <ul class="mt-3 space-y-3 text-[#101815]">
+              <li class="panel-divider border-b pb-2">React applications</li>
+              <li class="panel-divider border-b pb-2">Next.js interfaces</li>
+              <li class="panel-divider border-b pb-2">Responsive UI implementation</li>
+              <li>Also know: Angular, Vue</li>
+            </ul>
+          </article>
+
+          <article class="panel col-span-12 border-t p-6 md:p-8 lg:col-span-4 lg:border-t-0">
+            <p class="kicker">Backend</p>
+            <ul class="mt-3 space-y-3 text-[#101815]">
+              <li class="panel-divider border-b pb-2">PHP services</li>
+              <li class="panel-divider border-b pb-2">TypeScript APIs</li>
+              <li class="panel-divider border-b pb-2">TYPO3 implementation</li>
+              <li>Database integration</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="panel-divider col-span-12 grid border-t lg:grid-cols-12">
+          <article class="panel panel-divider col-span-12 p-6 md:p-8 lg:col-span-6 lg:border-r">
+            <p class="kicker">Experience</p>
+            <ol class="mt-4 space-y-3">
+              <li class="stat-card p-4">
+                <p class="font-mono text-xs muted">Aug 2023 - Present</p>
+                <p class="mt-1 font-semibold text-[#101815]">team neusta · Apprentice Software Developer</p>
+                <p class="muted mt-1 text-sm">
+                  Working on web projects with frontend and backend responsibilities in a professional team environment.
+                </p>
+              </li>
+              <li class="stat-card p-4">
+                <p class="font-mono text-xs muted">Aug 2023 - Jun 2026</p>
+                <p class="mt-1 font-semibold text-[#101815]">Vocational Training · Schulzentrum SII Utbremen</p>
+                <p class="muted mt-1 text-sm">
+                  Computer science fundamentals with practical development in Java, web technologies, and software engineering.
+                </p>
+              </li>
+            </ol>
+          </article>
+
+          <article class="panel col-span-12 border-t p-6 md:p-8 lg:col-span-6 lg:border-t-0">
+            <p class="kicker">Profile</p>
+            <ul class="mt-3 space-y-3 text-[#101815]">
+              <li class="panel-divider border-b pb-2">Location: Bremen</li>
+              <li class="panel-divider border-b pb-2">Languages: German, English</li>
+              <li>Open to full-time roles and projects</li>
+            </ul>
+
+            <div class="mt-8 rounded-xl border border-[#2f3b35] bg-[#101815] p-5 shadow-[0_12px_26px_rgba(10,14,12,0.35)]">
+              <p class="font-mono text-[11px] tracking-[0.12em] text-[#8ea59b] uppercase">Contact</p>
+              <a href="mailto:hi@itsjan.dev" class="mt-1 block text-lg font-bold text-white hover:underline">hi@itsjan.dev</a>
+              <p class="text-sm text-[#c7d4ce]">Open for full-time roles and project collaborations</p>
+              <div class="mt-4">
+                <Button href="mailto:hi@itsjan.dev" variant="white">Start a conversation</Button>
+              </div>
+            </div>
+          </article>
         </div>
       </div>
     </section>
-
-    <section>
-      <article class="surface reveal-up rounded-2xl p-5">
-        <p class="font-mono text-[11px] tracking-[0.12em] text-[#46524c] uppercase">About Me</p>
-        <h2 class="mt-2 text-2xl font-bold text-[#101815] md:text-3xl">I care about shipping software people trust.</h2>
-        <p class="mt-3 text-[#46524c]">
-          Personally, I am structured, calm under pressure, and straightforward in communication.
-          I enjoy working in teams where quality and ownership matter. My goal is to grow into a
-          strong full-stack engineer role and contribute to products with real user value.
-        </p>
-        <div class="mt-4 flex flex-wrap gap-2">
-          <span class="rounded-full border border-[#d8e1db] bg-white/85 px-3 py-1 font-mono text-xs">Reliable execution</span>
-          <span class="rounded-full border border-[#d8e1db] bg-white/85 px-3 py-1 font-mono text-xs">Clear communication</span>
-          <span class="rounded-full border border-[#d8e1db] bg-white/85 px-3 py-1 font-mono text-xs">Team mindset</span>
-        </div>
-      </article>
-    </section>
-
-    <section class="grid gap-4 lg:grid-cols-3">
-      <article class="surface card-hover reveal-up rounded-2xl p-5">
-        <p class="font-mono text-[11px] tracking-[0.12em] text-[#46524c] uppercase">Frontend</p>
-        <ul class="mt-3 space-y-2 text-[#101815]">
-          <li>React applications</li>
-          <li>Next.js interfaces</li>
-          <li>Responsive UI implementation</li>
-          <li>Also know: Angular, Vue</li>
-        </ul>
-      </article>
-      <article class="surface card-hover reveal-up rounded-2xl p-5">
-        <p class="font-mono text-[11px] tracking-[0.12em] text-[#46524c] uppercase">Backend</p>
-        <ul class="mt-3 space-y-2 text-[#101815]">
-          <li>PHP services</li>
-          <li>TypeScript APIs</li>
-          <li>TYPO3 implementation</li>
-          <li>Database integration</li>
-        </ul>
-      </article>
-      <article class="surface card-hover reveal-up rounded-2xl p-5">
-        <p class="font-mono text-[11px] tracking-[0.12em] text-[#46524c] uppercase">Profile</p>
-        <ul class="mt-3 space-y-2 text-[#101815]">
-          <li>Location: Schwanewede / Bremen</li>
-          <li>Languages: German, English</li>
-          <li>Open to full-time roles and projects</li>
-        </ul>
-      </article>
-    </section>
-
-    <section class="surface reveal-up rounded-2xl p-5 md:p-6">
-      <p class="font-mono text-[11px] tracking-[0.12em] text-[#46524c] uppercase">Experience</p>
-      <ol class="mt-4 space-y-3">
-        <li class="card-hover rounded-xl border border-[#d8e1db] bg-white/80 p-4">
-          <p class="font-mono text-xs text-[#46524c]">Aug 2023 - Present</p>
-          <p class="mt-1 font-semibold text-[#101815]">team neusta · Apprentice Software Developer</p>
-          <p class="mt-1 text-sm text-[#46524c]">
-            Working on web projects with frontend and backend responsibilities in a professional team environment.
-          </p>
-        </li>
-        <li class="card-hover rounded-xl border border-[#d8e1db] bg-white/80 p-4">
-          <p class="font-mono text-xs text-[#46524c]">Aug 2023 - Jun 2026</p>
-          <p class="mt-1 font-semibold text-[#101815]">Vocational Training · Schulzentrum SII Utbremen</p>
-          <p class="mt-1 text-sm text-[#46524c]">
-            Computer science fundamentals with practical development in Java, web technologies, and software engineering.
-          </p>
-        </li>
-      </ol>
-    </section>
-
-    <footer class="reveal-up flex flex-col items-start justify-between gap-3 rounded-2xl border border-[#d8e1db] bg-[#101815] px-6 py-5 md:flex-row md:items-center">
-      <div>
-        <p class="font-mono text-[11px] tracking-[0.12em] text-[#8ea59b] uppercase">Contact</p>
-        <a href="mailto:hi@itsjan.dev" class="mt-1 block text-lg font-bold text-white hover:underline">hi@itsjan.dev</a>
-        <p class="text-sm text-[#c7d4ce]">Open for full-time roles and project collaborations</p>
-      </div>
-      <Button href="mailto:hi@itsjan.dev" variant="white">Start a conversation</Button>
-    </footer>
   </main>
 </Layout>
