@@ -1,12 +1,17 @@
 ---
 import "../styles/global.css";
 import { ageYears, aOrAn } from "../lib/jan";
+import { detectLocale, tr } from "../lib/i18n";
+
+const locale = detectLocale(Astro.request);
+const t = tr(locale);
+// Tell caches the response varies by Accept-Language so en/de don't bleed
+Astro.response.headers.set("Vary", "Accept-Language");
 
 const siteName = "itsjan.dev";
-const title = "Jan-Marlon Leibl — developer in Bremen";
 const years = ageYears();
-const description =
-  `I'm ${aOrAn(years)} ${years}-year-old PHP and TypeScript developer in Bremen. Apprenticing at team neusta, free for hire from June 2026 — full-time or freelance.`;
+const title = t.meta.title;
+const description = t.meta.description(years, aOrAn(years));
 const url = "https://itsjan.dev";
 const image = `${url}/jan.jpg`;
 const imageAlt = "Portrait of Jan-Marlon Leibl";
@@ -78,7 +83,7 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={t.htmlLang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
