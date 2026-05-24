@@ -810,11 +810,20 @@ const stack = [
       updateCount();
     };
 
+    // Peer positions travel as % of the DOCUMENT (not viewport), so each
+    // cursor is anchored to a fixed point on the page content. When the
+    // local user scrolls, peer cursors move with the content beneath them.
+    const docSize = () => ({
+      w: Math.max(document.documentElement.scrollWidth,  window.innerWidth),
+      h: Math.max(document.documentElement.scrollHeight, window.innerHeight),
+    });
+
     const updatePeerTarget = (id: string, x01: number, y01: number) => {
       const p = peers.get(id);
       if (!p) return;
-      p.tx = Math.max(0, Math.min(1, x01)) * window.innerWidth;
-      p.ty = Math.max(0, Math.min(1, y01)) * window.innerHeight;
+      const { w, h } = docSize();
+      p.tx = Math.max(0, Math.min(1, x01)) * w;
+      p.ty = Math.max(0, Math.min(1, y01)) * h;
       if (p.firstFrame) {
         p.cx = p.tx;
         p.cy = p.ty;
@@ -822,12 +831,16 @@ const stack = [
       }
     };
 
-    // Render loop — lerps all peers toward their target each frame
+    // Render loop — lerps peers toward target (in document coords), then
+    // renders relative to current scroll. Scrolling instantly re-anchors
+    // every peer to its document point on the next frame.
     const tick = () => {
+      const sx = window.scrollX;
+      const sy = window.scrollY;
       for (const p of peers.values()) {
         p.cx += (p.tx - p.cx) * 0.22;
         p.cy += (p.ty - p.cy) * 0.22;
-        p.el.style.transform = `translate3d(${p.cx}px, ${p.cy}px, 0)`;
+        p.el.style.transform = `translate3d(${p.cx - sx}px, ${p.cy - sy}px, 0)`;
       }
       requestAnimationFrame(tick);
     };
@@ -914,8 +927,11 @@ const stack = [
     let lastSentX = -1, lastSentY = -1;
 
     window.addEventListener("pointermove", (e) => {
-      outX = e.clientX / window.innerWidth;
-      outY = e.clientY / window.innerHeight;
+      // Document-relative — viewport coord + current scroll, normalized
+      // by total document size. Peers receive a fixed page-content anchor.
+      const { w, h } = docSize();
+      outX = (e.clientX + window.scrollX) / w;
+      outY = (e.clientY + window.scrollY) / h;
       dirty = true;
     }, { passive: true });
 
