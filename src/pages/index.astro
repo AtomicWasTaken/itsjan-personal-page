@@ -5,18 +5,14 @@ import SquigglyText from "../components/SquigglyText.astro";
 import portrait from "../assets/jan.jpg";
 import teamNeustaLogo from "../assets/team-neusta-logo.svg?raw";
 import { BIRTHDATE_ISO, ageNow, ageYears, aOrAn } from "../lib/jan";
+import { detectLocale, tr } from "../lib/i18n";
 
+const locale     = detectLocale(Astro.request);
+const t          = tr(locale);
 const initialAge = ageNow().toFixed(8);
-const article    = aOrAn(ageYears()); // "a" or "an" for the hero sentence
+const article    = aOrAn(ageYears()); // "a"/"an" for English (ignored by German)
 
-const stack = [
-  { name: "PHP",        note: "day job, services & TYPO3" },
-  { name: "TypeScript", note: "end to end, type-led API design" },
-  { name: "React",      note: "default for app frontends" },
-  { name: "Next.js",    note: "side projects & client builds" },
-  { name: "TYPO3",      note: "a lot of what team neusta ships" },
-  { name: "Angular & Vue", note: "shipped when the job needs it" },
-];
+const stack = t.stack.items;
 ---
 
 <Layout>
@@ -66,20 +62,20 @@ const stack = [
   </div>
 
   <!-- Floating top pill — live status (N5) -->
-  <a href="mailto:hi@itsjan.dev" class="float-pill post-intro" aria-label="Open for hire from June 2026 — email me">
+  <a href="mailto:hi@itsjan.dev" class="float-pill post-intro" aria-label={t.topPillAria}>
     <span class="live-dot" aria-hidden="true"></span>
-    <span>open for hire — jun '26</span>
+    <span>{t.topPill}</span>
   </a>
 
   <!-- Back-to-top floating pill (shown on scroll) -->
   <button
     id="back-to-top"
     class="back-to-top"
-    aria-label="Back to top"
+    aria-label={t.backToTopAria}
     type="button"
   >
     <span class="bt-arrow" aria-hidden="true">↑</span>
-    <span>top</span>
+    <span>{locale === "de" ? "oben" : "top"}</span>
   </button>
 
   <main class="mx-auto w-full max-w-4xl px-5 pt-24 pb-12 md:px-8 md:pt-32">
@@ -87,49 +83,45 @@ const stack = [
     <!-- ── HERO ─────────────────────────────────────────── -->
     <section class="reveal-up">
       <div class="intro-block">
-        <p class="label-muted">Hey there.</p>
-        <h1 class="hero-greeting mt-3">I'm <SquigglyText scale={8} stepDuration={100}>Jan-Marlon</SquigglyText></h1>
-        <p class="hero-aka"><span class="arrow">↳</span>everyone just calls me Jan.</p>
+        <p class="label-muted">{t.hero.hey}</p>
+        <h1 class="hero-greeting mt-3">{locale === "de" ? "Ich bin " : "I'm "}<SquigglyText scale={8} stepDuration={100}>Jan-Marlon</SquigglyText></h1>
+        <p class="hero-aka"><span class="arrow">↳</span>{t.hero.aka}</p>
       </div>
 
       <div class="post-intro">
       <p class="hero-prose mt-6">
-        I'm {article}
+        {t.hero.ageBefore(article)}
         <span class="age-ticker" id="age" data-birth={BIRTHDATE_ISO}>{initialAge}</span>
-        year old developer at
+        {t.hero.ageAfter}
         <a
           class="company-pill"
           href="https://www.team-neusta.de"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="team neusta"
-        ><span set:html={teamNeustaLogo} /></a>,
-        working in PHP and TypeScript by day, Next.js by night.
-        Wrapping my apprenticeship in <strong class="text-[var(--color-text-strong)] font-semibold">June 2026</strong>
-        and looking for what's next — full-time or freelance, German or English.
+        ><span set:html={teamNeustaLogo} /></a>{t.hero.proseBeforeBold}<strong class="text-[var(--color-text-strong)] font-semibold">{t.hero.bold}</strong>{t.hero.proseAfterBold}
       </p>
 
       <p class="hero-prose mt-4 muted">
-        Started coding at 11 with C# — a friend showed me a tiny app he'd built
-        and I had to figure out how it worked. That was the start.
+        {t.hero.origin}
       </p>
 
       <div class="mt-7 flex flex-wrap gap-2.5">
-        <Button href="mailto:hi@itsjan.dev" variant="dark">Email me</Button>
-        <Button href="https://github.com/AtomicWasTaken" variant="light" external>GitHub</Button>
-        <Button href="https://www.linkedin.com/in/janmarlonleibl/" variant="light" external>LinkedIn</Button>
+        <Button href="mailto:hi@itsjan.dev" variant="dark">{t.hero.buttons.email}</Button>
+        <Button href="https://github.com/AtomicWasTaken" variant="light" external>{t.hero.buttons.github}</Button>
+        <Button href="https://www.linkedin.com/in/janmarlonleibl/" variant="light" external>{t.hero.buttons.linkedin}</Button>
       </div>
 
       <!-- Status / timezone block — fullag.ar's right-aligned aux line -->
       <div class="mt-16 max-w-sm md:ml-auto md:text-right reveal-up">
         <p class="aux-block">
-          <span class="key">status</span> open for offers from June&nbsp;2026
+          <span class="key">{t.hero.aux.statusLabel}</span> {t.hero.aux.statusValue}
         </p>
         <p class="aux-block">
-          <span class="key">based</span> Bremen, Germany &middot; UTC+1
+          <span class="key">{t.hero.aux.basedLabel}</span> {t.hero.aux.basedValue}
         </p>
         <p class="aux-block">
-          <span class="key">reply</span> usually same day
+          <span class="key">{t.hero.aux.replyLabel}</span> {t.hero.aux.replyValue}
         </p>
       </div>
       </div><!-- /.post-intro -->
@@ -137,9 +129,9 @@ const stack = [
 
     <!-- ── STACK ────────────────────────────────────────── -->
     <section class="section-block reveal-up post-intro">
-      <p class="label">› stack</p>
-      <h2 class="section-heading mt-3">what I work with</h2>
-      <p class="section-sub">Day to day, in roughly that order. I'd rather pick the boring tool that fits than the hot one that doesn't.</p>
+      <p class="label">{t.stack.eyebrow}</p>
+      <h2 class="section-heading mt-3">{t.stack.heading}</h2>
+      <p class="section-sub">{t.stack.sub}</p>
 
       <div class="stack-list mt-10">
         {stack.map((s, i) => (
@@ -154,74 +146,37 @@ const stack = [
 
     <!-- ── OPINIONS ─────────────────────────────────────── -->
     <section class="section-block reveal-up post-intro">
-      <p class="label">› opinions</p>
-      <h2 class="section-heading mt-3">lightly held</h2>
-      <p class="section-sub">Things I'd argue for over a coffee. Cheap to change.</p>
+      <p class="label">{t.opinions.eyebrow}</p>
+      <h2 class="section-heading mt-3">{t.opinions.heading}</h2>
+      <p class="section-sub">{t.opinions.sub}</p>
 
       <div class="opinions-list mt-10">
-        <article class="opinion">
-          <span class="opinion-num">01</span>
-          <p class="opinion-text">TypeScript pays for itself by lunchtime.</p>
-        </article>
-        <article class="opinion">
-          <span class="opinion-num">02</span>
-          <p class="opinion-text">Boring tech beats hot tech most days of the week.</p>
-        </article>
-        <article class="opinion">
-          <span class="opinion-num">03</span>
-          <p class="opinion-text">Commit messages are for the person reading them in 18 months, not for you right now.</p>
-        </article>
-        <article class="opinion">
-          <span class="opinion-num">04</span>
-          <p class="opinion-text">If a tool needs a 90-minute setup video, something is wrong.</p>
-        </article>
-        <article class="opinion">
-          <span class="opinion-num">05</span>
-          <p class="opinion-text">Shipping is part of the job. Code that never reaches a user is a sketch.</p>
-        </article>
+        {t.opinions.items.map((line, i) => (
+          <article class="opinion">
+            <span class="opinion-num">{String(i + 1).padStart(2, "0")}</span>
+            <p class="opinion-text">{line}</p>
+          </article>
+        ))}
       </div>
     </section>
 
     <!-- ── ARC ──────────────────────────────────────────── -->
     <section class="section-block reveal-up post-intro">
-      <p class="label">› arc</p>
-      <h2 class="section-heading mt-3">how I got here</h2>
-      <p class="section-sub">Short version. The longer one's over coffee.</p>
+      <p class="label">{t.arc.eyebrow}</p>
+      <h2 class="section-heading mt-3">{t.arc.heading}</h2>
+      <p class="section-sub">{t.arc.sub}</p>
 
       <div class="mt-10 grid gap-12 md:grid-cols-[1fr_14rem] md:items-start md:gap-16">
         <div class="arc-list">
-          <div class="arc-row">
-            <span class="arc-year">'19</span>
-            <div>
-              <p class="arc-headline">First taste.</p>
-              <p class="arc-body">
-                Age 11. A friend showed me a tiny app he'd built in
-                <strong>C#</strong>. I had to figure out how it worked, then
-                build my own. The hook never came out.
-              </p>
+          {t.arc.items.map((row) => (
+            <div class="arc-row">
+              <span class="arc-year">{row.year}</span>
+              <div>
+                <p class="arc-headline">{row.title}</p>
+                <p class="arc-body" set:html={row.body} />
+              </div>
             </div>
-          </div>
-          <div class="arc-row">
-            <span class="arc-year">'23</span>
-            <div>
-              <p class="arc-headline">team neusta, Bremen.</p>
-              <p class="arc-body">
-                Started a three-year apprenticeship. Real client work in
-                <strong>PHP</strong>, <strong>TypeScript</strong>, and <strong>TYPO3</strong>
-                alongside training at Schulzentrum SII Utbremen.
-              </p>
-            </div>
-          </div>
-          <div class="arc-row">
-            <span class="arc-year">'26</span>
-            <div>
-              <p class="arc-headline">Open for what's next.</p>
-              <p class="arc-body">
-                Apprenticeship wraps in June. Looking for full-time or freelance —
-                either fine, both German and English.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
 
         <aside class="hidden md:block">
@@ -243,17 +198,15 @@ const stack = [
 
     <!-- ── CONTACT ──────────────────────────────────────── -->
     <section class="section-block reveal-up post-intro">
-      <p class="label">› contact</p>
-      <h2 class="section-heading mt-3">let's talk</h2>
-      <p class="section-sub">
-        Tell me what you're working on. Same-day reply, German or English.
-      </p>
+      <p class="label">{t.contact.eyebrow}</p>
+      <h2 class="section-heading mt-3">{t.contact.heading}</h2>
+      <p class="section-sub">{t.contact.sub}</p>
 
       <form id="contact-form" class="contact-form mt-10" novalidate>
         <label class="field field-row">
           <span class="field-label">
-            Name
-            <span class="field-hint">optional</span>
+            {t.contact.nameLabel}
+            <span class="field-hint">{t.contact.nameHint}</span>
           </span>
           <input
             class="field-input"
@@ -261,12 +214,12 @@ const stack = [
             name="name"
             autocomplete="name"
             maxlength="100"
-            placeholder="who's writing?"
+            placeholder={t.contact.namePlaceholder}
           />
         </label>
 
         <label class="field field-row">
-          <span class="field-label">Email</span>
+          <span class="field-label">{t.contact.emailLabel}</span>
           <input
             class="field-input"
             type="email"
@@ -274,12 +227,12 @@ const stack = [
             autocomplete="email"
             required
             maxlength="200"
-            placeholder="so I can reply"
+            placeholder={t.contact.emailPlaceholder}
           />
         </label>
 
         <label class="field field-row">
-          <span class="field-label">Message</span>
+          <span class="field-label">{t.contact.messageLabel}</span>
           <textarea
             class="field-textarea"
             name="message"
@@ -287,7 +240,7 @@ const stack = [
             maxlength="5000"
             minlength="10"
             rows="5"
-            placeholder="apprenticeship, freelance gig, an idea you want to talk through — all fine."
+            placeholder={t.contact.messagePlaceholder}
           ></textarea>
         </label>
 
@@ -300,12 +253,10 @@ const stack = [
         <div class="contact-actions">
           <div>
             <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
-            <p class="contact-direct">
-              or <a href="mailto:hi@itsjan.dev">email hi@itsjan.dev directly</a>
-            </p>
+            <p class="contact-direct" set:html={t.contact.direct} />
           </div>
           <button id="contact-submit" type="submit" class="btn-3d btn-3d-dark">
-            Send a note
+            {t.contact.submit}
           </button>
         </div>
       </form>
@@ -313,15 +264,32 @@ const stack = [
 
     <footer class="site-footer mt-24 post-intro">
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <span>itsjan.dev</span>
-        <span>jan-marlon leibl &middot; bremen &middot; '26</span>
+        <span>{t.footer.site}</span>
+        <span>{t.footer.sig}</span>
       </div>
     </footer>
 
   </main>
 </Layout>
 
+<!-- Locale-specific strings used by the client-side scripts below -->
+<script type="application/json" id="i18n-data" is:inline set:html={JSON.stringify({
+  formMessages: t.formMessages,
+  peers: {
+    none: t.peers.none,
+    one:  t.peers.one,
+    manyTemplate: t.peers.many(99).replace("99", "{n}"),
+  },
+  contact: { sending: t.formMessages.sending, sent: t.formMessages.sent, submit: t.contact.submit },
+})} />
+
 <script>
+  // Read locale strings emitted by the page
+  const I18N = (() => {
+    const el = document.getElementById("i18n-data");
+    try { return JSON.parse(el?.textContent || "{}"); } catch { return {}; }
+  })();
+
   // ── Intro state machine — transform-only, zero layout shift ────────
   //
   //    The greeting block stays in document flow at ALL times. Its position
@@ -760,10 +728,11 @@ const stack = [
 
     const updateCount = () => {
       const n = peers.size;
+      const p = I18N.peers || { none: "no one else here", one: "1 other here", manyTemplate: "{n} others here" };
       countEl.textContent = n === 0
-        ? "no one else here"
-        : n === 1 ? "1 other here"
-        : `${n} others here`;
+        ? p.none
+        : n === 1 ? p.one
+        : p.manyTemplate.replace("{n}", String(n));
       toggle.dataset.visible = n > 0 ? "true" : "false";
     };
 
@@ -1352,14 +1321,16 @@ const stack = [
         company: String(data.get("company") ?? ""),
       };
 
-      // Client-side guards (server validates again)
+      const M = I18N.formMessages || {};
+      const SUBMIT_LABEL = I18N.contact?.submit ?? "Send a note";
+
       if (!payload.email || !payload.message) {
-        setStatus("Email and message are required.", "error");
+        setStatus(M.required ?? "Email and message are required.", "error");
         return;
       }
 
       submit.setAttribute("aria-busy", "true");
-      submit.textContent = "Sending…";
+      submit.textContent = M.sending ?? "Sending…";
 
       try {
         const res = await fetch("/api/contact", {
@@ -1371,21 +1342,21 @@ const stack = [
 
         if (res.ok && json.ok) {
           form.reset();
-          submit.textContent = "Sent ✓";
-          setStatus("Got it — I'll reply same day to that email.", "ok");
+          submit.textContent = M.sent ?? "Sent ✓";
+          setStatus(M.success ?? "Got it — I'll reply same day to that email.", "ok");
           setTimeout(() => {
-            submit.textContent = "Send a note";
+            submit.textContent = SUBMIT_LABEL;
             submit.removeAttribute("aria-busy");
           }, 2400);
         } else {
-          submit.textContent = "Send a note";
+          submit.textContent = SUBMIT_LABEL;
           submit.removeAttribute("aria-busy");
-          setStatus(json.error ?? "Something went wrong. Please try again.", "error");
+          setStatus(json.error ?? M.genericError ?? "Something went wrong.", "error");
         }
-      } catch (err) {
-        submit.textContent = "Send a note";
+      } catch {
+        submit.textContent = SUBMIT_LABEL;
         submit.removeAttribute("aria-busy");
-        setStatus("Network error. Please try again or email hi@itsjan.dev.", "error");
+        setStatus(M.networkError ?? "Network error.", "error");
       }
     });
   }
