@@ -673,8 +673,14 @@ const stack = [
 
   // ── Multiplayer remote cursors ────────────────────────
   (() => {
-    const WSS_URL = import.meta.env.PUBLIC_CURSORS_WSS as string | undefined;
-    if (!WSS_URL) return; // Feature gracefully disabled if env not set
+    // Default to the public production worker so the feature works even
+    // when no env var is set (e.g., on a fresh Cloudflare Pages deploy
+    // before the dashboard env vars are configured). Override locally
+    // by setting PUBLIC_CURSORS_WSS in `.env` (e.g., to ws://localhost:8788/ws).
+    const WSS_URL =
+      (import.meta.env.PUBLIC_CURSORS_WSS as string | undefined) ||
+      "wss://itsjan-cursors.jleibl.workers.dev/ws";
+    if (!WSS_URL) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
