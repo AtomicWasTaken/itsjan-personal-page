@@ -24,6 +24,9 @@ const stack = [
   <!-- Multiplayer remote cursors render here -->
   <div id="peers-layer" class="peers-layer" aria-hidden="true"></div>
 
+  <!-- Peer text selections — absolute, sit inside body so they scroll naturally -->
+  <div id="peers-selections" class="peers-selections" aria-hidden="true"></div>
+
   <!-- Show/hide other people's cursors -->
   <button id="peers-toggle" class="peers-toggle post-intro" type="button" aria-label="Toggle other visitors' cursors">
     <span class="eye" aria-hidden="true"></span>
@@ -686,16 +689,18 @@ const stack = [
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     if (reduced || isTouch) return;
 
-    const layer   = document.getElementById("peers-layer");
-    const toggle  = document.getElementById("peers-toggle") as HTMLButtonElement | null;
-    const countEl = document.getElementById("peers-count");
-    if (!layer || !toggle || !countEl) return;
+    const layer       = document.getElementById("peers-layer");
+    const selections  = document.getElementById("peers-selections");
+    const toggle      = document.getElementById("peers-toggle") as HTMLButtonElement | null;
+    const countEl     = document.getElementById("peers-count");
+    if (!layer || !selections || !toggle || !countEl) return;
 
     type Peer = {
       id: string;
       name: string;
       color: string;
       el: HTMLDivElement;
+      selEl: HTMLDivElement; // per-peer container for selection rect overlays
       tx: number; ty: number;
       cx: number; cy: number;
       firstFrame: boolean;
@@ -786,8 +791,13 @@ const stack = [
       el.appendChild(label);
       layer.appendChild(el);
 
+      // Per-peer selection container — lives in the absolute selections layer
+      const selEl = document.createElement("div");
+      selEl.className = "peer-selection-set";
+      selections.appendChild(selEl);
+
       peers.set(id, {
-        id, name, color: safeColor, el,
+        id, name, color: safeColor, el, selEl,
         tx: -100, ty: -100, cx: -100, cy: -100,
         firstFrame: true,
         mode: "default",
@@ -814,8 +824,30 @@ const stack = [
       const p = peers.get(id);
       if (!p) return;
       p.el.remove();
+      p.selEl.remove();
       peers.delete(id);
       updateCount();
+    };
+
+    // Render a peer's text-selection rectangles (in document px coords)
+    const renderPeerSelection = (id: string, rects: number[][]) => {
+      const p = peers.get(id);
+      if (!p) return;
+      // Replace contents — using createElement so this stays XSS-safe
+      while (p.selEl.firstChild) p.selEl.removeChild(p.selEl.firstChild);
+      for (const r of rects) {
+        const [x, y, w, h] = r;
+        if (typeof x !== "number" || typeof y !== "number" ||
+            typeof w !== "number" || typeof h !== "number") continue;
+        if (w <= 0 || h <= 0) continue;
+        const rect = document.createElement("div");
+        rect.className = "peer-selection";
+        rect.style.transform = `translate(${x}px, ${y}px)`;
+        rect.style.width  = `${w}px`;
+        rect.style.height = `${h}px`;
+        rect.style.backgroundColor = p.color;
+        p.selEl.appendChild(rect);
+      }
     };
 
     // Peer positions travel as % of the DOCUMENT (not viewport), so each
@@ -904,6 +936,11 @@ const stack = [
               );
             }
             break;
+          case "selection":
+            if (typeof m.id === "string" && Array.isArray(m.rects)) {
+              renderPeerSelection(m.id, m.rects as number[][]);
+            }
+            break;
         }
       });
 
@@ -979,6 +1016,62 @@ const stack = [
     window.addEventListener("cursor:press", (e) => {
       const pressed = (e as CustomEvent<{ pressed: boolean }>).detail.pressed;
       sendState({ pressed });
+    });
+
+    // ── Broadcast local text selection as document-px rectangles ─────
+    let selectionDirty = false;
+    let lastSelectionKey = "";
+
+    const captureSelection = (): number[][] => {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed || sel.rangeCount === 0) return [];
+      const rects: number[][] = [];
+      const sx = window.scrollX;
+      const sy = window.scrollY;
+      for (let i = 0; i < sel.rangeCount; i++) {
+        const range = sel.getRangeAt(i);
+        for (const r of Array.from(range.getClientRects())) {
+          if (r.width <= 0 || r.height <= 0) continue;
+          rects.push([
+            Math.round((r.left + sx) * 100) / 100,
+            Math.round((r.top  + sy) * 100) / 100,
+            Math.round(r.width  * 100) / 100,
+            Math.round(r.height * 100) / 100,
+          ]);
+        }
+        if (rects.length >= 200) break; // cap
+      }
+      return rects;
+    };
+
+    const sendSelection = () => {
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      const rects = captureSelection();
+      // Cheap dedup so we don't re-emit identical selections every frame
+      const key = rects.length === 0
+        ? "0"
+        : rects.length + ":" + rects[0][0] + "," + rects[0][1];
+      if (key === lastSelectionKey) return;
+      lastSelectionKey = key;
+      ws.send(JSON.stringify({ type: "selection", rects }));
+    };
+
+    document.addEventListener("selectionchange", () => { selectionDirty = true; }, { passive: true });
+
+    const selectionLoop = () => {
+      if (selectionDirty) {
+        selectionDirty = false;
+        sendSelection();
+      }
+      requestAnimationFrame(selectionLoop);
+    };
+    requestAnimationFrame(selectionLoop);
+
+    // Resending on layout change (window resize) so peers re-locate the
+    // selection rects to where the content actually sits now.
+    window.addEventListener("resize", () => {
+      lastSelectionKey = "";
+      selectionDirty = true;
     });
   })();
 

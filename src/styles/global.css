@@ -506,12 +506,7 @@ body::after {
   align-items: baseline;
   padding: 1.4rem 0;
   border-bottom: 1px solid var(--color-border);
-  transition: padding-left var(--dur-base) var(--ease-out);
   position: relative;
-}
-
-.stack-row:hover {
-  padding-left: 0.75rem;
 }
 
 .stack-index {
@@ -1299,7 +1294,30 @@ html.has-custom-cursor label {
 }
 
 /* Hide all peers when the toggle is off */
-body[data-peers="off"] .peers-layer { display: none; }
+body[data-peers="off"] .peers-layer,
+body[data-peers="off"] .peers-selections { display: none; }
+
+/* ── Peer text selections (rendered in document coordinates) ── */
+
+.peers-selections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.peer-selection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* background-color set inline per-peer */
+  opacity: 0.28;
+  border-radius: 2px;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
 
 /* ── Peers toggle pill (bottom-left, mirrors back-to-top) ── */
 
