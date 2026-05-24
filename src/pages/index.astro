@@ -74,7 +74,7 @@ const stack = [
   <!-- Back-to-top floating pill (shown on scroll) -->
   <button
     id="back-to-top"
-    class="back-to-top post-intro"
+    class="back-to-top"
     aria-label="Back to top"
     type="button"
   >
@@ -516,6 +516,45 @@ const stack = [
     }
   }
 
+  // ── Secret cursor-system toggle: type the word "cursors" ─────
+  //   Hides/shows the local custom cursor, all peer cursors + selections,
+  //   and the peers-toggle pill. Persisted in localStorage.
+  (() => {
+    const STORAGE = "itsjan:cursors-off";
+    const SECRET  = "cursors";
+
+    // Apply persisted state ASAP so the cursor IIFE below sees the flag
+    if (localStorage.getItem(STORAGE) === "1") {
+      document.body.dataset.cursorsOff = "true";
+    }
+
+    let buf = "";
+    document.addEventListener("keydown", (e) => {
+      const t = e.target;
+      if (
+        t instanceof HTMLInputElement ||
+        t instanceof HTMLTextAreaElement ||
+        (t instanceof HTMLElement && t.isContentEditable)
+      ) return;
+      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+
+      buf = (buf + e.key.toLowerCase()).slice(-SECRET.length);
+      if (buf === SECRET) {
+        const off = document.body.dataset.cursorsOff === "true";
+        if (off) {
+          delete document.body.dataset.cursorsOff;
+          document.documentElement.classList.add("has-custom-cursor");
+          localStorage.removeItem(STORAGE);
+        } else {
+          document.body.dataset.cursorsOff = "true";
+          document.documentElement.classList.remove("has-custom-cursor");
+          localStorage.setItem(STORAGE, "1");
+        }
+        buf = "";
+      }
+    }, { passive: true });
+  })();
+
   // ── Custom cursor — smooth lerp + context-aware modes ─
   (() => {
     const fine    = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -523,7 +562,12 @@ const stack = [
     const cursor  = document.getElementById("cursor") as HTMLElement | null;
     if (!cursor || !fine || reduced) return;
 
-    document.documentElement.classList.add("has-custom-cursor");
+    // Respect the secret cursors-off toggle — don't enable the custom cursor
+    // (the OS cursor stays visible). The CSS rules + dataset flag also hide
+    // the .cursor element directly, so this just keeps things tidy.
+    if (document.body.dataset.cursorsOff !== "true") {
+      document.documentElement.classList.add("has-custom-cursor");
+    }
 
     let tx = -100, ty = -100;
     let cx = -100, cy = -100;
