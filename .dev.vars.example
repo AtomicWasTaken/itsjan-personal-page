@@ -1,3 +1,7 @@
-# Copy to .dev.vars and fill in. `.dev.vars` is auto-gitignored by wrangler.
+# Wrangler runtime env vars — copy to `.dev.vars` and fill in.
+# `.dev.vars` is auto-gitignored by wrangler.
 # For production: `wrangler secret put RESEND_API_KEY` (do NOT put real keys here).
 RESEND_API_KEY=re_your_resend_api_key_here
+
+# Note: PUBLIC_* vars (like PUBLIC_CURSORS_WSS) belong in `.env`, not here,
+# because Astro inlines them at BUILD time via Vite. See `.env.example`.

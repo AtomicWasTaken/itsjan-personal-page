@@ -1,0 +1,17 @@
+name = "itsjan-cursors"
+main = "src/index.ts"
+compatibility_date = "2026-05-24"
+compatibility_flags = ["nodejs_compat"]
+
+[[durable_objects.bindings]]
+name = "CURSORS"
+class_name = "CursorsRoom"
+
+# SQLite-backed Durable Objects — eligible for the Workers free tier and
+# cheaper than the legacy KV-backed ones. New deploys should use this.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["CursorsRoom"]
+
+[observability]
+enabled = true

@@ -1,0 +1,15 @@
+{
+  "name": "itsjan-cursors-worker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev --config wrangler.toml --port 8788",
+    "deploy": "wrangler deploy --config wrangler.toml",
+    "types": "wrangler types --config wrangler.toml"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250101.0",
+    "typescript": "^5.4.0",
+    "wrangler": "^4.0.0"
+  }
+}
