@@ -108,11 +108,16 @@ export class CursorsRoom implements DurableObject {
     }
 
     if (isMoveMessage(data)) {
+      // anchor + ax/ay are DOM-relative (preferred — survive different layouts)
+      // x + y are fractional viewport fallback for when no anchor was resolvable
       this.broadcast({
         type: "move",
         id: attachment.id,
         x: clamp01(data.x),
         y: clamp01(data.y),
+        anchor: typeof data.anchor === "string" ? data.anchor.slice(0, 500) : undefined,
+        ax: typeof data.ax === "number" ? data.ax : undefined,
+        ay: typeof data.ay === "number" ? data.ay : undefined,
       }, ws);
       return;
     }
@@ -128,14 +133,14 @@ export class CursorsRoom implements DurableObject {
     }
 
     if (isSelectionMessage(data)) {
-      // Cap rect count + sanitize coords (defensive against bad clients)
-      const rects = (Array.isArray(data.rects) ? data.rects : [])
-        .slice(0, 200)
-        .map((r) => Array.isArray(r) ? r.slice(0, 4).map((v) => typeof v === "number" ? v : 0) : [0, 0, 0, 0]);
+      // Prefer text-offset-within-anchor (renders pixel-perfect on any layout).
+      // Falls back to rects[] for when DOM walks failed on the sender.
       this.broadcast({
         type: "selection",
         id: attachment.id,
-        rects,
+        anchor: typeof data.anchor === "string" ? data.anchor.slice(0, 500) : undefined,
+        startOffset: typeof data.startOffset === "number" ? data.startOffset : undefined,
+        endOffset: typeof data.endOffset === "number" ? data.endOffset : undefined,
       }, ws);
       return;
     }
@@ -161,7 +166,7 @@ export class CursorsRoom implements DurableObject {
   }
 }
 
-function isMoveMessage(d: unknown): d is { type: "move"; x: number; y: number } {
+function isMoveMessage(d: unknown): d is { type: "move"; x: number; y: number; anchor?: unknown; ax?: unknown; ay?: unknown } {
   return (
     typeof d === "object" && d !== null &&
     (d as { type?: unknown }).type === "move" &&
@@ -177,7 +182,7 @@ function isStateMessage(d: unknown): d is { type: "state"; mode?: unknown; press
   );
 }
 
-function isSelectionMessage(d: unknown): d is { type: "selection"; rects?: unknown } {
+function isSelectionMessage(d: unknown): d is { type: "selection"; anchor?: unknown; startOffset?: unknown; endOffset?: unknown } {
   return (
     typeof d === "object" && d !== null &&
     (d as { type?: unknown }).type === "selection"
