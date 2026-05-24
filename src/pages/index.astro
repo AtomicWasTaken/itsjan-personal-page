@@ -706,6 +706,9 @@ const stack = [
       firstFrame: boolean;
       mode: string;
       pressed: boolean;
+      // Last-known anchor data (for re-resolving on local layout change)
+      lastMove?: { anchor?: string; ax?: number; ay?: number; x: number; y: number };
+      lastSelection?: { anchor: string; startOffset: number; endOffset: number } | null;
     };
 
     const peers = new Map<string, Peer>();
@@ -829,11 +832,83 @@ const stack = [
       updateCount();
     };
 
-    // Render a peer's text-selection rectangles (in document px coords)
+    // Walk text nodes inside `root` counting characters; return char count
+    // between `root` start and (targetNode, targetOffset).
+    const textOffsetWithin = (root: Node, target: Node, targetOffset: number): number => {
+      if (root === target) return targetOffset;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let offset = 0;
+      let n: Node | null;
+      while ((n = walker.nextNode())) {
+        if (n === target) return offset + targetOffset;
+        offset += (n.nodeValue || "").length;
+      }
+      return offset;
+    };
+
+    // Inverse: find the text node + offset N characters into `root`.
+    const textNodeAt = (root: Node, target: number): { node: Text; offset: number } | null => {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let offset = 0;
+      let n: Node | null;
+      while ((n = walker.nextNode())) {
+        const len = (n.nodeValue || "").length;
+        if (offset + len >= target) {
+          return { node: n as Text, offset: Math.max(0, Math.min(len, target - offset)) };
+        }
+        offset += len;
+      }
+      // Past the end — return last text node end position
+      if (n) {
+        const len = (n.nodeValue || "").length;
+        return { node: n as Text, offset: len };
+      }
+      return null;
+    };
+
+    // Render a peer's selection using anchor + text offsets — reconstructs
+    // the Range on THIS client so rects are pixel-perfect on our layout.
+    const renderPeerSelectionFromAnchor = (
+      id: string, anchor: string, startOffset: number, endOffset: number,
+    ) => {
+      const p = peers.get(id);
+      if (!p) return;
+      p.lastSelection = { anchor, startOffset, endOffset };
+      while (p.selEl.firstChild) p.selEl.removeChild(p.selEl.firstChild);
+      if (startOffset === endOffset) return;
+
+      let root: Element | null;
+      try { root = document.querySelector(anchor); } catch { return; }
+      if (!root) return;
+
+      const a = textNodeAt(root, Math.min(startOffset, endOffset));
+      const b = textNodeAt(root, Math.max(startOffset, endOffset));
+      if (!a || !b) return;
+
+      const range = document.createRange();
+      try {
+        range.setStart(a.node, a.offset);
+        range.setEnd(b.node, b.offset);
+      } catch { return; }
+
+      const sx = window.scrollX, sy = window.scrollY;
+      for (const r of Array.from(range.getClientRects())) {
+        if (r.width <= 0 || r.height <= 0) continue;
+        const rect = document.createElement("div");
+        rect.className = "peer-selection";
+        rect.style.transform = `translate(${r.left + sx}px, ${r.top + sy}px)`;
+        rect.style.width  = `${r.width}px`;
+        rect.style.height = `${r.height}px`;
+        rect.style.backgroundColor = p.color;
+        p.selEl.appendChild(rect);
+      }
+    };
+
+    // Legacy fallback — render pre-computed rects (from older senders)
     const renderPeerSelection = (id: string, rects: number[][]) => {
       const p = peers.get(id);
       if (!p) return;
-      // Replace contents — using createElement so this stays XSS-safe
+      p.lastSelection = null;
       while (p.selEl.firstChild) p.selEl.removeChild(p.selEl.firstChild);
       for (const r of rects) {
         const [x, y, w, h] = r;
@@ -850,20 +925,59 @@ const stack = [
       }
     };
 
-    // Peer positions travel as % of the DOCUMENT (not viewport), so each
-    // cursor is anchored to a fixed point on the page content. When the
-    // local user scrolls, peer cursors move with the content beneath them.
+    // Peer positions are DOM-anchored — they travel as (element, ax, ay)
+    // where ax/ay are fractions within the element's bounding rect. The
+    // receiver resolves the element by CSS path on THEIR layout and computes
+    // the local pixel position. This is what makes cursors land on the same
+    // CONTENT across different viewport sizes / responsive breakpoints.
+    //
+    // Legacy fallback: if anchor doesn't resolve, the message also carries
+    // viewport-fraction x/y so we still render something sensible.
     const docSize = () => ({
       w: Math.max(document.documentElement.scrollWidth,  window.innerWidth),
       h: Math.max(document.documentElement.scrollHeight, window.innerHeight),
     });
 
-    const updatePeerTarget = (id: string, x01: number, y01: number) => {
+    // Resolve an incoming move to a document-pixel target position.
+    const resolveTarget = (
+      anchor: string | undefined,
+      ax: number | undefined,
+      ay: number | undefined,
+      x01: number,
+      y01: number,
+    ): { x: number; y: number } => {
+      if (anchor && typeof ax === "number" && typeof ay === "number") {
+        try {
+          const el = document.querySelector(anchor) as HTMLElement | null;
+          if (el) {
+            const r = el.getBoundingClientRect();
+            if (r.width > 0 && r.height > 0) {
+              return {
+                x: r.left + ax * r.width  + window.scrollX,
+                y: r.top  + ay * r.height + window.scrollY,
+              };
+            }
+          }
+        } catch { /* invalid selector — fall through to legacy */ }
+      }
+      const { w, h } = docSize();
+      return { x: Math.max(0, Math.min(1, x01)) * w, y: Math.max(0, Math.min(1, y01)) * h };
+    };
+
+    const updatePeerTarget = (
+      id: string,
+      x01: number,
+      y01: number,
+      anchor?: string,
+      ax?: number,
+      ay?: number,
+    ) => {
       const p = peers.get(id);
       if (!p) return;
-      const { w, h } = docSize();
-      p.tx = Math.max(0, Math.min(1, x01)) * w;
-      p.ty = Math.max(0, Math.min(1, y01)) * h;
+      p.lastMove = { anchor, ax, ay, x: x01, y: y01 };
+      const { x, y } = resolveTarget(anchor, ax, ay, x01, y01);
+      p.tx = x;
+      p.ty = y;
       if (p.firstFrame) {
         p.cx = p.tx;
         p.cy = p.ty;
@@ -924,7 +1038,12 @@ const stack = [
             break;
           case "move":
             if (typeof m.id === "string" && typeof m.x === "number" && typeof m.y === "number") {
-              updatePeerTarget(m.id, m.x, m.y);
+              updatePeerTarget(
+                m.id, m.x, m.y,
+                typeof m.anchor === "string" ? m.anchor : undefined,
+                typeof m.ax === "number" ? m.ax : undefined,
+                typeof m.ay === "number" ? m.ay : undefined,
+              );
             }
             break;
           case "state":
@@ -937,8 +1056,20 @@ const stack = [
             }
             break;
           case "selection":
-            if (typeof m.id === "string" && Array.isArray(m.rects)) {
-              renderPeerSelection(m.id, m.rects as number[][]);
+            if (typeof m.id === "string") {
+              // Prefer anchor-based selection (reconstructs Range on this client)
+              if (
+                typeof m.anchor === "string" &&
+                typeof m.startOffset === "number" &&
+                typeof m.endOffset === "number"
+              ) {
+                renderPeerSelectionFromAnchor(m.id, m.anchor, m.startOffset, m.endOffset);
+              } else if (Array.isArray(m.rects)) {
+                renderPeerSelection(m.id, m.rects as number[][]);
+              } else {
+                // Empty selection — clear
+                renderPeerSelection(m.id, []);
+              }
             }
             break;
         }
@@ -966,29 +1097,80 @@ const stack = [
 
     window.addEventListener("beforeunload", () => { try { ws?.close(); } catch {} });
 
+    // ── DOM-anchor helpers — same selector on any client of this page ─
+
+    // Build a CSS selector that uniquely identifies `el` within the document.
+    // Bails out early if it hits an id (most stable). Caps depth at 12.
+    const pathTo = (el: Element | null): string => {
+      if (!el || el === document.documentElement) return "";
+      if (el === document.body) return "body";
+      const parts: string[] = [];
+      let cur: Element | null = el;
+      let depth = 0;
+      while (cur && cur !== document.body && depth < 12) {
+        if (cur.id) {
+          parts.unshift(`#${CSS.escape(cur.id)}`);
+          return parts.join(" > ");
+        }
+        const parent: Element | null = cur.parentElement;
+        if (!parent) break;
+        const siblings = Array.from(parent.children).filter(s => s.tagName === cur!.tagName);
+        if (siblings.length === 1) {
+          parts.unshift(cur.tagName.toLowerCase());
+        } else {
+          const idx = siblings.indexOf(cur) + 1;
+          parts.unshift(`${cur.tagName.toLowerCase()}:nth-of-type(${idx})`);
+        }
+        cur = parent;
+        depth++;
+      }
+      return parts.length ? `body > ${parts.join(" > ")}` : "body";
+    };
+
     // ── Outgoing cursor position (throttled to rAF cadence) ─
     let outX = 0, outY = 0;
+    let outAnchor: string | undefined;
+    let outAx: number | undefined;
+    let outAy: number | undefined;
     let dirty = false;
-    let lastSentX = -1, lastSentY = -1;
+    let lastSentSig = "";
 
     window.addEventListener("pointermove", (e) => {
-      // Document-relative — viewport coord + current scroll, normalized
-      // by total document size. Peers receive a fixed page-content anchor.
+      // Legacy doc-fraction fallback (used if anchor doesn't resolve elsewhere)
       const { w, h } = docSize();
       outX = (e.clientX + window.scrollX) / w;
       outY = (e.clientY + window.scrollY) / h;
+
+      // Preferred DOM anchor: which element is the cursor over, where inside it?
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      if (target && target !== document.documentElement) {
+        const r = target.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) {
+          outAnchor = pathTo(target);
+          outAx = (e.clientX - r.left) / r.width;
+          outAy = (e.clientY - r.top)  / r.height;
+        } else {
+          outAnchor = undefined;
+        }
+      } else {
+        outAnchor = undefined;
+      }
+
       dirty = true;
     }, { passive: true });
 
     const sendLoop = () => {
-      if (
-        dirty &&
-        ws && ws.readyState === WebSocket.OPEN &&
-        (outX !== lastSentX || outY !== lastSentY)
-      ) {
-        ws.send(JSON.stringify({ type: "move", x: outX, y: outY }));
-        lastSentX = outX;
-        lastSentY = outY;
+      if (dirty && ws && ws.readyState === WebSocket.OPEN) {
+        // Dedup against last sent signature so an identical frame doesn't re-emit
+        const sig = `${outAnchor ?? ""}|${outAx ?? ""}|${outAy ?? ""}|${outX}|${outY}`;
+        if (sig !== lastSentSig) {
+          ws.send(JSON.stringify({
+            type: "move",
+            x: outX, y: outY,
+            anchor: outAnchor, ax: outAx, ay: outAy,
+          }));
+          lastSentSig = sig;
+        }
         dirty = false;
       }
       requestAnimationFrame(sendLoop);
@@ -1018,42 +1200,49 @@ const stack = [
       sendState({ pressed });
     });
 
-    // ── Broadcast local text selection as document-px rectangles ─────
+    // ── Broadcast local text selection as anchor + text offsets ─────
+    //
+    // Anchor = CSS path to the selection's common ancestor element.
+    // startOffset/endOffset = character positions within that ancestor's
+    // concatenated text content. Receivers reconstruct the exact same Range
+    // on their own DOM and compute rects on THEIR layout — so the highlight
+    // wraps the same words regardless of viewport size.
     let selectionDirty = false;
     let lastSelectionKey = "";
 
-    const captureSelection = (): number[][] => {
+    const captureSelectionAnchor = (): { anchor: string; startOffset: number; endOffset: number } | null => {
       const sel = window.getSelection();
-      if (!sel || sel.isCollapsed || sel.rangeCount === 0) return [];
-      const rects: number[][] = [];
-      const sx = window.scrollX;
-      const sy = window.scrollY;
-      for (let i = 0; i < sel.rangeCount; i++) {
-        const range = sel.getRangeAt(i);
-        for (const r of Array.from(range.getClientRects())) {
-          if (r.width <= 0 || r.height <= 0) continue;
-          rects.push([
-            Math.round((r.left + sx) * 100) / 100,
-            Math.round((r.top  + sy) * 100) / 100,
-            Math.round(r.width  * 100) / 100,
-            Math.round(r.height * 100) / 100,
-          ]);
-        }
-        if (rects.length >= 200) break; // cap
-      }
-      return rects;
+      if (!sel || sel.isCollapsed || sel.rangeCount === 0) return null;
+      const range = sel.getRangeAt(0);
+      const common = range.commonAncestorContainer.nodeType === 1
+        ? (range.commonAncestorContainer as Element)
+        : range.commonAncestorContainer.parentElement;
+      if (!common) return null;
+      const anchor = pathTo(common);
+      if (!anchor) return null;
+      const startOffset = textOffsetWithin(common, range.startContainer, range.startOffset);
+      const endOffset   = textOffsetWithin(common, range.endContainer,   range.endOffset);
+      return { anchor, startOffset, endOffset };
     };
 
     const sendSelection = () => {
       if (!ws || ws.readyState !== WebSocket.OPEN) return;
-      const rects = captureSelection();
-      // Cheap dedup so we don't re-emit identical selections every frame
-      const key = rects.length === 0
-        ? "0"
-        : rects.length + ":" + rects[0][0] + "," + rects[0][1];
+      const data = captureSelectionAnchor();
+      const key = data
+        ? `${data.anchor}|${data.startOffset}|${data.endOffset}`
+        : "0";
       if (key === lastSelectionKey) return;
       lastSelectionKey = key;
-      ws.send(JSON.stringify({ type: "selection", rects }));
+      if (data) {
+        ws.send(JSON.stringify({
+          type: "selection",
+          anchor: data.anchor,
+          startOffset: data.startOffset,
+          endOffset: data.endOffset,
+        }));
+      } else {
+        ws.send(JSON.stringify({ type: "selection" })); // cleared
+      }
     };
 
     document.addEventListener("selectionchange", () => { selectionDirty = true; }, { passive: true });
@@ -1067,9 +1256,32 @@ const stack = [
     };
     requestAnimationFrame(selectionLoop);
 
-    // Resending on layout change (window resize) so peers re-locate the
-    // selection rects to where the content actually sits now.
+    // On local layout change, re-resolve every peer's stored anchor data
+    // against the new layout so their cursors + selections stay anchored
+    // to the same DOM content.
+    const relayoutPeers = () => {
+      for (const p of peers.values()) {
+        if (p.lastMove) {
+          const { x, y } = resolveTarget(
+            p.lastMove.anchor, p.lastMove.ax, p.lastMove.ay,
+            p.lastMove.x, p.lastMove.y,
+          );
+          p.tx = x; p.ty = y;
+          // Don't reset cx/cy — the lerp will catch up smoothly
+        }
+        if (p.lastSelection) {
+          // Re-render selection rects from the same anchor data
+          const { anchor, startOffset, endOffset } = p.lastSelection;
+          renderPeerSelectionFromAnchor(p.id, anchor, startOffset, endOffset);
+        }
+      }
+    };
+
     window.addEventListener("resize", () => {
+      relayoutPeers();
+      // Also re-emit our own selection so other peers re-render against
+      // their new layouts (anchor + offsets are layout-independent, but
+      // their rendered rects need a refresh).
       lastSelectionKey = "";
       selectionDirty = true;
     });
