@@ -87,6 +87,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Always reserve scrollbar space so toggling body.is-intro
+   * (which adds overflow:hidden) doesn't cause a horizontal jump. */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -946,6 +949,60 @@ a:focus-visible {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+}
+
+/* ── Intro state — only greeting visible, centered on screen ─ */
+
+body.is-intro {
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* During intro, the intro-block STAYS in natural document flow — only its
+ * `transform` is set by JS to move it visually to viewport center. This is
+ * what eliminates layout shift: nothing about the document layout actually
+ * changes between intro and post-intro states.
+ *
+ * width: fit-content shrinks the block to its widest line so that centering
+ * the block on viewport also centers its (left-aligned) text. */
+.intro-block {
+  position: relative;
+  z-index: 50;
+  width: fit-content;
+  will-change: transform;
+}
+
+/* Hide until JS has measured + applied the centering transform on first
+ * paint, otherwise the greeting would flash at its natural top-of-hero
+ * position before the script runs. */
+body.is-intro .intro-block:not(.is-positioned) {
+  visibility: hidden;
+}
+
+body.is-intro .post-intro {
+  /* !important needed to override the reveal-up keyframe's `to { opacity: 1 }`
+   * with animation-fill-mode: both, which otherwise stays sticky. */
+  opacity: 0 !important;
+  pointer-events: none;
+  filter: blur(6px);
+  transition: opacity 200ms var(--ease-out), filter 200ms var(--ease-out);
+}
+
+body:not(.is-intro) .post-intro {
+  opacity: 1;
+  filter: blur(0);
+  transition:
+    opacity 800ms var(--ease-out) 350ms,
+    filter 800ms var(--ease-out) 350ms;
+}
+
+/* Reduced motion — make the intro feel instant */
+@media (prefers-reduced-motion: reduce) {
+  body.is-intro .post-intro,
+  body:not(.is-intro) .post-intro {
+    transition: opacity 180ms;
+    filter: none !important;
+  }
 }
 
 /* ── Custom cursor — refined macOS arrow, smooth lerp ───── */
