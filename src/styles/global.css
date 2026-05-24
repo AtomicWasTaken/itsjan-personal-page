@@ -1177,6 +1177,20 @@ html.has-custom-cursor label {
   }
 }
 
+/* ── Secret toggle: hide the entire cursor system (type "cursors") ─
+ * When body[data-cursors-off] is set, we hide every cursor-related
+ * element and restore the OS cursor. */
+body[data-cursors-off] .cursor,
+body[data-cursors-off] .peers-layer,
+body[data-cursors-off] .peers-selections,
+body[data-cursors-off] .peers-toggle {
+  display: none !important;
+}
+html body[data-cursors-off],
+html body[data-cursors-off] * {
+  cursor: auto !important;
+}
+
 /* ── Multiplayer remote cursors ─────────────────────────── */
 
 .peers-layer {
