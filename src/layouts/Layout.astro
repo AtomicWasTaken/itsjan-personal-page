@@ -1,10 +1,12 @@
 ---
 import "../styles/global.css";
+import { ageYears, aOrAn } from "../lib/jan";
 
 const siteName = "itsjan.dev";
 const title = "Jan-Marlon Leibl — developer in Bremen";
+const years = ageYears();
 const description =
-  "I'm a 17-year-old PHP and TypeScript developer in Bremen. Apprenticing at team neusta, free for hire from June 2026 — full-time or freelance.";
+  `I'm ${aOrAn(years)} ${years}-year-old PHP and TypeScript developer in Bremen. Apprenticing at team neusta, free for hire from June 2026 — full-time or freelance.`;
 const url = "https://itsjan.dev";
 const image = `${url}/jan.jpg`;
 const imageAlt = "Portrait of Jan-Marlon Leibl";
