@@ -16,6 +16,16 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.dev.vars
+
+# cloudflare wrangler cache
+.wrangler/
+
+# playwright mcp scratch (screenshots, snapshots, console logs)
+.playwright-mcp/
+
+# dev screenshots at repo root (one-off scratch from iteration)
+/*.png
 
 # macOS-specific files
 .DS_Store
