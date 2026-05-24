@@ -126,6 +126,19 @@ export class CursorsRoom implements DurableObject {
       }, ws);
       return;
     }
+
+    if (isSelectionMessage(data)) {
+      // Cap rect count + sanitize coords (defensive against bad clients)
+      const rects = (Array.isArray(data.rects) ? data.rects : [])
+        .slice(0, 200)
+        .map((r) => Array.isArray(r) ? r.slice(0, 4).map((v) => typeof v === "number" ? v : 0) : [0, 0, 0, 0]);
+      this.broadcast({
+        type: "selection",
+        id: attachment.id,
+        rects,
+      }, ws);
+      return;
+    }
   }
 
   async webSocketClose(ws: WebSocket): Promise<void> {
@@ -161,6 +174,13 @@ function isStateMessage(d: unknown): d is { type: "state"; mode?: unknown; press
   return (
     typeof d === "object" && d !== null &&
     (d as { type?: unknown }).type === "state"
+  );
+}
+
+function isSelectionMessage(d: unknown): d is { type: "selection"; rects?: unknown } {
+  return (
+    typeof d === "object" && d !== null &&
+    (d as { type?: unknown }).type === "selection"
   );
 }
 
