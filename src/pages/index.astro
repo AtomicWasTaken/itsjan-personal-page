@@ -1,143 +1,545 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Button from "../components/Button.astro";
+import SquigglyText from "../components/SquigglyText.astro";
 import portrait from "../assets/jan.jpg";
+import teamNeustaLogo from "../assets/team-neusta-logo.svg?raw";
+
+const BIRTHDATE_ISO = "2007-05-30T00:00:00+02:00";
+
+const stack = [
+  { name: "PHP",        note: "day job, services & TYPO3" },
+  { name: "TypeScript", note: "end to end, type-led API design" },
+  { name: "React",      note: "default for app frontends" },
+  { name: "Next.js",    note: "side projects & client builds" },
+  { name: "TYPO3",      note: "a lot of what team neusta ships" },
+  { name: "Angular & Vue", note: "shipped when the job needs it" },
+];
 ---
 
 <Layout>
-  <main class="mx-auto w-full max-w-7xl px-4 py-6 md:px-8 md:py-10">
-    <section class="app-shell reveal-up overflow-hidden rounded-3xl">
-      <div class="grid lg:grid-cols-12">
-        <header class="panel-divider col-span-12 border-b px-5 py-4 md:px-8">
-          <div class="grid gap-1 md:grid-cols-[1fr_auto] md:items-center">
-            <p class="hero-name muted text-xs uppercase">Jan-Marlon Leibl</p>
-            <p class="muted text-xs md:justify-self-end">Open for full-time roles and freelance projects</p>
-          </div>
-        </header>
 
-        <div class="col-span-12 grid lg:grid-cols-12 lg:items-start">
-          <article class="panel panel-divider col-span-12 border-b p-5 md:p-8 lg:col-span-9 lg:border-r lg:border-b-0">
-            <h1 class="hero-display editorial-hero text-[#101815]">
-              PHP and TypeScript developer building reliable products
-              with <span class="accent-text">React and Next.js</span>.
-            </h1>
-            <p class="lede muted mt-6 max-w-2xl">
-              I am an apprentice software developer at team neusta in Bremen (expected completion: June 2026).
-              I specialize in PHP, TypeScript, React, Next.js, and TYPO3, and I also know Angular and Vue.
-              I like building products that are easy to use, easy to maintain, and easy to hand over.
-            </p>
-            <div class="mt-6 flex flex-wrap gap-2.5 md:mt-7 md:gap-3">
-              <Button href="mailto:hi@itsjan.dev" variant="dark">Contact me</Button>
-              <Button href="https://www.linkedin.com/in/janmarlonleibl/" variant="light" external>LinkedIn</Button>
-              <Button href="https://github.com/AtomicWasTaken" variant="light" external>GitHub</Button>
-            </div>
-          </article>
+  <!-- Custom cursor — rounded macOS-style arrow with always-on squiggle -->
+  <div id="cursor" class="cursor" aria-hidden="true">
+    <svg class="cursor-arrow" viewBox="0 0 16 22" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <filter id={`cursor-wiggle-${i}`} x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed={i + 1} />
+            <feDisplacementMap in="SourceGraphic" scale="2" />
+          </filter>
+        ))}
+      </defs>
+      <path
+        id="cursor-arrow-path"
+        d="M 1.6 1.4
+           Q 1 1 1 2
+           L 1 16.6
+           Q 1 17.7 1.9 17.1
+           L 5.3 14.3
+           L 8.4 21
+           Q 8.8 21.9 9.7 21.5
+           L 11 20.9
+           Q 11.9 20.5 11.5 19.6
+           L 8.4 12.9
+           L 13.6 12.9
+           Q 14.7 12.9 13.9 12.2
+           Z"
+        filter="url(#cursor-wiggle-0)"
+      />
+    </svg>
+    <div class="cursor-beam"></div>
+  </div>
 
-          <aside class="panel col-span-12 p-4 md:p-6 lg:col-span-3 lg:self-stretch">
-            <div class="panel-divider relative aspect-[4/5] overflow-hidden rounded-xl border bg-white sm:aspect-[5/6] lg:h-full lg:aspect-auto">
-              <img
-                src={portrait.src}
-                alt="Jan-Marlon Leibl"
-                class="block h-full w-full object-cover object-[center_12%]"
-                loading="eager"
-                decoding="async"
-              />
-            </div>
-          </aside>
-        </div>
+  <!-- Floating top pill — live status (N5) -->
+  <a href="mailto:hi@itsjan.dev" class="float-pill" aria-label="Open for hire from June 2026 — email me">
+    <span class="live-dot" aria-hidden="true"></span>
+    <span>open for hire — jun '26</span>
+  </a>
 
-        <div class="panel-divider col-span-12 grid border-t lg:grid-cols-12">
-          <article class="panel panel-divider col-span-12 p-5 md:p-8 lg:col-span-4 lg:border-r">
-            <p class="kicker">Current Role</p>
-            <p class="mt-1 text-sm font-semibold text-[#101815]">Apprentice Software Developer</p>
-            <p class="muted text-sm">team neusta · Bremen</p>
-          </article>
-          <article class="panel panel-divider col-span-12 border-t p-5 md:p-8 lg:col-span-4 lg:border-t-0 lg:border-r">
-            <p class="kicker">Core Stack</p>
-            <p class="mt-1 text-sm font-semibold text-[#101815]">PHP · TypeScript · React · Next.js · TYPO3</p>
-          </article>
-          <article class="panel col-span-12 border-t p-5 md:p-8 lg:col-span-4 lg:border-t-0">
-            <p class="kicker">Availability</p>
-            <p class="mt-1 text-sm font-semibold text-[#101815]">Full-time jobs and freelance projects</p>
-          </article>
-        </div>
+  <!-- Back-to-top floating pill (shown on scroll) -->
+  <button
+    id="back-to-top"
+    class="back-to-top"
+    aria-label="Back to top"
+    type="button"
+  >
+    <span class="bt-arrow" aria-hidden="true">↑</span>
+    <span>top</span>
+  </button>
 
-        <div class="panel-divider col-span-12 grid border-t lg:grid-cols-12">
-          <article class="panel panel-divider col-span-12 p-5 md:p-8 lg:col-span-4 lg:border-r">
-            <p class="kicker">About Me</p>
-            <h2 class="section-heading mt-2 text-[#101815]">I care about shipping software people trust.</h2>
-            <p class="muted mt-3">
-              Personally, I am structured, calm under pressure, and straightforward in communication.
-              I enjoy working in teams where quality and ownership matter.
-            </p>
-            <div class="mt-4 flex flex-wrap gap-2">
-              <span class="panel-divider rounded-full border bg-white px-3 py-1 font-mono text-xs">Reliable execution</span>
-              <span class="panel-divider rounded-full border bg-white px-3 py-1 font-mono text-xs">Clear communication</span>
-              <span class="panel-divider rounded-full border bg-white px-3 py-1 font-mono text-xs">Team mindset</span>
-            </div>
-          </article>
+  <main class="mx-auto w-full max-w-4xl px-5 pt-24 pb-12 md:px-8 md:pt-32">
 
-          <article class="panel panel-divider col-span-12 border-t p-5 md:p-8 lg:col-span-4 lg:border-t-0 lg:border-r">
-            <p class="kicker">Frontend</p>
-            <ul class="mt-3 space-y-3 text-[#101815]">
-              <li class="panel-divider border-b pb-2">React applications</li>
-              <li class="panel-divider border-b pb-2">Next.js interfaces</li>
-              <li class="panel-divider border-b pb-2">Responsive UI implementation</li>
-              <li>Also know: Angular, Vue</li>
-            </ul>
-          </article>
+    <!-- ── HERO ─────────────────────────────────────────── -->
+    <section class="reveal-up">
+      <p class="label-muted">Hey there.</p>
+      <h1 class="hero-greeting mt-3">I'm <SquigglyText scale={8} stepDuration={100}>Jan-Marlon</SquigglyText></h1>
+      <p class="hero-aka"><span class="arrow">↳</span>everyone just calls me Jan.</p>
 
-          <article class="panel col-span-12 border-t p-5 md:p-8 lg:col-span-4 lg:border-t-0">
-            <p class="kicker">Backend</p>
-            <ul class="mt-3 space-y-3 text-[#101815]">
-              <li class="panel-divider border-b pb-2">PHP services</li>
-              <li class="panel-divider border-b pb-2">TypeScript APIs</li>
-              <li class="panel-divider border-b pb-2">TYPO3 implementation</li>
-              <li>Database integration</li>
-            </ul>
-          </article>
-        </div>
+      <p class="hero-prose mt-6">
+        I'm a
+        <span class="age-ticker" id="age" data-birth={BIRTHDATE_ISO}>18.0000000</span>
+        year old developer at
+        <a
+          class="company-pill"
+          href="https://www.team-neusta.de"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="team neusta"
+        ><span set:html={teamNeustaLogo} /></a>,
+        working in PHP and TypeScript by day, Next.js by night.
+        Wrapping my apprenticeship in <strong class="text-[var(--color-text-strong)] font-semibold">June 2026</strong>
+        and looking for what's next — full-time or freelance, German or English.
+      </p>
 
-        <div class="panel-divider col-span-12 grid border-t lg:grid-cols-12">
-          <article class="panel panel-divider col-span-12 p-5 md:p-8 lg:col-span-6 lg:border-r">
-            <p class="kicker">Experience</p>
-            <ol class="mt-4 space-y-3">
-              <li class="stat-card p-4">
-                <p class="font-mono text-xs muted">Aug 2023 - Present</p>
-                <p class="mt-1 font-semibold text-[#101815]">team neusta · Apprentice Software Developer</p>
-                <p class="muted mt-1 text-sm">
-                  Working on web projects with frontend and backend responsibilities in a professional team environment.
-                </p>
-              </li>
-              <li class="stat-card p-4">
-                <p class="font-mono text-xs muted">Aug 2023 - Jun 2026</p>
-                <p class="mt-1 font-semibold text-[#101815]">Vocational Training · Schulzentrum SII Utbremen</p>
-                <p class="muted mt-1 text-sm">
-                  Computer science fundamentals with practical development in Java, web technologies, and software engineering.
-                </p>
-              </li>
-            </ol>
-          </article>
+      <p class="hero-prose mt-4 muted">
+        Started coding at 11 with C# — a friend showed me a tiny app he'd built
+        and I had to figure out how it worked. That was the start.
+      </p>
 
-          <article class="panel col-span-12 border-t p-5 md:p-8 lg:col-span-6 lg:border-t-0">
-            <p class="kicker">Profile</p>
-            <ul class="mt-3 space-y-3 text-[#101815]">
-              <li class="panel-divider border-b pb-2">Location: Bremen</li>
-              <li class="panel-divider border-b pb-2">Languages: German, English</li>
-              <li>Open to full-time roles and projects</li>
-            </ul>
+      <div class="mt-7 flex flex-wrap gap-2.5">
+        <Button href="mailto:hi@itsjan.dev" variant="dark">Email me</Button>
+        <Button href="https://github.com/AtomicWasTaken" variant="light" external>GitHub</Button>
+        <Button href="https://www.linkedin.com/in/janmarlonleibl/" variant="light" external>LinkedIn</Button>
+      </div>
 
-            <div class="mt-8 rounded-xl border border-[#2f3b35] bg-[#101815] p-5 shadow-[0_12px_26px_rgba(10,14,12,0.35)]">
-              <p class="font-mono text-[11px] tracking-[0.12em] text-[#8ea59b] uppercase">Contact</p>
-              <a href="mailto:hi@itsjan.dev" class="contact-email mt-1 block text-lg font-bold text-white hover:underline">hi@itsjan.dev</a>
-              <p class="text-sm text-[#c7d4ce]">Open for full-time roles and project collaborations</p>
-              <div class="mt-4">
-                <Button href="mailto:hi@itsjan.dev" variant="white">Start a conversation</Button>
-              </div>
-            </div>
-          </article>
-        </div>
+      <!-- Status / timezone block — fullag.ar's right-aligned aux line -->
+      <div class="mt-16 max-w-sm md:ml-auto md:text-right reveal-up">
+        <p class="aux-block">
+          <span class="key">status</span> open for offers from June&nbsp;2026
+        </p>
+        <p class="aux-block">
+          <span class="key">based</span> Bremen, Germany &middot; UTC+1
+        </p>
+        <p class="aux-block">
+          <span class="key">reply</span> usually same day
+        </p>
       </div>
     </section>
+
+    <!-- ── STACK ────────────────────────────────────────── -->
+    <section class="section-block reveal-up">
+      <p class="label">› stack</p>
+      <h2 class="section-heading mt-3">what I work with</h2>
+      <p class="section-sub">Day to day, in roughly that order. I'd rather pick the boring tool that fits than the hot one that doesn't.</p>
+
+      <div class="stack-list mt-10">
+        {stack.map((s, i) => (
+          <div class="stack-row">
+            <span class="stack-index">{String(i + 1).padStart(2, "0")}</span>
+            <span class="stack-name">{s.name}</span>
+            <span class="stack-note">{s.note}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── OPINIONS ─────────────────────────────────────── -->
+    <section class="section-block reveal-up">
+      <p class="label">› opinions</p>
+      <h2 class="section-heading mt-3">lightly held</h2>
+      <p class="section-sub">Things I'd argue for over a coffee. Cheap to change.</p>
+
+      <div class="opinions-list mt-10">
+        <article class="opinion">
+          <span class="opinion-num">01</span>
+          <p class="opinion-text">TypeScript pays for itself by lunchtime.</p>
+        </article>
+        <article class="opinion">
+          <span class="opinion-num">02</span>
+          <p class="opinion-text">Boring tech beats hot tech most days of the week.</p>
+        </article>
+        <article class="opinion">
+          <span class="opinion-num">03</span>
+          <p class="opinion-text">Commit messages are for the person reading them in 18 months, not for you right now.</p>
+        </article>
+        <article class="opinion">
+          <span class="opinion-num">04</span>
+          <p class="opinion-text">If a tool needs a 90-minute setup video, something is wrong.</p>
+        </article>
+        <article class="opinion">
+          <span class="opinion-num">05</span>
+          <p class="opinion-text">Shipping is part of the job. Code that never reaches a user is a sketch.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ── ARC ──────────────────────────────────────────── -->
+    <section class="section-block reveal-up">
+      <p class="label">› arc</p>
+      <h2 class="section-heading mt-3">how I got here</h2>
+      <p class="section-sub">Short version. The longer one's over coffee.</p>
+
+      <div class="mt-10 grid gap-12 md:grid-cols-[1fr_14rem] md:items-start md:gap-16">
+        <div class="arc-list">
+          <div class="arc-row">
+            <span class="arc-year">'19</span>
+            <div>
+              <p class="arc-headline">First taste.</p>
+              <p class="arc-body">
+                Age 11. A friend showed me a tiny app he'd built in
+                <strong>C#</strong>. I had to figure out how it worked, then
+                build my own. The hook never came out.
+              </p>
+            </div>
+          </div>
+          <div class="arc-row">
+            <span class="arc-year">'23</span>
+            <div>
+              <p class="arc-headline">team neusta, Bremen.</p>
+              <p class="arc-body">
+                Started a three-year apprenticeship. Real client work in
+                <strong>PHP</strong>, <strong>TypeScript</strong>, and <strong>TYPO3</strong>
+                alongside training at Schulzentrum SII Utbremen.
+              </p>
+            </div>
+          </div>
+          <div class="arc-row">
+            <span class="arc-year">'26</span>
+            <div>
+              <p class="arc-headline">Open for what's next.</p>
+              <p class="arc-body">
+                Apprenticeship wraps in June. Looking for full-time or freelance —
+                either fine, both German and English.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hidden md:block">
+          <div class="portrait-frame">
+            <img
+              src={portrait.src}
+              alt="Jan-Marlon Leibl"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="portrait-caption">
+              <span>Jan</span>
+              <span>Bremen '26</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ── CONTACT ──────────────────────────────────────── -->
+    <section class="section-block reveal-up">
+      <p class="label">› contact</p>
+      <h2 class="section-heading mt-3">let's talk</h2>
+      <p class="section-sub">
+        Tell me what you're working on. Same-day reply, German or English.
+      </p>
+
+      <form id="contact-form" class="contact-form mt-10" novalidate>
+        <label class="field field-row">
+          <span class="field-label">
+            Name
+            <span class="field-hint">optional</span>
+          </span>
+          <input
+            class="field-input"
+            type="text"
+            name="name"
+            autocomplete="name"
+            maxlength="100"
+            placeholder="who's writing?"
+          />
+        </label>
+
+        <label class="field field-row">
+          <span class="field-label">Email</span>
+          <input
+            class="field-input"
+            type="email"
+            name="email"
+            autocomplete="email"
+            required
+            maxlength="200"
+            placeholder="so I can reply"
+          />
+        </label>
+
+        <label class="field field-row">
+          <span class="field-label">Message</span>
+          <textarea
+            class="field-textarea"
+            name="message"
+            required
+            maxlength="5000"
+            minlength="10"
+            rows="5"
+            placeholder="apprenticeship, freelance gig, an idea you want to talk through — all fine."
+          ></textarea>
+        </label>
+
+        <!-- Honeypot: hidden, bots fill it, humans don't see it -->
+        <label class="honeypot" aria-hidden="true">
+          <span>Company (leave empty)</span>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" />
+        </label>
+
+        <div class="contact-actions">
+          <div>
+            <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+            <p class="contact-direct">
+              or <a href="mailto:hi@itsjan.dev">email hi@itsjan.dev directly</a>
+            </p>
+          </div>
+          <button id="contact-submit" type="submit" class="btn-3d btn-3d-dark">
+            Send a note
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <footer class="site-footer mt-24">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <span>itsjan.dev</span>
+        <span>jan-marlon leibl &middot; bremen &middot; '26</span>
+      </div>
+    </footer>
+
   </main>
 </Layout>
+
+<script>
+  // ── Live age ticker ───────────────────────────────────
+  const ageEl = document.getElementById("age");
+  if (ageEl) {
+    const birth = new Date(ageEl.dataset.birth!).getTime();
+    const YEAR_MS = 365.25 * 24 * 60 * 60 * 1000;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduced) {
+      ageEl.textContent = Math.floor((Date.now() - birth) / YEAR_MS).toString();
+    } else {
+      let running = true;
+      const tick = () => {
+        if (!running) return;
+        ageEl.textContent = ((Date.now() - birth) / YEAR_MS).toFixed(7);
+        requestAnimationFrame(tick);
+      };
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          running = false;
+        } else if (!running) {
+          running = true;
+          requestAnimationFrame(tick);
+        }
+      });
+      requestAnimationFrame(tick);
+    }
+  }
+
+  // ── Custom cursor — smooth lerp + context-aware modes ─
+  (() => {
+    const fine    = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const cursor  = document.getElementById("cursor") as HTMLElement | null;
+    if (!cursor || !fine || reduced) return;
+
+    document.documentElement.classList.add("has-custom-cursor");
+
+    let tx = -100, ty = -100;
+    let cx = -100, cy = -100;
+    let lastModeEl: Element | null = null;
+
+    const setMode = (mode: string) => {
+      if (cursor.dataset.mode !== mode) cursor.dataset.mode = mode;
+    };
+
+    // Granular context map — each interactive element class gets its own mode.
+    // Order matters: more specific selectors come first.
+    const detectMode = (el: Element | null): string => {
+      if (!el) return "default";
+
+      // 1) Form fields → text I-beam
+      if (el.closest("input, textarea, [contenteditable='true']")) return "text";
+
+      // 2) Primary CTAs (amber buttons): Email me, Send a note
+      if (el.closest(".btn-3d-dark")) return "cta-primary";
+
+      // 3) Secondary CTAs (light/white buttons): GitHub, LinkedIn
+      if (el.closest(".btn-3d-light, .btn-3d-white")) return "cta-secondary";
+
+      // 4) Inline brand chip (team neusta) → amber link mode
+      if (el.closest(".company-pill")) return "link-amber";
+
+      // 5) Live age ticker (amber number) → accent mode
+      if (el.closest(".age-ticker")) return "accent";
+
+      // 6) Squiggly text (Jan-Marlon) → tilted "wink"
+      if (el.closest(".squiggly")) return "squiggly";
+
+      // 7) Portrait photo → view affordance
+      if (el.closest(".portrait-frame")) return "view";
+
+      // 8) Floating chrome pills → subtle pill ring
+      if (el.closest(".float-pill, .back-to-top")) return "pill";
+
+      // 9) Catch-all interactive (other links, label.field, role=button)
+      if (el.closest("a, button, [role='button'], label.field")) return "link";
+
+      return "default";
+    };
+
+    document.addEventListener("pointermove", (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+      if (!cursor.classList.contains("is-ready")) cursor.classList.add("is-ready");
+
+      const t = e.target as Element | null;
+      if (t !== lastModeEl) {
+        setMode(detectMode(t));
+        lastModeEl = t;
+      }
+    }, { passive: true });
+
+    // Action feedback: squeeze on press, release bounce on let-go
+    let releaseTimer: ReturnType<typeof setTimeout> | null = null;
+    document.addEventListener("pointerdown", () => {
+      cursor.classList.add("is-down");
+      cursor.classList.remove("is-released");
+    });
+    document.addEventListener("pointerup", () => {
+      cursor.classList.remove("is-down");
+      cursor.classList.add("is-released");
+      if (releaseTimer) clearTimeout(releaseTimer);
+      releaseTimer = setTimeout(() => cursor.classList.remove("is-released"), 290);
+    });
+
+    document.addEventListener("mouseleave", () => cursor.classList.remove("is-ready"));
+    document.addEventListener("mouseenter", () => cursor.classList.add("is-ready"));
+
+    const lerp = 0.22;
+    const loop = () => {
+      cx += (tx - cx) * lerp;
+      cy += (ty - cy) * lerp;
+      cursor.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+
+    // Subtle always-on squiggle on the cursor arrow itself
+    const arrowPath = document.getElementById("cursor-arrow-path");
+    if (arrowPath) {
+      let frame = 0;
+      const totalFrames = 5;
+      const frameDuration = 110;
+      let last = 0;
+      const wiggleLoop = (now: number) => {
+        if (now - last >= frameDuration) {
+          arrowPath.setAttribute("filter", `url(#cursor-wiggle-${frame})`);
+          frame = (frame + 1) % totalFrames;
+          last = now;
+        }
+        requestAnimationFrame(wiggleLoop);
+      };
+      requestAnimationFrame(wiggleLoop);
+    }
+  })();
+
+  // ── Liquid glass pill: cursor-following sheen ─────────
+  const attachSheen = (el: HTMLElement) => {
+    if (window.matchMedia("(hover: none)").matches) return;
+    const setPos = (clientX: number, clientY: number) => {
+      const r = el.getBoundingClientRect();
+      const x = ((clientX - r.left) / r.width) * 100;
+      const y = ((clientY - r.top) / r.height) * 100;
+      el.style.setProperty("--mx", `${x}%`);
+      el.style.setProperty("--my", `${y}%`);
+    };
+    el.addEventListener("pointermove", (e) => setPos(e.clientX, e.clientY));
+    el.addEventListener("pointerleave", () => {
+      el.style.setProperty("--mx", "50%");
+      el.style.setProperty("--my", "0%");
+    });
+  };
+  document.querySelectorAll<HTMLElement>(".float-pill, .back-to-top").forEach(attachSheen);
+
+  // ── Back-to-top: show after scroll, smooth-scroll on click ─
+  const backTop = document.getElementById("back-to-top") as HTMLButtonElement | null;
+  if (backTop) {
+    const showThreshold = 600;
+    let lastVisible = false;
+    const onScroll = () => {
+      const visible = window.scrollY > showThreshold;
+      if (visible !== lastVisible) {
+        backTop.dataset.visible = visible ? "true" : "false";
+        lastVisible = visible;
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    backTop.addEventListener("click", () => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+    });
+  }
+
+  // ── Contact form submission ───────────────────────────
+  const form = document.getElementById("contact-form") as HTMLFormElement | null;
+  const submit = document.getElementById("contact-submit") as HTMLButtonElement | null;
+  const status = document.getElementById("form-status");
+
+  if (form && submit && status) {
+    const setStatus = (msg: string, state: "" | "error" | "ok") => {
+      status.textContent = msg;
+      if (state) {
+        status.setAttribute("data-state", state);
+      } else {
+        status.removeAttribute("data-state");
+      }
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setStatus("", "");
+
+      const data = new FormData(form);
+      const payload = {
+        name:    String(data.get("name")    ?? ""),
+        email:   String(data.get("email")   ?? ""),
+        message: String(data.get("message") ?? ""),
+        company: String(data.get("company") ?? ""),
+      };
+
+      // Client-side guards (server validates again)
+      if (!payload.email || !payload.message) {
+        setStatus("Email and message are required.", "error");
+        return;
+      }
+
+      submit.setAttribute("aria-busy", "true");
+      submit.textContent = "Sending…";
+
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const json = (await res.json()) as { ok?: boolean; error?: string };
+
+        if (res.ok && json.ok) {
+          form.reset();
+          submit.textContent = "Sent ✓";
+          setStatus("Got it — I'll reply same day to that email.", "ok");
+          setTimeout(() => {
+            submit.textContent = "Send a note";
+            submit.removeAttribute("aria-busy");
+          }, 2400);
+        } else {
+          submit.textContent = "Send a note";
+          submit.removeAttribute("aria-busy");
+          setStatus(json.error ?? "Something went wrong. Please try again.", "error");
+        }
+      } catch (err) {
+        submit.textContent = "Send a note";
+        submit.removeAttribute("aria-busy");
+        setStatus("Network error. Please try again or email hi@itsjan.dev.", "error");
+      }
+    });
+  }
+</script>

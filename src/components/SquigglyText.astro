@@ -1,0 +1,91 @@
+---
+interface Props {
+  /** Number of distinct displacement frames to cycle through. Higher = smoother wobble at the cost of more SVG filters in the DOM. */
+  steps?: number;
+  /** Time between filter swaps, in ms. Lower = jittery; higher = lazy. Full cycle = steps * stepDuration. */
+  stepDuration?: number;
+  /** Maximum displacement in px. */
+  scale?: number;
+  /** Turbulence base frequency. Lower = longer smoother waves; higher = tighter noise. */
+  baseFrequency?: number;
+  /** Number of turbulence octaves. Higher = more detailed noise. */
+  numOctaves?: number;
+  /** Optional class for the wrapper. */
+  class?: string;
+}
+
+const {
+  steps = 5,
+  stepDuration = 90,
+  scale = 6,
+  baseFrequency = 0.02,
+  numOctaves = 3,
+  class: className = "",
+} = Astro.props;
+
+const id = `squiggly-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<svg aria-hidden="true" class="squiggly-defs">
+  <defs>
+    {Array.from({ length: steps }).map((_, i) => (
+      <filter id={`${id}-${i}`}>
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency={baseFrequency}
+          numOctaves={numOctaves}
+          seed={i + 1}
+        />
+        <feDisplacementMap in="SourceGraphic" scale={scale} />
+      </filter>
+    ))}
+  </defs>
+</svg>
+
+<span
+  class:list={["squiggly", className]}
+  data-squiggly-id={id}
+  data-squiggly-steps={steps}
+  data-squiggly-duration={stepDuration}
+><slot /></span>
+
+<style>
+  .squiggly-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .squiggly {
+    display: inline-block;
+    will-change: filter;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .squiggly { filter: none !important; }
+  }
+</style>
+
+<script>
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduced) {
+    document.querySelectorAll<HTMLElement>(".squiggly").forEach((el) => {
+      const id = el.dataset.squigglyId;
+      const steps = parseInt(el.dataset.squigglySteps ?? "5", 10);
+      const duration = parseInt(el.dataset.squigglyDuration ?? "90", 10);
+      if (!id || !steps) return;
+
+      let frame = 0;
+      let last = 0;
+      const loop = (now: number) => {
+        if (now - last >= duration) {
+          el.style.filter = `url(#${id}-${frame})`;
+          frame = (frame + 1) % steps;
+          last = now;
+        }
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+    });
+  }
+</script>
