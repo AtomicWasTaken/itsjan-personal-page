@@ -516,15 +516,16 @@ const stack = [
     }
   }
 
-  // ── Secret cursor-system toggle: type the word "cursors" ─────
-  //   Hides/shows the local custom cursor, all peer cursors + selections,
-  //   and the peers-toggle pill. Persisted in localStorage.
+  // ── Secret peers toggle: type the word "cursors" ─────────────
+  //   Shows/hides other users' cursors + selections + the peers-toggle
+  //   pill. Local custom cursor is always on. Default is HIDDEN (opt-in);
+  //   `itsjan:peers-on=1` in localStorage means the user has revealed it.
   (() => {
-    const STORAGE = "itsjan:cursors-off";
+    const STORAGE = "itsjan:peers-on";
     const SECRET  = "cursors";
 
-    // Apply persisted state ASAP so the cursor IIFE below sees the flag
-    if (localStorage.getItem(STORAGE) === "1") {
+    // Default: peers HIDDEN. Only reveal when explicitly opted in.
+    if (localStorage.getItem(STORAGE) !== "1") {
       document.body.dataset.cursorsOff = "true";
     }
 
@@ -543,12 +544,10 @@ const stack = [
         const off = document.body.dataset.cursorsOff === "true";
         if (off) {
           delete document.body.dataset.cursorsOff;
-          document.documentElement.classList.add("has-custom-cursor");
-          localStorage.removeItem(STORAGE);
+          localStorage.setItem(STORAGE, "1");
         } else {
           document.body.dataset.cursorsOff = "true";
-          document.documentElement.classList.remove("has-custom-cursor");
-          localStorage.setItem(STORAGE, "1");
+          localStorage.removeItem(STORAGE);
         }
         buf = "";
       }
@@ -562,12 +561,7 @@ const stack = [
     const cursor  = document.getElementById("cursor") as HTMLElement | null;
     if (!cursor || !fine || reduced) return;
 
-    // Respect the secret cursors-off toggle — don't enable the custom cursor
-    // (the OS cursor stays visible). The CSS rules + dataset flag also hide
-    // the .cursor element directly, so this just keeps things tidy.
-    if (document.body.dataset.cursorsOff !== "true") {
-      document.documentElement.classList.add("has-custom-cursor");
-    }
+    document.documentElement.classList.add("has-custom-cursor");
 
     let tx = -100, ty = -100;
     let cx = -100, cy = -100;
