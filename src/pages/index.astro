@@ -4,8 +4,10 @@ import Button from "../components/Button.astro";
 import SquigglyText from "../components/SquigglyText.astro";
 import portrait from "../assets/jan.jpg";
 import teamNeustaLogo from "../assets/team-neusta-logo.svg?raw";
+import { BIRTHDATE_ISO, ageNow, ageYears, aOrAn } from "../lib/jan";
 
-const BIRTHDATE_ISO = "2007-05-30T00:00:00+02:00";
+const initialAge = ageNow().toFixed(8);
+const article    = aOrAn(ageYears()); // "a" or "an" for the hero sentence
 
 const stack = [
   { name: "PHP",        note: "day job, services & TYPO3" },
@@ -89,8 +91,8 @@ const stack = [
 
       <div class="post-intro">
       <p class="hero-prose mt-6">
-        I'm a
-        <span class="age-ticker" id="age" data-birth={BIRTHDATE_ISO}>18.00000000</span>
+        I'm {article}
+        <span class="age-ticker" id="age" data-birth={BIRTHDATE_ISO}>{initialAge}</span>
         year old developer at
         <a
           class="company-pill"
