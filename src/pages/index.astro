@@ -19,6 +19,15 @@ const stack = [
 
 <Layout>
 
+  <!-- Multiplayer remote cursors render here -->
+  <div id="peers-layer" class="peers-layer" aria-hidden="true"></div>
+
+  <!-- Show/hide other people's cursors -->
+  <button id="peers-toggle" class="peers-toggle post-intro" type="button" aria-label="Toggle other visitors' cursors">
+    <span class="eye" aria-hidden="true"></span>
+    <span id="peers-count">0 others here</span>
+  </button>
+
   <!-- Custom cursor — rounded macOS-style arrow with always-on squiggle -->
   <div id="cursor" class="cursor" aria-hidden="true">
     <svg class="cursor-arrow" viewBox="0 0 16 22" xmlns="http://www.w3.org/2000/svg">
@@ -81,7 +90,7 @@ const stack = [
       <div class="post-intro">
       <p class="hero-prose mt-6">
         I'm a
-        <span class="age-ticker" id="age" data-birth={BIRTHDATE_ISO}>18.0000000</span>
+        <span class="age-ticker" id="age" data-birth={BIRTHDATE_ISO}>18.00000000</span>
         year old developer at
         <a
           class="company-pill"
@@ -487,7 +496,7 @@ const stack = [
       let running = true;
       const tick = () => {
         if (!running) return;
-        ageEl.textContent = ((Date.now() - birth) / YEAR_MS).toFixed(7);
+        ageEl.textContent = ((Date.now() - birth) / YEAR_MS).toFixed(8);
         requestAnimationFrame(tick);
       };
       document.addEventListener("visibilitychange", () => {
@@ -516,7 +525,11 @@ const stack = [
     let lastModeEl: Element | null = null;
 
     const setMode = (mode: string) => {
-      if (cursor.dataset.mode !== mode) cursor.dataset.mode = mode;
+      if (cursor.dataset.mode !== mode) {
+        cursor.dataset.mode = mode;
+        // Broadcast to peers IIFE → WebSocket
+        window.dispatchEvent(new CustomEvent("cursor:mode", { detail: { mode } }));
+      }
     };
 
     // Granular context map — each interactive element class gets its own mode.
@@ -571,12 +584,14 @@ const stack = [
     document.addEventListener("pointerdown", () => {
       cursor.classList.add("is-down");
       cursor.classList.remove("is-released");
+      window.dispatchEvent(new CustomEvent("cursor:press", { detail: { pressed: true } }));
     });
     document.addEventListener("pointerup", () => {
       cursor.classList.remove("is-down");
       cursor.classList.add("is-released");
       if (releaseTimer) clearTimeout(releaseTimer);
       releaseTimer = setTimeout(() => cursor.classList.remove("is-released"), 290);
+      window.dispatchEvent(new CustomEvent("cursor:press", { detail: { pressed: false } }));
     });
 
     document.addEventListener("mouseleave", () => cursor.classList.remove("is-ready"));
@@ -591,16 +606,22 @@ const stack = [
     };
     requestAnimationFrame(loop);
 
-    // Subtle always-on squiggle on the cursor arrow itself
+    // Subtle always-on squiggle — applied to the local cursor AND every
+    // peer cursor on the page. SVG filter IDs are document-scoped so one
+    // set of defs serves them all.
     const arrowPath = document.getElementById("cursor-arrow-path");
-    if (arrowPath) {
+    {
       let frame = 0;
       const totalFrames = 5;
       const frameDuration = 110;
       let last = 0;
       const wiggleLoop = (now: number) => {
         if (now - last >= frameDuration) {
-          arrowPath.setAttribute("filter", `url(#cursor-wiggle-${frame})`);
+          const filterUrl = `url(#cursor-wiggle-${frame})`;
+          if (arrowPath) arrowPath.setAttribute("filter", filterUrl);
+          document.querySelectorAll<SVGPathElement>(".peer-arrow path").forEach((p) => {
+            p.setAttribute("filter", filterUrl);
+          });
           frame = (frame + 1) % totalFrames;
           last = now;
         }
@@ -647,6 +668,295 @@ const stack = [
       window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
     });
   }
+
+  // ── Multiplayer remote cursors ────────────────────────
+  (() => {
+    const WSS_URL = import.meta.env.PUBLIC_CURSORS_WSS as string | undefined;
+    if (!WSS_URL) return; // Feature gracefully disabled if env not set
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    if (reduced || isTouch) return;
+
+    const layer   = document.getElementById("peers-layer");
+    const toggle  = document.getElementById("peers-toggle") as HTMLButtonElement | null;
+    const countEl = document.getElementById("peers-count");
+    if (!layer || !toggle || !countEl) return;
+
+    type Peer = {
+      id: string;
+      name: string;
+      color: string;
+      el: HTMLDivElement;
+      tx: number; ty: number;
+      cx: number; cy: number;
+      firstFrame: boolean;
+      mode: string;
+      pressed: boolean;
+    };
+
+    const peers = new Map<string, Peer>();
+    let myId: string | null = null;
+
+    // Toggle persisted in localStorage
+    const STORAGE_KEY = "itsjan:peers";
+    if (localStorage.getItem(STORAGE_KEY) === "off") {
+      document.body.dataset.peers = "off";
+    }
+
+    const updateCount = () => {
+      const n = peers.size;
+      countEl.textContent = n === 0
+        ? "no one else here"
+        : n === 1 ? "1 other here"
+        : `${n} others here`;
+      toggle.dataset.visible = n > 0 ? "true" : "false";
+    };
+
+    toggle.addEventListener("click", () => {
+      const off = document.body.dataset.peers === "off";
+      if (off) {
+        delete document.body.dataset.peers;
+        localStorage.removeItem(STORAGE_KEY);
+      } else {
+        document.body.dataset.peers = "off";
+        localStorage.setItem(STORAGE_KEY, "off");
+      }
+    });
+
+    // ── Build peer DOM via safe createElement (no innerHTML) ─
+    const SVG_NS  = "http://www.w3.org/2000/svg";
+    const ARROW_D = "M 1.6 1.4 Q 1 1 1 2 L 1 16.6 Q 1 17.7 1.9 17.1 L 5.3 14.3 L 8.4 21 Q 8.8 21.9 9.7 21.5 L 11 20.9 Q 11.9 20.5 11.5 19.6 L 8.4 12.9 L 13.6 12.9 Q 14.7 12.9 13.9 12.2 Z";
+    const HEX_RE  = /^#[0-9a-fA-F]{6}$/;
+
+    // WCAG relative luminance → pick the foreground that gives better contrast
+    // against the peer's color. Returns deep-ink or near-white.
+    const pickForeground = (hex: string): string => {
+      const n = parseInt(hex.slice(1), 16);
+      const toLin = (c: number) => {
+        const s = c / 255;
+        return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+      };
+      const r = toLin((n >> 16) & 0xff);
+      const g = toLin((n >> 8)  & 0xff);
+      const b = toLin( n        & 0xff);
+      const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      // Contrast ratios vs pure white (1.0) and near-black (~0.0)
+      const ratioWhite = 1.05 / (L + 0.05);
+      const ratioBlack = (L + 0.05) / 0.05;
+      return ratioBlack > ratioWhite ? "#0a0a0a" : "#ffffff";
+    };
+
+    const addPeer = (id: string, name: string, color: string) => {
+      if (peers.has(id)) return;
+      const safeColor = HEX_RE.test(color) ? color : "#888888";
+      const fg = pickForeground(safeColor);
+
+      const el = document.createElement("div");
+      el.className = "peer";
+      // Set color on the wrapper so children (arrow path, text-mode I-beam) inherit
+      el.style.color = safeColor;
+
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("class", "peer-arrow");
+      svg.setAttribute("viewBox", "0 0 16 22");
+      const path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("d", ARROW_D);
+      // Inherit the shared wiggle filter — the wiggleLoop will cycle it
+      path.setAttribute("filter", "url(#cursor-wiggle-0)");
+      svg.appendChild(path);
+
+      const label = document.createElement("span");
+      label.className = "peer-label";
+      // background = peer color, text = whichever of white/ink beats contrast
+      label.style.backgroundColor = safeColor;
+      label.style.color = fg;
+      label.style.textShadow = "none"; // override CSS default that assumed white
+      label.textContent = name; // textContent escapes — safe
+
+      el.appendChild(svg);
+      el.appendChild(label);
+      layer.appendChild(el);
+
+      peers.set(id, {
+        id, name, color: safeColor, el,
+        tx: -100, ty: -100, cx: -100, cy: -100,
+        firstFrame: true,
+        mode: "default",
+        pressed: false,
+      });
+      updateCount();
+    };
+
+    const updatePeerState = (id: string, mode?: string, pressed?: boolean) => {
+      const p = peers.get(id);
+      if (!p) return;
+      if (typeof mode === "string" && p.mode !== mode) {
+        p.mode = mode;
+        p.el.dataset.mode = mode;
+      }
+      if (typeof pressed === "boolean" && p.pressed !== pressed) {
+        p.pressed = pressed;
+        if (pressed) p.el.dataset.pressed = "true";
+        else         delete p.el.dataset.pressed;
+      }
+    };
+
+    const removePeer = (id: string) => {
+      const p = peers.get(id);
+      if (!p) return;
+      p.el.remove();
+      peers.delete(id);
+      updateCount();
+    };
+
+    const updatePeerTarget = (id: string, x01: number, y01: number) => {
+      const p = peers.get(id);
+      if (!p) return;
+      p.tx = Math.max(0, Math.min(1, x01)) * window.innerWidth;
+      p.ty = Math.max(0, Math.min(1, y01)) * window.innerHeight;
+      if (p.firstFrame) {
+        p.cx = p.tx;
+        p.cy = p.ty;
+        p.firstFrame = false;
+      }
+    };
+
+    // Render loop — lerps all peers toward their target each frame
+    const tick = () => {
+      for (const p of peers.values()) {
+        p.cx += (p.tx - p.cx) * 0.22;
+        p.cy += (p.ty - p.cy) * 0.22;
+        p.el.style.transform = `translate3d(${p.cx}px, ${p.cy}px, 0)`;
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+
+    // ── WebSocket with reconnect backoff ─────────────────
+    let ws: WebSocket | null = null;
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    let reconnectDelay = 1000;
+
+    const connect = () => {
+      try { ws = new WebSocket(WSS_URL); }
+      catch { scheduleReconnect(); return; }
+
+      ws.addEventListener("open", () => { reconnectDelay = 1000; });
+
+      ws.addEventListener("message", (e) => {
+        let msg: unknown;
+        try { msg = JSON.parse(String(e.data)); } catch { return; }
+        if (typeof msg !== "object" || msg === null) return;
+        const m = msg as { type?: string; [k: string]: unknown };
+
+        switch (m.type) {
+          case "welcome":
+            myId = (m.self as { id?: string } | undefined)?.id ?? null;
+            if (Array.isArray(m.peers)) {
+              for (const p of m.peers) {
+                if (p && typeof p.id === "string" && typeof p.name === "string" && typeof p.color === "string") {
+                  addPeer(p.id, p.name, p.color);
+                }
+              }
+            }
+            break;
+          case "join":
+            if (typeof m.id === "string" && typeof m.name === "string" && typeof m.color === "string" && m.id !== myId) {
+              addPeer(m.id, m.name, m.color);
+            }
+            break;
+          case "leave":
+            if (typeof m.id === "string") removePeer(m.id);
+            break;
+          case "move":
+            if (typeof m.id === "string" && typeof m.x === "number" && typeof m.y === "number") {
+              updatePeerTarget(m.id, m.x, m.y);
+            }
+            break;
+          case "state":
+            if (typeof m.id === "string") {
+              updatePeerState(
+                m.id,
+                typeof m.mode === "string" ? m.mode : undefined,
+                typeof m.pressed === "boolean" ? m.pressed : undefined,
+              );
+            }
+            break;
+        }
+      });
+
+      ws.addEventListener("close", () => {
+        for (const id of [...peers.keys()]) removePeer(id);
+        myId = null;
+        scheduleReconnect();
+      });
+
+      ws.addEventListener("error", () => { try { ws?.close(); } catch {} });
+    };
+
+    const scheduleReconnect = () => {
+      if (reconnectTimer) return;
+      reconnectTimer = setTimeout(() => {
+        reconnectTimer = null;
+        reconnectDelay = Math.min(reconnectDelay * 2, 30_000);
+        connect();
+      }, reconnectDelay);
+    };
+
+    connect();
+
+    window.addEventListener("beforeunload", () => { try { ws?.close(); } catch {} });
+
+    // ── Outgoing cursor position (throttled to rAF cadence) ─
+    let outX = 0, outY = 0;
+    let dirty = false;
+    let lastSentX = -1, lastSentY = -1;
+
+    window.addEventListener("pointermove", (e) => {
+      outX = e.clientX / window.innerWidth;
+      outY = e.clientY / window.innerHeight;
+      dirty = true;
+    }, { passive: true });
+
+    const sendLoop = () => {
+      if (
+        dirty &&
+        ws && ws.readyState === WebSocket.OPEN &&
+        (outX !== lastSentX || outY !== lastSentY)
+      ) {
+        ws.send(JSON.stringify({ type: "move", x: outX, y: outY }));
+        lastSentX = outX;
+        lastSentY = outY;
+        dirty = false;
+      }
+      requestAnimationFrame(sendLoop);
+    };
+    requestAnimationFrame(sendLoop);
+
+    // ── Mirror local cursor mode/press to peers via WebSocket ───
+    let lastSentMode    = "default";
+    let lastSentPressed = false;
+
+    const sendState = (next: { mode?: string; pressed?: boolean }) => {
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      const mode    = next.mode    ?? lastSentMode;
+      const pressed = next.pressed ?? lastSentPressed;
+      if (mode === lastSentMode && pressed === lastSentPressed) return;
+      lastSentMode    = mode;
+      lastSentPressed = pressed;
+      ws.send(JSON.stringify({ type: "state", mode, pressed }));
+    };
+
+    window.addEventListener("cursor:mode", (e) => {
+      const mode = (e as CustomEvent<{ mode: string }>).detail.mode;
+      sendState({ mode });
+    });
+    window.addEventListener("cursor:press", (e) => {
+      const pressed = (e as CustomEvent<{ pressed: boolean }>).detail.pressed;
+      sendState({ pressed });
+    });
+  })();
 
   // ── Contact form submission ───────────────────────────
   const form = document.getElementById("contact-form") as HTMLFormElement | null;

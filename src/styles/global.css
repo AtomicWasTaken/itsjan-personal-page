@@ -1182,6 +1182,187 @@ html.has-custom-cursor label {
   }
 }
 
+/* ── Multiplayer remote cursors ─────────────────────────── */
+
+.peers-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  overflow: hidden;
+}
+
+.peer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+  transform: translate3d(-100px, -100px, 0);
+
+  /* Per-mode design tokens — same idea as the local cursor */
+  --p-arrow-scale: 1;
+  --p-arrow-opacity: 1;
+  --p-arrow-rotate: 0deg;
+}
+
+.peer-arrow {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 18px;
+  height: 25px;
+  filter: drop-shadow(0 1.5px 2.5px rgba(0, 0, 0, 0.45));
+  pointer-events: none;
+  transform-origin: 6% 5%;
+  transform: scale(var(--p-arrow-scale)) rotate(var(--p-arrow-rotate));
+  opacity: var(--p-arrow-opacity);
+  transition:
+    transform 220ms var(--ease-out),
+    opacity 200ms var(--ease-out);
+}
+
+.peer-arrow path {
+  /* `color` is set inline via the user's assigned color */
+  fill: currentColor;
+  stroke: rgba(10, 10, 10, 0.4);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/* ── Peer modes — keep identity color, vary scale/rotation ──── */
+
+.peer[data-mode="link"],
+.peer[data-mode="pill"],
+.peer[data-mode="link-amber"] {
+  --p-arrow-scale: 0.85;
+  --p-arrow-opacity: 0.9;
+}
+
+.peer[data-mode="cta-primary"]   { --p-arrow-scale: 1.18; }
+.peer[data-mode="cta-secondary"] { --p-arrow-scale: 1.12; }
+.peer[data-mode="view"]          { --p-arrow-scale: 1.1;  --p-arrow-opacity: 0.95; }
+.peer[data-mode="accent"]        { --p-arrow-scale: 1.05; }
+.peer[data-mode="squiggly"]      { --p-arrow-rotate: -8deg; --p-arrow-scale: 1.05; }
+
+/* Text-input mode: hide the arrow, show a small color-matched I-beam */
+.peer[data-mode="text"] .peer-arrow { --p-arrow-opacity: 0; --p-arrow-scale: 0.5; }
+.peer[data-mode="text"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 22px;
+  border-radius: 1px;
+  background: currentColor; /* peer color — set via .peer-label inline style? no — set on .peer */
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  transition: opacity 200ms var(--ease-out);
+}
+
+/* Press squeeze — applied on top of whatever mode is active */
+.peer[data-pressed="true"] .peer-arrow {
+  --p-arrow-scale: 0.74;
+}
+.peer[data-pressed="true"][data-mode="cta-primary"] .peer-arrow,
+.peer[data-pressed="true"][data-mode="cta-secondary"] .peer-arrow {
+  --p-arrow-scale: 0.95;
+}
+.peer[data-pressed="true"][data-mode="link"] .peer-arrow,
+.peer[data-pressed="true"][data-mode="pill"] .peer-arrow,
+.peer[data-pressed="true"][data-mode="link-amber"] .peer-arrow {
+  --p-arrow-scale: 0.72;
+}
+
+.peer-label {
+  position: absolute;
+  top: 22px;
+  left: 14px;
+  padding: 0.18rem 0.5rem 0.22rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  /* `color` and `background-color` are set inline per-peer via WCAG-derived
+   * contrast pick so every label is readable regardless of its bg color. */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Tiny enter animation when a peer joins */
+@keyframes peer-pop {
+  0%   { transform: translate3d(var(--tx, 0), var(--ty, 0), 0) scale(0.6); opacity: 0; }
+  100% { transform: translate3d(var(--tx, 0), var(--ty, 0), 0) scale(1);   opacity: 1; }
+}
+
+/* Hide all peers when the toggle is off */
+body[data-peers="off"] .peers-layer { display: none; }
+
+/* ── Peers toggle pill (bottom-left, mirrors back-to-top) ── */
+
+.peers-toggle {
+  position: fixed;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 70;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  background: oklch(18% 0 0 / 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--color-text);
+  font-family: var(--font-mono), monospace;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  cursor: pointer;
+  box-shadow: 0 10px 30px oklch(0% 0 0 / 0.4);
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+
+  /* Hidden until at least one peer is connected (and during intro) */
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+
+.peers-toggle[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.peers-toggle:hover {
+  border-color: var(--color-border-2);
+  color: var(--color-text-strong);
+}
+
+.peers-toggle .eye {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-live);
+  box-shadow: 0 0 0 0 oklch(72% 0.18 145 / 0.55);
+  animation: pulse-dot 2s var(--ease-out) infinite;
+}
+
+body[data-peers="off"] .peers-toggle .eye {
+  background: var(--color-text-faint);
+  animation: none;
+  box-shadow: none;
+}
+
 /* ── Reveal animation ───────────────────────────────────── */
 
 .reveal-up {
