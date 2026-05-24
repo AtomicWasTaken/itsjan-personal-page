@@ -27,6 +27,11 @@ pnpm-debug.log*
 # dev screenshots at repo root (one-off scratch from iteration)
 /*.png
 
+# this project uses bun (bun.lock is committed) — ignore npm/yarn/pnpm lockfiles
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
 # macOS-specific files
 .DS_Store
 
