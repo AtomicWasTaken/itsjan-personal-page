@@ -253,10 +253,15 @@ body::after {
   background: var(--color-accent-edge);
 }
 
-.company-pill svg {
+.company-pill span {
+  font-weight: 650;
+}
+
+.company-pill img {
   height: 1.05em;
-  width: auto;
+  width: 1.05em;
   display: block;
+  border-radius: 0.25em;
 }
 
 /* ── Floating top-center pill (N5) ──────────────────────── */

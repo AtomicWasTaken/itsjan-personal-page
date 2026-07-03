@@ -3,7 +3,6 @@ import Layout from "../layouts/Layout.astro";
 import Button from "../components/Button.astro";
 import SquigglyText from "../components/SquigglyText.astro";
 import portrait from "../assets/jan.jpg";
-import finnyLogo from "../assets/finny-logo.svg?raw";
 import { BIRTHDATE_ISO, ageNow, ageYears, aOrAn } from "../lib/jan";
 import { detectLocale, tr } from "../lib/i18n";
 
@@ -99,7 +98,7 @@ const stack = t.stack.items;
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Finny"
-        ><span set:html={finnyLogo} /></a>{t.hero.proseBeforeBold}<strong class="text-[var(--color-text-strong)] font-semibold">{t.hero.bold}</strong>{t.hero.proseAfterBold}
+        ><img src="/finny-favicon.png" alt="" width="32" height="32" loading="lazy" decoding="async" /><span>Finny</span></a>{t.hero.proseBeforeBold}<strong class="text-[var(--color-text-strong)] font-semibold">{t.hero.bold}</strong>{t.hero.proseAfterBold}
       </p>
 
       <p class="hero-prose mt-4 muted">
