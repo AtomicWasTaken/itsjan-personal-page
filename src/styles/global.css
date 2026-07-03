@@ -230,7 +230,7 @@ body::after {
   font-weight: 600;
 }
 
-/* ── Inline team neusta logo pill ───────────────────────── */
+/* ── Inline company logo pill ───────────────────────────── */
 
 .company-pill {
   display: inline-flex;
@@ -254,7 +254,7 @@ body::after {
 }
 
 .company-pill svg {
-  height: 0.95em;
+  height: 1.05em;
   width: auto;
   display: block;
 }
@@ -1085,7 +1085,7 @@ body:not(.is-intro) .post-intro {
   --arrow-opacity: 0.9;
 }
 
-/* Inline brand chip (team neusta) — small white arrow (pill bg is dark glass,
+/* Inline brand chip — small white arrow (pill bg is dark glass,
  * amber would blend with the pill's amber text underneath) */
 .cursor[data-mode="link-amber"] {
   --arrow-scale: 0.85;
