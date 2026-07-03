@@ -235,6 +235,7 @@ body::after {
 .company-pill {
   display: inline-flex;
   align-items: center;
+  gap: 0.28em;
   vertical-align: -0.15em;
   padding: 0.15em 0.45em;
   margin: 0 0.08em;
