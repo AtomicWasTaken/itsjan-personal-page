@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Button from "../components/Button.astro";
 import SquigglyText from "../components/SquigglyText.astro";
 import portrait from "../assets/jan.jpg";
-import teamNeustaLogo from "../assets/team-neusta-logo.svg?raw";
+import finnyLogo from "../assets/finny-logo.svg?raw";
 import { BIRTHDATE_ISO, ageNow, ageYears, aOrAn } from "../lib/jan";
 import { detectLocale, tr } from "../lib/i18n";
 
@@ -95,11 +95,11 @@ const stack = t.stack.items;
         {t.hero.ageAfter}
         <a
           class="company-pill"
-          href="https://www.team-neusta.de"
+          href="https://fnny.app"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="team neusta"
-        ><span set:html={teamNeustaLogo} /></a>{t.hero.proseBeforeBold}<strong class="text-[var(--color-text-strong)] font-semibold">{t.hero.bold}</strong>{t.hero.proseAfterBold}
+          aria-label="Finny"
+        ><span set:html={finnyLogo} /></a>{t.hero.proseBeforeBold}<strong class="text-[var(--color-text-strong)] font-semibold">{t.hero.bold}</strong>{t.hero.proseAfterBold}
       </p>
 
       <p class="hero-prose mt-4 muted">
@@ -110,6 +110,7 @@ const stack = t.stack.items;
         <Button href="mailto:hi@itsjan.dev" variant="dark">{t.hero.buttons.email}</Button>
         <Button href="https://github.com/AtomicWasTaken" variant="light" external>{t.hero.buttons.github}</Button>
         <Button href="https://www.linkedin.com/in/janmarlonleibl/" variant="light" external>{t.hero.buttons.linkedin}</Button>
+        <Button href="https://x.com/janodersooo" variant="light" external>{t.hero.buttons.x}</Button>
       </div>
 
       <!-- Status / timezone block — fullag.ar's right-aligned aux line -->
@@ -557,7 +558,7 @@ const stack = t.stack.items;
       // 3) Secondary CTAs (light/white buttons): GitHub, LinkedIn
       if (el.closest(".btn-3d-light, .btn-3d-white")) return "cta-secondary";
 
-      // 4) Inline brand chip (team neusta) → amber link mode
+      // 4) Inline brand chip → amber link mode
       if (el.closest(".company-pill")) return "link-amber";
 
       // 5) Live age ticker (amber number) → accent mode
