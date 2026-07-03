@@ -39,7 +39,7 @@ interface Strings {
     bold: string; // bold span text (e.g., "June 2026")
     proseAfterBold: string;
     origin: string;
-    buttons: { email: string; github: string; linkedin: string };
+    buttons: { email: string; github: string; linkedin: string; x: string };
     aux: {
       statusLabel: string; statusValue: string;
       basedLabel: string;  basedValue: string;
@@ -102,22 +102,22 @@ const en: Strings = {
   meta: {
     title: "Jan-Marlon Leibl — developer in Bremen",
     description: (years, article) =>
-      `I'm ${article} ${years}-year-old PHP and TypeScript developer in Bremen. Apprenticing at team neusta, free for hire from June 2026 — full-time or freelance.`,
+      `I'm ${article} ${years}-year-old PHP and TypeScript developer in Bremen. I finished my three-year apprenticeship and am founding Finny, a warranty reminder app.`,
   },
-  topPill: "open for hire — jun '26",
+  topPill: "founding Finny",
   hero: {
     hey: "Hey there.",
     iAm: "I'm Jan-Marlon",
     aka: "everyone just calls me Jan.",
     ageBefore: (article) => `I'm ${article}`,
-    ageAfter: "year old developer at",
-    proseBeforeBold: ", working in PHP and TypeScript by day, Next.js by night. Wrapping my apprenticeship in ",
-    bold: "June 2026",
-    proseAfterBold: " and looking for what's next — full-time or freelance, German or English.",
+    ageAfter: "year old developer founding",
+    proseBeforeBold: ", a small app that tracks receipts and reminds you before warranties run out. I finished my ",
+    bold: "three-year apprenticeship",
+    proseAfterBold: " and still build mostly with PHP, TypeScript, and Next.js.",
     origin: "Started coding at 11 with C# — a friend showed me a tiny app he'd built and I had to figure out how it worked. That was the start.",
-    buttons: { email: "Email me", github: "GitHub", linkedin: "LinkedIn" },
+    buttons: { email: "Email me", github: "GitHub", linkedin: "LinkedIn", x: "X" },
     aux: {
-      statusLabel: "status", statusValue: "open for offers from June 2026",
+      statusLabel: "status", statusValue: "founding Finny",
       basedLabel: "based",   basedValue: "Bremen, Germany · UTC+1",
       replyLabel: "reply",   replyValue: "usually same day",
     },
@@ -131,7 +131,7 @@ const en: Strings = {
       { name: "TypeScript",     note: "end to end, type-led API design" },
       { name: "React",          note: "default for app frontends" },
       { name: "Next.js",        note: "side projects & client builds" },
-      { name: "TYPO3",          note: "a lot of what team neusta ships" },
+      { name: "TYPO3",          note: "client work & CMS builds" },
       { name: "Angular & Vue",  note: "shipped when the job needs it" },
     ],
   },
@@ -154,7 +154,7 @@ const en: Strings = {
     items: [
       { year: "'19", title: "First taste.",            body: "Age 11. A friend showed me a tiny app he'd built in <strong>C#</strong>. I had to figure out how it worked, then build my own. The hook never came out." },
       { year: "'23", title: "team neusta, Bremen.",    body: "Started a three-year apprenticeship. Real client work in <strong>PHP</strong>, <strong>TypeScript</strong>, and <strong>TYPO3</strong> alongside training at Schulzentrum SII Utbremen." },
-      { year: "'26", title: "Open for what's next.",   body: "Apprenticeship wraps in June. Looking for full-time or freelance — either fine, both German and English." },
+      { year: "'26", title: "Finny.",                  body: "Finished the apprenticeship and started founding <strong>Finny</strong>: take a photo of a receipt, save the useful details, and get reminded before the warranty runs out." },
     ],
   },
   contact: {
@@ -167,7 +167,7 @@ const en: Strings = {
     emailLabel: "Email",
     emailPlaceholder: "so I can reply",
     messageLabel: "Message",
-    messagePlaceholder: "apprenticeship, freelance gig, an idea you want to talk through — all fine.",
+    messagePlaceholder: "Finny, freelance gig, an idea you want to talk through — all fine.",
     submit: "Send a note",
     direct: 'or <a href="mailto:hi@itsjan.dev">email hi@itsjan.dev directly</a>',
     say: "say hi",
@@ -189,7 +189,7 @@ const en: Strings = {
     one:  "1 other here",
     many: (n) => `${n} others here`,
   },
-  topPillAria:  "Open for hire from June 2026 — email me",
+  topPillAria:  "Founding Finny — email me",
   backToTopAria: "Back to top",
 };
 
@@ -198,22 +198,22 @@ const de: Strings = {
   meta: {
     title: "Jan-Marlon Leibl — Entwickler in Bremen",
     description: (years) =>
-      `Ich bin ein ${years}-jähriger PHP- und TypeScript-Entwickler aus Bremen. Auszubildender bei team neusta, ab Juni 2026 verfügbar — Festanstellung oder freiberuflich.`,
+      `Ich bin ein ${years}-jähriger PHP- und TypeScript-Entwickler aus Bremen. Ich habe meine dreijährige Ausbildung abgeschlossen und gründe Finny, eine App für Garantie-Erinnerungen.`,
   },
-  topPill: "verfügbar — juni '26",
+  topPill: "gründe Finny",
   hero: {
     hey: "Hi.",
     iAm: "Ich bin Jan-Marlon",
     aka: "alle nennen mich einfach Jan.",
     ageBefore: () => "Ich bin",
-    ageAfter: "Jahre alter Entwickler bei",
-    proseBeforeBold: ", arbeite tagsüber mit PHP und TypeScript, abends mit Next.js. Meine Ausbildung endet im ",
-    bold: "Juni 2026",
-    proseAfterBold: " und ich suche, was als Nächstes kommt — Festanstellung oder freiberuflich, deutsch oder englisch.",
+    ageAfter: "Jahre alter Entwickler und gründe",
+    proseBeforeBold: ", eine kleine App, die Belege speichert und dich vor Garantieablauf erinnert. Ich habe meine ",
+    bold: "dreijährige Ausbildung",
+    proseAfterBold: " abgeschlossen und baue weiter vor allem mit PHP, TypeScript und Next.js.",
     origin: "Mit 11 habe ich angefangen zu programmieren — in C#. Ein Freund hat mir eine kleine App gezeigt, die er gebaut hatte, und ich musste herausfinden, wie sie funktioniert. So fing alles an.",
-    buttons: { email: "Schreib mir", github: "GitHub", linkedin: "LinkedIn" },
+    buttons: { email: "Schreib mir", github: "GitHub", linkedin: "LinkedIn", x: "X" },
     aux: {
-      statusLabel: "status",  statusValue: "ab Juni 2026 verfügbar",
+      statusLabel: "status",  statusValue: "gründe Finny",
       basedLabel: "ort",      basedValue: "Bremen, Deutschland · UTC+1",
       replyLabel: "antwort",  replyValue: "meist am selben Tag",
     },
@@ -227,7 +227,7 @@ const de: Strings = {
       { name: "TypeScript",     note: "End-to-End, typgetriebene APIs" },
       { name: "React",          note: "Standard für App-Frontends" },
       { name: "Next.js",        note: "Side Projects & Kundenprojekte" },
-      { name: "TYPO3",          note: "viel davon liefert team neusta" },
+      { name: "TYPO3",          note: "Kundenarbeit & CMS-Builds" },
       { name: "Angular & Vue",  note: "wenn der Job es verlangt" },
     ],
   },
@@ -250,7 +250,7 @@ const de: Strings = {
     items: [
       { year: "'19", title: "Erster Kontakt.",        body: "Mit 11. Ein Freund zeigte mir eine kleine App, die er in <strong>C#</strong> gebaut hatte. Ich musste verstehen, wie sie funktioniert, und dann selbst eine bauen. Der Haken saß seitdem." },
       { year: "'23", title: "team neusta, Bremen.",   body: "Beginn einer dreijährigen Ausbildung. Echte Kundenprojekte in <strong>PHP</strong>, <strong>TypeScript</strong> und <strong>TYPO3</strong>, parallel zur Berufsschule am Schulzentrum SII Utbremen." },
-      { year: "'26", title: "Offen für das, was kommt.", body: "Ausbildung endet im Juni. Auf der Suche nach Festanstellung oder freiberuflichen Projekten — beides passt, deutsch und englisch." },
+      { year: "'26", title: "Finny.",                 body: "Ausbildung abgeschlossen und <strong>Finny</strong> gestartet: Beleg fotografieren, wichtige Daten speichern und vor Ablauf der Garantie erinnert werden." },
     ],
   },
   contact: {
@@ -263,7 +263,7 @@ const de: Strings = {
     emailLabel: "E-Mail",
     emailPlaceholder: "damit ich antworten kann",
     messageLabel: "Nachricht",
-    messagePlaceholder: "Ausbildung, freiberuflicher Auftrag, eine Idee, über die du sprechen willst — alles passt.",
+    messagePlaceholder: "Finny, freiberuflicher Auftrag, eine Idee, über die du sprechen willst — alles passt.",
     submit: "Nachricht senden",
     direct: 'oder schreib direkt an <a href="mailto:hi@itsjan.dev">hi@itsjan.dev</a>',
     say: "sag hi",
@@ -285,7 +285,7 @@ const de: Strings = {
     one:  "1 weitere Person hier",
     many: (n) => `${n} weitere Personen hier`,
   },
-  topPillAria:  "Ab Juni 2026 verfügbar — schreib mir",
+  topPillAria:  "Jan gründet Finny — schreib mir",
   backToTopAria: "Zurück nach oben",
 };
 
