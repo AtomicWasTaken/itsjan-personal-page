@@ -7,7 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 name = "CURSORS"
 class_name = "CursorsRoom"
 
-# SQLite-backed Durable Objects — eligible for the Workers free tier and
+# SQLite-backed Durable Objects, eligible for the Workers free tier and
 # cheaper than the legacy KV-backed ones. New deploys should use this.
 [[migrations]]
 tag = "v1"

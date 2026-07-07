@@ -27,7 +27,7 @@
   --color-text-muted:  oklch(54% 0 0);       /* #737373 mid grey */
   --color-text-faint:  oklch(40% 0 0);       /* deepest mute */
 
-  /* Accent — amber, recurring footprint */
+  /* Accent - amber, recurring footprint */
   --color-accent:        oklch(76% 0.16 70); /* #f59e0b amber */
   --color-accent-soft:   oklch(76% 0.16 70 / 0.10);
   --color-accent-edge:   oklch(76% 0.16 70 / 0.32);
@@ -67,7 +67,7 @@
   --radius-lg: 1rem;
   --radius-pill: 9999px;
 
-  /* Motion — three named eases, no browser default */
+  /* Motion - three named eases, no browser default */
   --ease-out:    cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-in:     cubic-bezier(0.4, 0, 1, 0.4);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
@@ -111,7 +111,7 @@ html {
   overflow-x: clip;
 }
 
-/* Subtle dark-mode noise — barely-there, prevents banding */
+/* Subtle dark-mode noise - barely-there, prevents banding */
 body::before {
   content: "";
   position: fixed;
@@ -124,7 +124,7 @@ body::before {
   background-size: 3px 3px;
 }
 
-/* Far-edge amber bloom — single chromatic seasoning */
+/* Far-edge amber bloom - single chromatic seasoning */
 body::after {
   content: "";
   position: fixed;
@@ -221,7 +221,7 @@ body::after {
 
 .muted { color: var(--color-text-muted); }
 
-/* ── Live age ticker — inline, mono, tabular ─────────────── */
+/* ── Live age ticker - inline, mono, tabular ─────────────── */
 
 .age-ticker {
   font-family: var(--font-mono), monospace;
@@ -298,7 +298,7 @@ body::after {
   overflow: hidden;
 }
 
-/* Cursor-following sheen — JS updates --mx / --my on pointer move.
+/* Cursor-following sheen - JS updates --mx / --my on pointer move.
  * Only visible on hover; everything else is plain. */
 .float-pill::after {
   content: "";
@@ -440,7 +440,7 @@ body::after {
   100% { box-shadow: 0 0 0 0 oklch(72% 0.18 145 / 0); }
 }
 
-/* ── Card — rounded surface with amber hover edge ──────── */
+/* ── Card - rounded surface with amber hover edge ──────── */
 
 .card {
   border: 1px solid var(--color-border);
@@ -498,7 +498,7 @@ body::after {
 
 .aux-block .key { color: var(--color-text-faint); margin-right: 0.5rem; }
 
-/* ── Stack — typographic list display ───────────────────── */
+/* ── Stack - typographic list display ───────────────────── */
 
 .stack-list {
   display: grid;
@@ -507,22 +507,12 @@ body::after {
 
 .stack-row {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto;
   gap: 1rem 1.5rem;
   align-items: baseline;
   padding: 1.4rem 0;
   border-bottom: 1px solid var(--color-border);
   position: relative;
-}
-
-.stack-index {
-  font-family: var(--font-mono), monospace;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  color: var(--color-text-muted);
-  width: 1.75rem;
-  flex-shrink: 0;
 }
 
 .stack-name {
@@ -548,46 +538,11 @@ body::after {
 }
 
 @media (max-width: 640px) {
-  .stack-row { grid-template-columns: auto 1fr; }
-  .stack-note { grid-column: 1 / -1; text-align: left; padding-left: 2.75rem; margin-top: 0.25rem; }
+  .stack-row { grid-template-columns: 1fr; }
+  .stack-note { text-align: left; margin-top: 0.25rem; }
 }
 
-/* ── Opinions — big numbered statements ─────────────────── */
-
-.opinions-list {
-  display: grid;
-  border-top: 1px solid var(--color-border);
-}
-
-.opinion {
-  display: grid;
-  grid-template-columns: 4rem 1fr;
-  gap: 1.5rem;
-  align-items: baseline;
-  padding: 1.6rem 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.opinion-num {
-  font-family: var(--font-mono), monospace;
-  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--color-accent);
-  line-height: 1;
-}
-
-.opinion-text {
-  font-family: var(--font-sans), sans-serif;
-  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
-  font-weight: 400;
-  line-height: 1.5;
-  letter-spacing: -0.012em;
-  color: var(--color-text-strong);
-  max-width: 50ch;
-}
-
-/* ── Arc — big year markers, prose ──────────────────────── */
+/* ── Arc - big year markers, prose ──────────────────────── */
 
 .arc-list {
   display: grid;
@@ -645,7 +600,7 @@ body::after {
   .section-block { padding-top: var(--space-20); }
 }
 
-/* ── Portrait — kept as documentary frame, dark variant ── */
+/* ── Portrait - kept as documentary frame, dark variant ── */
 
 .portrait-frame {
   border: 1px solid var(--color-border);
@@ -701,7 +656,7 @@ body::after {
 
 .contact-email:hover { color: var(--color-accent); }
 
-/* ── Contact form — inline, no card wrapper ─────────────── */
+/* ── Contact form - inline, no card wrapper ─────────────── */
 
 .contact-form {
   display: grid;
@@ -875,7 +830,7 @@ body::after {
   pointer-events: none;
 }
 
-/* ── 3D Buttons — UNTOUCHED signature element ───────────── */
+/* ── 3D Buttons - UNTOUCHED signature element ───────────── */
 
 .btn-3d {
   position: relative;
@@ -906,12 +861,12 @@ body::after {
   box-shadow: 0 1px 0 var(--btn-shadow);
 }
 
-/* Dark theme adaptation — preserves press/hover physics.
+/* Dark theme adaptation - preserves press/hover physics.
  * Shadow colors are lighter than the page bg so the "block side" reads.
  * Buttons are clearly elevated surfaces, never just border-on-bg.
  */
 .btn-3d-dark {
-  --btn-shadow: oklch(50% 0.12 70);        /* deep amber side — visible block edge */
+  --btn-shadow: oklch(50% 0.12 70);        /* deep amber side - visible block edge */
   background: var(--color-accent);
   border: 1px solid oklch(82% 0.14 70);    /* warm top highlight */
   color: var(--color-paper);
@@ -931,7 +886,7 @@ body::after {
   color: var(--color-paper);
 }
 
-/* Focus styles — visible ring at ≥3:1, instant (never animated) */
+/* Focus styles - visible ring at ≥3:1, instant (never animated) */
 .btn-3d:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--color-accent);
@@ -952,14 +907,14 @@ a:focus-visible {
   color: var(--color-text-muted);
 }
 
-/* ── Intro state — only greeting visible, centered on screen ─ */
+/* ── Intro state - only greeting visible, centered on screen ─ */
 
 body.is-intro {
   overflow: hidden;
   height: 100vh;
 }
 
-/* During intro, the intro-block STAYS in natural document flow — only its
+/* During intro, the intro-block STAYS in natural document flow - only its
  * `transform` is set by JS to move it visually to viewport center. This is
  * what eliminates layout shift: nothing about the document layout actually
  * changes between intro and post-intro states.
@@ -997,7 +952,7 @@ body:not(.is-intro) .post-intro {
     filter 800ms var(--ease-out) 350ms;
 }
 
-/* Reduced motion — make the intro feel instant */
+/* Reduced motion - make the intro feel instant */
 @media (prefers-reduced-motion: reduce) {
   body.is-intro .post-intro,
   body:not(.is-intro) .post-intro {
@@ -1006,7 +961,7 @@ body:not(.is-intro) .post-intro {
   }
 }
 
-/* ── Custom cursor — refined macOS arrow, smooth lerp ───── */
+/* ── Custom cursor - refined macOS arrow, smooth lerp ───── */
 
 .cursor {
   position: fixed;
@@ -1021,7 +976,7 @@ body:not(.is-intro) .post-intro {
   opacity: 0;
   transition: opacity 220ms var(--ease-out);
 
-  /* Mode-driven design tokens — each mode overrides these */
+  /* Mode-driven design tokens - each mode overrides these */
   --c-fill: #ffffff;
   --c-stroke: rgba(10, 10, 10, 0.55);
   --arrow-scale: 1;
@@ -1034,7 +989,7 @@ body:not(.is-intro) .post-intro {
 
 .cursor.is-ready { opacity: 1; }
 
-/* SVG arrow — anchored so the tip sits at the lerped position */
+/* SVG arrow - anchored so the tip sits at the lerped position */
 .cursor-arrow {
   position: absolute;
   top: -1px;
@@ -1079,26 +1034,26 @@ body:not(.is-intro) .post-intro {
 
 /* ── MODES ──────────────────────────────────────────────── */
 
-/* Generic link (other anchors, label.field) — slight shrink */
+/* Generic link (other anchors, label.field) - slight shrink */
 .cursor[data-mode="link"] {
   --arrow-scale: 0.85;
   --arrow-opacity: 0.85;
 }
 
-/* Floating pills (top status, back-to-top) — subtle shrink */
+/* Floating pills (top status, back-to-top) - subtle shrink */
 .cursor[data-mode="pill"] {
   --arrow-scale: 0.88;
   --arrow-opacity: 0.9;
 }
 
-/* Inline brand chip — small white arrow (pill bg is dark glass,
+/* Inline brand chip - small white arrow (pill bg is dark glass,
  * amber would blend with the pill's amber text underneath) */
 .cursor[data-mode="link-amber"] {
   --arrow-scale: 0.85;
   --arrow-opacity: 0.95;
 }
 
-/* Primary CTA — amber 3D buttons (Email me / Send a note).
+/* Primary CTA - amber 3D buttons (Email me / Send a note).
  * Button bg is full amber → cursor must be DARK INK for contrast. */
 .cursor[data-mode="cta-primary"] {
   --c-fill: #0a0a0a;
@@ -1106,13 +1061,13 @@ body:not(.is-intro) .post-intro {
   --arrow-scale: 1.15;
 }
 
-/* Secondary CTA — light 3D buttons (GitHub / LinkedIn).
+/* Secondary CTA - light 3D buttons (GitHub / LinkedIn).
  * Surface is dark grey → white arrow reads cleanly. */
 .cursor[data-mode="cta-secondary"] {
   --arrow-scale: 1.1;
 }
 
-/* Form inputs — hide arrow, show amber I-beam (dark bg → amber pops) */
+/* Form inputs - hide arrow, show amber I-beam (dark bg → amber pops) */
 .cursor[data-mode="text"] {
   --arrow-opacity: 0;
   --arrow-scale: 0.5;
@@ -1120,20 +1075,20 @@ body:not(.is-intro) .post-intro {
   --beam-scale: 1;
 }
 
-/* Photo / portrait — slight scale up. White + dark stroke + shadow
+/* Photo / portrait - slight scale up. White + dark stroke + shadow
  * reads on most photographic tones. */
 .cursor[data-mode="view"] {
   --arrow-scale: 1.1;
   --arrow-opacity: 0.95;
 }
 
-/* Over the age ticker (amber digits on dark bg) — keep white so the
+/* Over the age ticker (amber digits on dark bg) - keep white so the
  * cursor never blends into the amber digit underneath. */
 .cursor[data-mode="accent"] {
   --arrow-scale: 1.05;
 }
 
-/* Over squiggly text — cursor tilts as a wink */
+/* Over squiggly text - cursor tilts as a wink */
 .cursor[data-mode="squiggly"] {
   --arrow-rotate: -8deg;
   --arrow-scale: 1.05;
@@ -1141,7 +1096,7 @@ body:not(.is-intro) .post-intro {
 
 /* ── ACTIONS ────────────────────────────────────────────── */
 
-/* Click squeeze — color stays mode-driven */
+/* Click squeeze - color stays mode-driven */
 .cursor.is-down {
   --arrow-scale: 0.74;
 }
@@ -1151,7 +1106,7 @@ body:not(.is-intro) .post-intro {
 .cursor.is-down[data-mode="cta-primary"]     { --arrow-scale: 0.95; }
 .cursor.is-down[data-mode="cta-secondary"]   { --arrow-scale: 0.92; }
 
-/* Release bounce — a subtle pop-back after click */
+/* Release bounce - a subtle pop-back after click */
 .cursor.is-released .cursor-arrow {
   animation: cursor-bounce 280ms var(--ease-out);
 }
@@ -1174,7 +1129,7 @@ html.has-custom-cursor label {
   cursor: none !important;
 }
 
-/* Mobile / touch / reduced-motion — disable entirely */
+/* Mobile / touch / reduced-motion - disable entirely */
 @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
   .cursor { display: none !important; }
   html.has-custom-cursor,
@@ -1184,7 +1139,7 @@ html.has-custom-cursor label {
 }
 
 /* ── Secret toggle: hide other-users' cursors (type "cursors") ─
- * Local custom cursor stays — only the peer overlay, peer selections,
+ * Local custom cursor stays - only the peer overlay, peer selections,
  * and the peers-toggle pill are hidden. Default is OFF (opt-in). */
 body[data-cursors-off] .peers-layer,
 body[data-cursors-off] .peers-selections,
@@ -1210,7 +1165,7 @@ body[data-cursors-off] .peers-toggle {
   will-change: transform;
   transform: translate3d(-100px, -100px, 0);
 
-  /* Per-mode design tokens — same idea as the local cursor */
+  /* Per-mode design tokens - same idea as the local cursor */
   --p-arrow-scale: 1;
   --p-arrow-opacity: 1;
   --p-arrow-rotate: 0deg;
@@ -1241,7 +1196,7 @@ body[data-cursors-off] .peers-toggle {
   stroke-linecap: round;
 }
 
-/* ── Peer modes — keep identity color, vary scale/rotation ──── */
+/* ── Peer modes - keep identity color, vary scale/rotation ──── */
 
 .peer[data-mode="link"],
 .peer[data-mode="pill"],
@@ -1266,13 +1221,13 @@ body[data-cursors-off] .peers-toggle {
   width: 2px;
   height: 22px;
   border-radius: 1px;
-  background: currentColor; /* peer color — set via .peer-label inline style? no — set on .peer */
+  background: currentColor; /* peer color - set via .peer-label inline style? no - set on .peer */
   transform: translate(-50%, -50%);
   opacity: 1;
   transition: opacity 200ms var(--ease-out);
 }
 
-/* Press squeeze — applied on top of whatever mode is active */
+/* Press squeeze - applied on top of whatever mode is active */
 .peer[data-pressed="true"] .peer-arrow {
   --p-arrow-scale: 0.74;
 }

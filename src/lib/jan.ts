@@ -10,8 +10,8 @@ export const ageNow = (): number =>
 
 export const ageYears = (): number => Math.floor(ageNow());
 
-// "a" vs "an" — pick based on the spoken sound of the leading number.
-// Numbers that start with a vowel sound: 8, 11, 18, and 80–89.
+// "a" vs "an", picked from the spoken sound of the leading number.
+// Numbers that start with a vowel sound: 8, 11, 18, and 80-89.
 export const aOrAn = (n: number): string => {
   if (n === 8 || n === 11 || n === 18) return "an";
   if (n >= 80 && n <= 89) return "an";
