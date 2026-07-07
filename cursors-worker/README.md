@@ -24,7 +24,7 @@ PUBLIC_CURSORS_WSS=wss://itsjan-cursors.<your-account>.workers.dev/ws
 
 (Add to `.dev.vars` for local dev, and as a Pages env var for production.)
 
-If `PUBLIC_CURSORS_WSS` is unset, the client silently skips the cursor feature — the site still works normally.
+If `PUBLIC_CURSORS_WSS` is unset, the client skips the cursor feature silently. The site still works normally.
 
 ## Local dev
 

@@ -45,7 +45,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: "That email address doesn't look right." }, 400);
   }
   if (message.length < MIN_MESSAGE) {
-    return json({ error: "Message is too short — give me at least a sentence." }, 400);
+    return json({ error: "Message is too short. Give me at least a sentence." }, 400);
   }
 
   const apiKey = env.RESEND_API_KEY;
@@ -67,7 +67,7 @@ export const POST: APIRoute = async ({ request }) => {
     `\n` +
     `${message}\n` +
     `\n` +
-    `— sent via the itsjan.dev contact form`;
+    `sent via the itsjan.dev contact form`;
 
   const html = `
 <table style="font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.65;color:#181410;max-width:560px;border-collapse:collapse;">
