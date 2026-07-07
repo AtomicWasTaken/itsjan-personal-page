@@ -27,7 +27,7 @@ const ANIMAL = [
   "Raven", "Ibex", "Pangolin", "Quokka", "Ocelot", "Caracal", "Kestrel",
 ];
 
-// Distinct vibrant colors that read well on the page's dark bg (#0a0a0a).
+// Distinct colors that read well on the page's dark bg (#0a0a0a).
 // Avoiding amber so they don't compete with the site's accent.
 const COLORS = [
   "#ef4444", // red
@@ -108,7 +108,7 @@ export class CursorsRoom implements DurableObject {
     }
 
     if (isMoveMessage(data)) {
-      // anchor + ax/ay are DOM-relative (preferred — survive different layouts)
+      // anchor + ax/ay are DOM-relative and survive different layouts.
       // x + y are fractional viewport fallback for when no anchor was resolvable
       this.broadcast({
         type: "move",
@@ -203,7 +203,7 @@ function clamp01(n: number): number {
   return Math.max(0, Math.min(1, n));
 }
 
-// CORS headers — main site lives at itsjan.dev, worker at workers.dev subdomain
+// CORS headers. The main site lives at itsjan.dev, worker at workers.dev subdomain.
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
@@ -219,7 +219,7 @@ export default {
     }
 
     if (url.pathname === "/ws") {
-      // Single global room — every visitor joins the same one
+      // Single global room. Every visitor joins the same one.
       const id = env.CURSORS.idFromName("global");
       const room = env.CURSORS.get(id);
       return room.fetch(request);
