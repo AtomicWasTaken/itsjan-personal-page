@@ -143,7 +143,7 @@ const stickerStyle = (index: number) => {
 
 <Layout>
 <div class="portfolio-shell">
-  <aside class="tech-stickers" aria-label={copy.tech.aria}>
+  <aside class="tech-stickers" aria-label={copy.tech.aria} data-hover-hint={copy.tech.hoverHint}>
     <div class="tech-sticker-side tech-sticker-side--left">
       {copy.tech.items.map((technology, index) => {
         const placement = stickerLayout[index];
@@ -203,10 +203,28 @@ const stickerStyle = (index: number) => {
       })}
     </div>
   </aside>
+  <div id="avatar-modal" class="t-modal avatar-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label={copy.avatar.expand}>
+    <button type="button" class="avatar-modal-backdrop" data-avatar-close aria-label={copy.avatar.collapse}></button>
+    <div class="avatar-modal-content">
+      <button type="button" class="avatar-modal-close" data-avatar-close aria-label={copy.avatar.collapse}>
+        <span aria-hidden="true">×</span>
+      </button>
+      <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="320" height="320" class="avatar-modal-image" />
+    </div>
+  </div>
 <main class="portfolio-main mx-auto max-w-2xl space-y-12 pt-14 pb-12 md:space-y-14 md:pt-[72px] md:pb-16">
   <section>
     <div class="profile-row">
-      <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="48" height="48" class="profile-image h-12 w-12 rounded-full object-cover" />
+      <button
+        id="profile-avatar"
+        class="profile-avatar"
+        type="button"
+        aria-label={copy.avatar.expand}
+        aria-haspopup="dialog"
+        aria-controls="avatar-modal"
+      >
+        <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="160" height="160" class="profile-image" />
+      </button>
       <button
         id="theme-toggle"
         class="theme-toggle"
@@ -355,6 +373,7 @@ const stickerStyle = (index: number) => {
       toggle.setAttribute("aria-pressed", String(theme === "dark"));
       toggle.setAttribute("aria-label", theme === "dark" ? toggle.dataset.labelLight : toggle.dataset.labelDark);
       themeColor?.setAttribute("content", theme === "dark" ? "#0b0b0c" : "#ffffff");
+      window.dispatchEvent(new CustomEvent("itsjan-theme-change", { detail: theme }));
     };
 
     toggle.addEventListener("click", () => {
@@ -375,17 +394,88 @@ const stickerStyle = (index: number) => {
 
 <script is:inline>
   (() => {
+    const avatar = document.getElementById("profile-avatar");
+    const modal = document.getElementById("avatar-modal");
+    const closeButton = modal?.querySelector(".avatar-modal-close");
+    const content = modal?.querySelector(".avatar-modal-content");
+    if (!avatar || !modal || !closeButton || !content) return;
+
+    const readMs = (raw, fallback) => {
+      const value = parseFloat(raw);
+      if (!Number.isFinite(value)) return fallback;
+      const unit = raw.trim().toLowerCase();
+      if (unit.endsWith("ms")) return value;
+      if (unit.endsWith("s")) return value * 1000;
+      return value;
+    };
+    const rootStyles = getComputedStyle(document.documentElement);
+    const closeMs = readMs(rootStyles.getPropertyValue("--modal-close-dur"), 150);
+    const modalScale = parseFloat(rootStyles.getPropertyValue("--modal-scale")) || .96;
+    let previousFocus = null;
+
+    const setMorphOrigin = () => {
+      const source = avatar.getBoundingClientRect();
+      const targetWidth = content.offsetWidth || content.getBoundingClientRect().width;
+      const sourceCenterX = source.left + source.width / 2;
+      const sourceCenterY = source.top + source.height / 2;
+      modal.style.setProperty("--avatar-origin-x", `${(sourceCenterX - window.innerWidth / 2) / modalScale}px`);
+      modal.style.setProperty("--avatar-origin-y", `${(sourceCenterY - window.innerHeight / 2) / modalScale}px`);
+      modal.style.setProperty("--avatar-origin-scale", String(source.width / (targetWidth * modalScale)));
+    };
+
+    const openModal = () => {
+      previousFocus = document.activeElement;
+      setMorphOrigin();
+      modal.classList.remove("is-closing");
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("is-avatar-modal-open");
+      closeButton.focus({ preventScroll: true });
+    };
+
+    const closeModal = () => {
+      if (!modal.classList.contains("is-open")) return;
+      modal.classList.remove("is-open");
+      modal.classList.add("is-closing");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("is-avatar-modal-open");
+      window.setTimeout(() => modal.classList.remove("is-closing"), closeMs);
+      if (previousFocus instanceof HTMLElement) previousFocus.focus({ preventScroll: true });
+    };
+
+    avatar.addEventListener("click", openModal);
+    window.addEventListener("resize", () => {
+      if (modal.classList.contains("is-open")) setMorphOrigin();
+    });
+    modal.querySelectorAll("[data-avatar-close]").forEach((button) => button.addEventListener("click", closeModal));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeModal();
+    });
+  })();
+</script>
+
+<script is:inline>
+  (() => {
     const shell = document.querySelector(".portfolio-shell");
     const stickers = shell?.querySelectorAll(".tech-sticker");
     if (!shell || !stickers?.length) return;
 
     const rootStyles = getComputedStyle(document.documentElement);
-    const delay = parseFloat(rootStyles.getPropertyValue("--tech-card-delay")) || 1000;
+    const readMs = (raw, fallback) => {
+      const value = parseFloat(raw);
+      if (!Number.isFinite(value)) return fallback;
+      const unit = raw.trim().toLowerCase();
+      if (unit.endsWith("ms")) return value;
+      if (unit.endsWith("s")) return value * 1000;
+      return value;
+    };
+    const delay = readMs(rootStyles.getPropertyValue("--tech-card-delay"), 1000);
 
     stickers.forEach((sticker) => {
       let timer = 0;
       let hovering = false;
       let focused = false;
+      let dragging = false;
 
       const hide = () => {
         if (timer) window.clearTimeout(timer);
@@ -399,10 +489,11 @@ const stickerStyle = (index: number) => {
       const show = () => {
         if (timer || sticker.classList.contains("is-tool-card-active")) return;
         timer = window.setTimeout(() => {
-          timer = 0;
-          sticker.classList.add("is-tool-card-active");
-          shell.classList.add("is-tool-card-active");
-        }, delay);
+        timer = 0;
+        sticker.classList.add("is-tool-card-active");
+        shell.classList.add("is-tool-card-active");
+        sticker.dispatchEvent(new CustomEvent("tech-tooltip-open"));
+      }, delay);
       };
 
       const sync = () => {
@@ -410,9 +501,33 @@ const stickerStyle = (index: number) => {
         else hide();
       };
 
-      sticker.addEventListener("pointerenter", () => { hovering = true; sync(); });
+      sticker.addEventListener("pointerdown", () => {
+        dragging = true;
+        hovering = false;
+        focused = false;
+        hide();
+      });
+      sticker.addEventListener("pointerup", () => {
+        dragging = false;
+        hovering = false;
+        focused = false;
+        hide();
+      });
+      sticker.addEventListener("pointercancel", () => {
+        dragging = false;
+        hovering = false;
+        focused = false;
+        hide();
+      });
+      sticker.addEventListener("lostpointercapture", () => {
+        dragging = false;
+        hovering = false;
+        focused = false;
+        hide();
+      });
+      sticker.addEventListener("pointerenter", () => { if (!dragging) { hovering = true; sync(); } });
       sticker.addEventListener("pointerleave", () => { hovering = false; sync(); });
-      sticker.addEventListener("focus", () => { focused = true; sync(); });
+      sticker.addEventListener("focus", () => { if (!dragging) { focused = true; sync(); } });
       sticker.addEventListener("blur", () => { focused = false; sync(); });
     });
   })();
@@ -517,6 +632,116 @@ const stickerStyle = (index: number) => {
       });
     });
   })();
+</script>
+
+<script>
+  import { annotate } from "rough-notation";
+
+  const techAside = document.querySelector(".tech-stickers");
+  const canAnnotate = window.matchMedia("(min-width: 1100px)").matches;
+  const stickers = techAside ? Array.from(techAside.querySelectorAll(".tech-sticker")) : [];
+
+  if (techAside && canAnnotate && stickers.length > 0) {
+    const directions = {
+      up: {
+        path: '<path d="M40 39C38 27 29 13 19 4"/><path d="M19 4l10 1M19 4l2 10"/>',
+        reserve: (bounds) => ({
+          left: bounds.left - 40,
+          right: bounds.right + 100,
+          top: bounds.top - 16,
+          bottom: bounds.bottom + 108,
+        }),
+      },
+      down: {
+        path: '<path d="M6 3C8 15 17 29 27 38"/><path d="M27 38l-10-1M27 38l-2-10"/>',
+        reserve: (bounds) => ({
+          left: bounds.left - 84,
+          right: bounds.right + 32,
+          top: bounds.top - 108,
+          bottom: bounds.bottom + 16,
+        }),
+      },
+    };
+    const overlaps = (first, second) => (
+      first.left < second.right &&
+      first.right > second.left &&
+      first.top < second.bottom &&
+      first.bottom > second.top
+    );
+    const asideBounds = techAside.getBoundingClientRect();
+    const mainBounds = document.querySelector(".portfolio-main")?.getBoundingClientRect();
+    const safePlacements = stickers.flatMap((candidate) => {
+      const bounds = candidate.getBoundingClientRect();
+      return Object.entries(directions).flatMap(([direction, config]) => {
+        const reserved = config.reserve(bounds);
+        const withinPage = (
+          reserved.left >= asideBounds.left + 8 &&
+          reserved.right <= asideBounds.right - 8 &&
+          reserved.top >= asideBounds.top + 8 &&
+          reserved.bottom <= asideBounds.bottom - 8
+        );
+        const outsideContent = !mainBounds || (
+          candidate.classList.contains("tech-sticker--left")
+            ? reserved.right <= mainBounds.left - 12
+            : reserved.left >= mainBounds.right + 12
+        );
+        const clearOfTools = !stickers.some((other) => (
+          other !== candidate && overlaps(reserved, other.getBoundingClientRect())
+        ));
+        return withinPage && outsideContent && clearOfTools
+          ? [{ candidate, direction, path: config.path }]
+          : [];
+      });
+    });
+    const selected = safePlacements[Math.floor(Math.random() * safePlacements.length)];
+    const featured = selected?.candidate;
+    const icon = featured?.querySelector(":scope > img");
+
+    if (featured && icon && selected) {
+      const arrow = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      arrow.setAttribute("class", `tech-hover-arrow tech-hover-arrow--${selected.direction}`);
+      arrow.setAttribute("viewBox", "0 0 46 42");
+      arrow.setAttribute("aria-hidden", "true");
+      arrow.innerHTML = selected.path;
+
+      const hint = document.createElement("span");
+      hint.className = `tech-hover-hint tech-hover-hint--${selected.direction}`;
+      hint.setAttribute("aria-hidden", "true");
+      hint.textContent = techAside.dataset.hoverHint || "hover me";
+      featured.append(arrow, hint);
+
+      const getAnnotationColor = () => document.documentElement.dataset.theme === "dark"
+        ? "#ffffff"
+        : "#000000";
+      const annotation = annotate(icon, {
+        type: "circle",
+        color: getAnnotationColor(),
+        padding: 11,
+        strokeWidth: 2.4,
+        iterations: 2,
+        animationDuration: 800,
+      });
+      window.addEventListener("itsjan-theme-change", () => {
+        annotation.color = getAnnotationColor();
+      });
+
+      let dismissed = false;
+      window.requestAnimationFrame(() => {
+        if (!dismissed) annotation.show();
+      });
+
+      const dismiss = () => {
+        if (dismissed) return;
+        dismissed = true;
+        arrow.classList.add("is-dismissed");
+        hint.classList.add("is-dismissed");
+        annotation.hide();
+      };
+      stickers.forEach((sticker) => {
+        sticker.addEventListener("tech-tooltip-open", dismiss, { once: true });
+      });
+    }
+  }
 </script>
 
 </Layout>
