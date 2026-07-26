@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { detectLocale, tr } from "../lib/i18n";
+import { ageYears } from "../lib/jan";
 
 const locale = detectLocale(Astro.request);
 const copy = tr(locale).portfolio;
@@ -200,7 +201,7 @@ const stickerStyle = (index: number) => {
       </button>
     </div>
     <h1 class="text-2xl font-medium tracking-tight">Jan-Marlon Leibl</h1>
-    <p class="profile-subtitle mt-2">{copy.subtitle}</p>
+    <p class="profile-subtitle mt-1">{copy.subtitle(ageYears())}</p>
     <p class="mt-4 max-w-lg text-[17px] font-normal leading-7 text-[var(--text-secondary)]">
       {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{copy.intro.afterBremen}<span class="keyword">{copy.intro.apprenticeship}</span>{copy.intro.afterApprenticeship}<span class="keyword">{copy.intro.finny}</span>{copy.intro.afterFinny}
     </p>
