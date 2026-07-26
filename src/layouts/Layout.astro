@@ -1,150 +1,72 @@
 ---
 import "../styles/global.css";
-import { ageYears, aOrAn } from "../lib/jan";
 import { detectLocale, tr } from "../lib/i18n";
 
 const locale = detectLocale(Astro.request);
-const t = tr(locale);
-// Tell caches the response varies by Accept-Language so en/de don't bleed
-Astro.response.headers.set("Vary", "Accept-Language");
-
-const siteName = "itsjan.dev";
-const years = ageYears();
-const title = t.meta.title;
-const description = t.meta.description(years, aOrAn(years));
+const copy = tr(locale);
+const title = locale === "de" ? "Jan-Marlon Leibl · Entwickler aus Bremen" : "Jan-Marlon Leibl · Developer from Bremen";
+const description = locale === "de"
+  ? "Jan-Marlon Leibl ist Softwareentwickler aus Bremen. Er baut Finny, eine App für Belege und Garantie-Erinnerungen."
+  : "Jan-Marlon Leibl is a software developer from Bremen. He is building Finny, an app for receipts and warranty reminders.";
 const url = "https://itsjan.dev";
-const image = `${url}/jan.jpg`;
-const imageAlt = "Portrait of Jan-Marlon Leibl";
+const image = `${url}/jan-profile.jpg`;
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Person",
-      "@id": `${url}/#person`,
-      name: "Jan-Marlon Leibl",
-      url,
-      image,
-      jobTitle: "Software Developer",
-      description,
-      email: "hi@itsjan.dev",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Bremen",
-        addressCountry: "DE",
-      },
-      worksFor: {
-        "@type": "Organization",
-        name: "Finny",
-        url: "https://fnny.app",
-      },
-      sameAs: [
-        "https://www.linkedin.com/in/janmarlonleibl/",
-        "https://github.com/AtomicWasTaken",
-        "https://x.com/janodersooo",
-      ],
-      knowsAbout: [
-        "PHP",
-        "TypeScript",
-        "React",
-        "Next.js",
-        "TYPO3",
-        "Angular",
-        "Vue",
-      ],
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${url}/#website`,
-      url,
-      name: siteName,
-      description,
-      inLanguage: "en",
-    },
-    {
-      "@type": "WebPage",
-      "@id": `${url}/#webpage`,
-      url,
-      name: title,
-      description,
-      isPartOf: {
-        "@id": `${url}/#website`,
-      },
-      about: {
-        "@id": `${url}/#person`,
-      },
-      primaryImageOfPage: {
-        "@type": "ImageObject",
-        url: image,
-      },
-      inLanguage: "en",
-    },
-  ],
-};
+Astro.response.headers.set("Vary", "Accept-Language");
 ---
 
 <!doctype html>
-<html lang={t.htmlLang}>
+<html lang={copy.htmlLang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Jan-Marlon Leibl" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="theme-color" content="#0a0a0a" />
+    <meta id="theme-color" name="theme-color" content="#ffffff" />
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const storageKey = "itsjan-theme";
+        let stored = null;
+        try { stored = window.localStorage.getItem(storageKey); } catch {}
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        const theme = stored === "dark" || stored === "light" ? stored : systemTheme;
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+        document.getElementById("theme-color")?.setAttribute("content", theme === "dark" ? "#0b0b0c" : "#ffffff");
+      })();
+    </script>
     <link rel="canonical" href={url} />
-
-    <!-- Favicons -->
-    <link rel="icon" type="image/jpeg" href="/jan.jpg" />
-    <link rel="apple-touch-icon" href="/jan.jpg" />
-    <link rel="me" href="https://www.linkedin.com/in/janmarlonleibl/" />
-    <link rel="me" href="https://github.com/AtomicWasTaken" />
-    <link rel="me" href="https://x.com/janodersooo" />
-
-    <!-- Open Graph -->
+    <link rel="icon" type="image/jpeg" href="/jan-profile.jpg" />
+    <link rel="apple-touch-icon" href="/jan-profile.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={siteName} />
+    <meta property="og:site_name" content="itsjan.dev" />
     <meta property="og:url" content={url} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={image} />
-    <meta property="og:image:alt" content={imageAlt} />
-    <meta property="og:image:width" content="2408" />
-    <meta property="og:image:height" content="2408" />
-    <meta property="og:locale" content="en_US" />
-
-    <!-- Twitter Card -->
+    <meta property="og:image:alt" content={copy.meta.imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={image} />
-    <meta name="twitter:image:alt" content={imageAlt} />
-
-    <!-- Structured Data -->
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: "Jan-Marlon Leibl",
+      url,
+      image,
+      jobTitle: copy.meta.jobTitle,
+      email: "hi@itsjan.dev",
+      address: { "@type": "PostalAddress", addressLocality: "Bremen", addressCountry: "DE" },
+      sameAs: ["https://github.com/AtomicWasTaken", "https://www.linkedin.com/in/janmarlonleibl/", "https://x.com/janodersooo"],
+    })} />
     <meta name="generator" content={Astro.generator} />
-
-    <!-- If JS is disabled, skip the intro state entirely so the page is still readable -->
-    <noscript>
-      <style>
-        body.is-intro { overflow: auto !important; height: auto !important; }
-        body.is-intro .intro-block { position: static !important; transform: none !important; }
-        body.is-intro .post-intro { opacity: 1 !important; pointer-events: auto !important; filter: none !important; }
-      </style>
-    </noscript>
   </head>
-  <body class="is-intro">
+  <body>
     <slot />
   </body>
 </html>
