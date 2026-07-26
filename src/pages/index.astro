@@ -204,9 +204,9 @@ const stickerStyle = (index: number) => {
     </div>
   </aside>
   <div id="avatar-modal" class="t-modal avatar-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label={copy.avatar.expand}>
-    <button type="button" class="avatar-modal-backdrop" data-avatar-close aria-label={copy.avatar.collapse}></button>
+    <button type="button" class="avatar-modal-backdrop" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}></button>
     <div class="avatar-modal-content">
-      <button type="button" class="avatar-modal-close" data-avatar-close aria-label={copy.avatar.collapse}>
+      <button type="button" class="avatar-modal-close" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}>
         <span aria-hidden="true">×</span>
       </button>
       <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="320" height="320" class="avatar-modal-image" />
@@ -219,6 +219,8 @@ const stickerStyle = (index: number) => {
         id="profile-avatar"
         class="profile-avatar"
         type="button"
+        data-cuelume-hover="whisper"
+        data-cuelume-press="press"
         aria-label={copy.avatar.expand}
         aria-haspopup="dialog"
         aria-controls="avatar-modal"
@@ -229,6 +231,7 @@ const stickerStyle = (index: number) => {
         id="theme-toggle"
         class="theme-toggle"
         type="button"
+        data-cuelume-toggle="toggle"
         aria-label={copy.theme.label}
         aria-pressed="false"
         data-label-dark={copy.theme.toDark}
@@ -263,7 +266,7 @@ const stickerStyle = (index: number) => {
             <p class="text-[15px] font-normal leading-6 text-[var(--text-secondary)]">
               {copy.finny.description.lead}<span class="keyword">{copy.finny.description.first}</span>{copy.finny.description.middle}<span class="keyword">{copy.finny.description.second}</span>{copy.finny.description.join}<span class="keyword">{copy.finny.description.third}</span>{copy.finny.description.end}
             </p>
-            <div class="project-preview-action"><a href="https://fnny.app" target="_blank" rel="noreferrer" class="project-preview-cta">{copy.finny.cta.label}</a></div>
+            <div class="project-preview-action"><a href="https://fnny.app" target="_blank" rel="noreferrer" class="project-preview-cta" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.finny.cta.label}</a></div>
           </div>
         </div>
       </article>
@@ -293,10 +296,11 @@ const stickerStyle = (index: number) => {
             <p class="text-[15px] font-normal leading-6 text-[var(--text-secondary)]">
               {copy.ventry.description.lead}<span class="keyword">{copy.ventry.description.keyword}</span>{copy.ventry.description.end}
             </p>
-            <div class="project-preview-action"><a href="https://ventry.host" target="_blank" rel="noreferrer" class="project-preview-cta">{copy.ventry.cta.label}</a></div>
+            <div class="project-preview-action"><a href="https://ventry.host" target="_blank" rel="noreferrer" class="project-preview-cta" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.ventry.cta.label}</a></div>
           </div>
         </div>
       </article>
+
     </div>
   </section>
 
@@ -312,7 +316,7 @@ const stickerStyle = (index: number) => {
             {activity.map((day, index) => (
               day.count > 0 ? (
                 <span class="t-tt-wrap activity-tooltip-wrap">
-                  <span class="activity-day t-tt-trigger" data-level={day.level} data-project={day.project} aria-label={day.label} aria-describedby={`activity-tooltip-desktop-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>
+                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} aria-label={day.label} aria-describedby={`activity-tooltip-desktop-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>
                   <span id={`activity-tooltip-desktop-${index}`} class="t-tt activity-tooltip" role="tooltip">{day.label}</span>
                 </span>
               ) : (
@@ -331,7 +335,7 @@ const stickerStyle = (index: number) => {
             {mobileActivity.map((day, index) => (
               day.count > 0 ? (
                 <span class="t-tt-wrap activity-tooltip-wrap">
-                  <span class="activity-day t-tt-trigger" data-level={day.level} data-project={day.project} aria-label={day.label} aria-describedby={`activity-tooltip-mobile-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>
+                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} aria-label={day.label} aria-describedby={`activity-tooltip-mobile-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>
                   <span id={`activity-tooltip-mobile-${index}`} class="t-tt activity-tooltip" role="tooltip">{day.label}</span>
                 </span>
               ) : (
@@ -390,6 +394,26 @@ const stickerStyle = (index: number) => {
 
     applyTheme(root.dataset.theme === "dark" ? "dark" : "light");
   })();
+</script>
+
+<script>
+  import { bind, play } from "cuelume";
+
+  document.querySelectorAll(".social-link").forEach((link) => {
+    link.dataset.cuelumeHover = "tick";
+    link.dataset.cuelumePress = "press";
+    link.dataset.cuelumeRelease = "release";
+  });
+  document.querySelectorAll(".tech-sticker").forEach((sticker) => {
+    sticker.dataset.cuelumePress = "press";
+    sticker.dataset.cuelumeRelease = "release";
+    sticker.addEventListener("tech-tooltip-open", () => play("bloom"));
+    sticker.addEventListener("pointerenter", (event) => {
+      if (event.target === sticker && !sticker.classList.contains("is-tool-card-active")) play("whisper");
+    });
+  });
+
+  bind();
 </script>
 
 <script is:inline>
