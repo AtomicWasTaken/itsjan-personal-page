@@ -44,7 +44,7 @@
   --tt-out-ease: ease-out;
   --tt-bg: var(--text);
   --tt-fg: var(--page);
-  --tech-card-delay: 750ms;
+  --tech-card-delay: 500ms;
   --tech-card-close-delay: 180ms;
   --tech-card-blur: 5px;
   --tech-hover-scale: 1.08;
@@ -185,8 +185,8 @@ main p { text-wrap: pretty; }
   transform: translate(var(--drag-x, 0px), var(--drag-y, 0px));
   transition:
     transform 180ms var(--ease-smooth-out),
-    filter 250ms var(--ease-smooth-out),
-    opacity 250ms var(--ease-smooth-out);
+    filter var(--tt-in-dur) var(--tt-in-ease),
+    opacity var(--tt-in-dur) var(--tt-in-ease);
   user-select: none;
 }
 .tech-sticker--left { left: var(--sticker-x); }
@@ -249,7 +249,7 @@ html[data-theme="dark"] .tech-sticker--dark-logo.is-following > img {
   width: 100%;
   min-height: 100vh;
   padding-inline: 24px;
-  transition: filter 250ms var(--ease-smooth-out);
+  transition: filter var(--tt-in-dur) var(--tt-in-ease);
 }
 .portfolio-shell.is-tool-card-active .portfolio-main {
   filter: blur(var(--tech-card-blur));
