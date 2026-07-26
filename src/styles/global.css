@@ -36,6 +36,14 @@
   --reveal-dur: 400ms;
   --reveal-blur: 2px;
   --reveal-ease: ease-in-out;
+  --tt-in-dur: 150ms;
+  --tt-out-dur: 50ms;
+  --tt-scale: .98;
+  --tt-delay: 80ms;
+  --tt-in-ease: ease-out;
+  --tt-out-ease: ease-out;
+  --tt-bg: var(--text);
+  --tt-fg: var(--page);
   /* A deliberate column-wise sweep: all seven rows advance together. */
   --activity-reveal-step: 8ms;
   --activity-reveal-duration: 280ms;
@@ -123,6 +131,7 @@ body {
   transition-duration: 180ms;
   transition-timing-function: var(--ease-smooth-out);
   overflow-x: hidden;
+  overflow-x: clip;
 }
 a { color: inherit; text-decoration: none; }
 h1, h2 { text-wrap: balance; }
@@ -590,36 +599,55 @@ html[data-theme="dark"] .ventry-file-row b {
   border-radius: 2px;
   background: var(--activity-0);
 }
-.activity-day:hover,
-.activity-day:focus-visible { z-index: 30; }
-.activity-day[aria-label]::after {
+.t-tt-wrap { position: relative; display: inline-block; }
+.t-tt-wrap.activity-tooltip-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.activity-tooltip-wrap .activity-day {
+  width: 100%;
+  height: 100%;
+}
+.activity-tooltip-wrap:hover,
+.activity-tooltip-wrap:focus-within { z-index: 30; }
+.t-tt {
   position: absolute;
-  z-index: 20;
-  bottom: calc(100% + 7px);
+  z-index: 30;
+  bottom: calc(100% + 8px);
   left: 50%;
   width: max-content;
   max-width: 220px;
-  padding: 5px 7px;
+  padding: 8px 12px;
   border: 1px solid var(--divider);
-  border-radius: 6px;
-  background: var(--text);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .14);
-  color: var(--page);
-  content: attr(aria-label);
+  border-radius: 8px;
+  background: var(--tt-bg);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, .06),
+    0 2px 6px 0 rgba(0, 0, 0, .05),
+    0 4px 42px 0 rgba(0, 0, 0, .06);
+  color: var(--tt-fg);
   font-family: "Geist Mono", ui-monospace, monospace;
   font-size: 10px;
   font-weight: 500;
   line-height: 1.25;
-  pointer-events: none;
   opacity: 0;
-  transform: translate(-50%, 4px);
-  transition: opacity 140ms var(--ease-smooth-out), transform 140ms var(--ease-smooth-out);
+  pointer-events: none;
+  transform: translate(-50%, 0) scale(var(--tt-scale));
+  transform-origin: 50% 100%;
+  transition:
+    opacity var(--tt-out-dur) var(--tt-out-ease),
+    transform var(--tt-out-dur) var(--tt-out-ease);
   white-space: nowrap;
 }
-.activity-day[aria-label]:hover::after,
-.activity-day[aria-label]:focus-visible::after {
+.t-tt-wrap:hover .t-tt,
+.t-tt-trigger:focus-visible + .t-tt {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, 0) scale(1);
+  transition-duration: var(--tt-in-dur);
+  transition-timing-function: var(--tt-in-ease);
+  transition-delay: var(--tt-delay);
 }
 .activity-day[data-level="1"] { background: var(--activity-1); }.activity-day[data-level="2"] { background: var(--activity-2); }.activity-day[data-level="3"] { background: var(--activity-3); }.activity-day[data-level="4"] { background: var(--activity-4); }
 /* transitions.dev — skeleton loader and reveal */
@@ -666,7 +694,7 @@ html[data-theme="dark"] .ventry-file-row b {
 .activity-reveal.t-skel.is-revealed .t-skel-skeleton,
 .activity-reveal.t-skel.is-revealed .t-skel-content {
   opacity: 1;
-  filter: blur(0);
+  filter: none;
   clip-path: none;
   transition: none;
 }
@@ -748,6 +776,13 @@ html[data-theme="dark"] .ventry-file-row b {
     row-gap: 2px;
   }
   .activity-grid-mobile .activity-day { border-radius: 1.5px; }
+  .activity-tooltip {
+    display: none;
+    width: min(220px, calc(100vw - 24px));
+    max-width: none;
+    text-align: center;
+    white-space: normal;
+  }
   .activity-reveal-mobile { min-height: 47px; }
   .activity-legend i {
     width: 5px;
@@ -773,7 +808,7 @@ html[data-theme="dark"] .ventry-file-row b {
   .t-skel-skeleton, .t-skel-content { transition: none !important; }
   .t-skel-skeleton.is-pulsing > * { animation: none !important; }
   .activity-reveal.t-skel .activity-day { transition: none !important; }
-  .activity-day[aria-label]::after { transition: none !important; }
+  .t-tt { transition: none !important; }
   .project-preview-cta {
     transition: none;
   }
