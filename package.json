@@ -16,6 +16,7 @@
     "@astrojs/cloudflare": "^13.0.2",
     "@astrojs/sitemap": "^3.7.1",
     "astro": "^6.0.2",
+    "cuelume": "^0.1.2",
     "rough-notation": "^0.5.1"
   },
   "devDependencies": {
