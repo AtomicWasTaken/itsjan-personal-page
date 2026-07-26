@@ -93,6 +93,10 @@ interface Strings {
   backToTopAria: string;
   portfolio: {
     subtitle: (age: number) => string;
+    avatar: {
+      expand: string;
+      collapse: string;
+    };
     intro: {
       beforeBremen: string;
       afterBremen: string;
@@ -105,6 +109,7 @@ interface Strings {
       aria: string;
       cardLabel: string;
       visitLabel: (name: string) => string;
+      hoverHint: string;
       items: { name: string; logo: string; href: string; darkModeLight?: boolean; detail: { en: string; de: string } }[];
     };
     projects: string;
@@ -157,31 +162,32 @@ interface Strings {
 }
 
 const technologyLogos = [
-  { name: "PHP", logo: "https://cdn.simpleicons.org/php/777BB4", href: "https://www.php.net/", detail: { en: "Services, APIs, and the day-to-day work behind client projects.", de: "Services, APIs und die tägliche Arbeit hinter Kundenprojekten." } },
-  { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/3178C6", href: "https://www.typescriptlang.org/", detail: { en: "Typed APIs and interfaces that stay easier to change without surprises.", de: "Typisierte APIs und Interfaces, die sich ohne Überraschungen weiterentwickeln lassen." } },
-  { name: "React", logo: "https://cdn.simpleicons.org/react/61DAFB", href: "https://react.dev/", detail: { en: "Reusable app interfaces that keep small interactions easy to reason about.", de: "Wiederverwendbare App-Oberflächen, deren kleine Interaktionen überschaubar bleiben." } },
-  { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/000000", href: "https://nextjs.org/", darkModeLight: true, detail: { en: "Full-stack side projects and client builds with a clear structure.", de: "Neben- und Kundenprojekte mit klarer Full-Stack-Struktur." } },
-  { name: "TYPO3", logo: "https://cdn.simpleicons.org/typo3/FF8700", href: "https://typo3.org/", detail: { en: "CMS work for clients, from templates to integrations.", de: "CMS-Arbeit für Kunden, von Templates bis zu Integrationen." } },
-  { name: "Angular", logo: "https://cdn.simpleicons.org/angular/DD0031", href: "https://angular.dev/", detail: { en: "Structured application work when an opinionated framework fits best.", de: "Strukturierte Anwendungen, wenn ein festes Framework gut zum Projekt passt." } },
-  { name: "Vue", logo: "https://cdn.simpleicons.org/vuedotjs/4FC08D", href: "https://vuejs.org/", detail: { en: "Lightweight interfaces when Vue is the right fit for the project.", de: "Leichte Oberflächen, wenn Vue am besten zum Projekt passt." } },
-  { name: "GitHub", logo: "https://cdn.simpleicons.org/github/181717", href: "https://github.com/", darkModeLight: true, detail: { en: "Open-source code, reviews, issues, and the contribution graph on this page.", de: "Open-Source-Code, Reviews, Issues und der Beitragsgraph auf dieser Seite." } },
-  { name: "GitLab", logo: "https://cdn.simpleicons.org/gitlab/FC6D26", href: "https://gitlab.com/", detail: { en: "Repositories and CI workflows for projects that need one focused home.", de: "Repositories und CI-Workflows für Projekte mit einem zentralen Zuhause." } },
-  { name: "Gitea", logo: "https://cdn.simpleicons.org/gitea/609926", href: "https://about.gitea.com/", detail: { en: "Self-hosted Git repositories for smaller, controlled deployments.", de: "Selbst gehostete Git-Repositories für kleine, kontrollierte Deployments." } },
-  { name: "Docker", logo: "https://cdn.simpleicons.org/docker/2496ED", href: "https://www.docker.com/", detail: { en: "Repeatable local environments and services that behave the same everywhere.", de: "Reproduzierbare lokale Umgebungen und Services, die überall gleich laufen." } },
-  { name: "Proxmox", logo: "https://cdn.simpleicons.org/proxmox/E57000", href: "https://www.proxmox.com/", detail: { en: "Self-hosted virtual machines and infrastructure I can operate myself.", de: "Selbst gehostete virtuelle Maschinen und Infrastruktur, die ich selbst betreiben kann." } },
-  { name: "Linux", logo: "https://cdn.simpleicons.org/linux/FCC624", href: "https://www.linux.org/", detail: { en: "The environment I reach for when I want control over the system.", de: "Die Umgebung, zu der ich greife, wenn ich Kontrolle über das System will." } },
-  { name: "macOS", logo: "https://cdn.simpleicons.org/apple/000000", href: "https://www.apple.com/macos/", darkModeLight: true, detail: { en: "Daily development, design checks, and shipping from a Unix-like desktop.", de: "Tägliche Entwicklung, Design-Checks und Releases auf einem Unix-ähnlichen Desktop." } },
-  { name: "Astro", logo: "https://cdn.simpleicons.org/astro/FF5D01", href: "https://astro.build/", detail: { en: "Fast, content-focused pages with only the JavaScript that earns its place.", de: "Schnelle, inhaltsorientierte Seiten mit nur dem JavaScript, das wirklich nötig ist." } },
-  { name: "Cloudflare", logo: "https://cdn.simpleicons.org/cloudflare/F38020", href: "https://www.cloudflare.com/", detail: { en: "Edge hosting, DNS, and small services that stay close to visitors.", de: "Edge-Hosting, DNS und kleine Services nah an den Besuchern." } },
-  { name: "Bun", logo: "https://cdn.simpleicons.org/bun/000000", href: "https://bun.sh/", darkModeLight: true, detail: { en: "Fast scripts and package workflows when a lean toolchain helps.", de: "Schnelle Skripte und Paket-Workflows, wenn eine schlanke Toolchain hilft." } },
-  { name: "Claude", logo: "https://cdn.simpleicons.org/claude/D97757", href: "https://claude.ai/", detail: { en: "A thinking partner for exploring ideas, reviewing code, and sharpening copy.", de: "Ein Denkpartner für Ideen, Code-Reviews und klarere Texte." } },
-  { name: "Codex", logo: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/openai.svg", href: "https://openai.com/codex", darkModeLight: true, detail: { en: "Agentic coding help for turning a rough brief into a working change.", de: "Agentische Coding-Hilfe, die aus einem groben Briefing eine echte Änderung macht." } },
-  { name: "Cursor", logo: "https://cdn.simpleicons.org/cursor/000000", href: "https://cursor.com/", darkModeLight: true, detail: { en: "Context-aware editing when I am deep in a codebase.", de: "Kontextbewusstes Editieren, wenn ich tief in einem Codebase stecke." } },
-  { name: "Gemini", logo: "https://cdn.simpleicons.org/googlegemini/8E75B2", href: "https://gemini.google.com/", detail: { en: "A second perspective for research, comparisons, and multimodal ideas.", de: "Eine zweite Perspektive für Recherche, Vergleiche und multimodale Ideen." } },
-  { name: "VS Code", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg", href: "https://code.visualstudio.com/", detail: { en: "The dependable editor for debugging, extensions, and everyday code.", de: "Der verlässliche Editor für Debugging, Erweiterungen und den Alltag." } },
-  { name: "PhpStorm", logo: "https://cdn.simpleicons.org/phpstorm/000000", href: "https://www.jetbrains.com/phpstorm/", darkModeLight: true, detail: { en: "Deep PHP support when a codebase needs serious navigation and refactoring.", de: "Tiefe PHP-Unterstützung, wenn Navigation und Refactoring wichtig werden." } },
-  { name: "Windows", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/windows11/windows11-original.svg", href: "https://www.microsoft.com/windows", detail: { en: "The platform I know from the start, especially for Windows-first work.", de: "Die Plattform, mit der ich angefangen habe, besonders für Windows-Projekte." } },
-  { name: "Tailwind CSS", logo: "https://cdn.simpleicons.org/tailwindcss/06B6D4", href: "https://tailwindcss.com/", detail: { en: "Small, consistent utility decisions that keep interfaces quick to refine.", de: "Kleine, konsistente Utility-Entscheidungen für schnell verfeinerte Interfaces." } },
+  { name: "PHP", logo: "https://cdn.simpleicons.org/php/777BB4", href: "https://www.php.net/", detail: { en: "The backend work I do every day, including services and APIs.", de: "Backend-Arbeit, die ich jeden Tag mache, inklusive Services und APIs." } },
+  { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/3178C6", href: "https://www.typescriptlang.org/", detail: { en: "I use it for APIs and interfaces that should stay easy to change.", de: "Für APIs und Interfaces, die sich später leicht ändern lassen." } },
+  { name: "React", logo: "https://cdn.simpleicons.org/react/61DAFB", href: "https://react.dev/", detail: { en: "My usual choice for app interfaces and reusable UI pieces.", de: "Meine Standardwahl für App-Oberflächen und wiederverwendbare UI-Teile." } },
+  { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/000000", href: "https://nextjs.org/", darkModeLight: true, detail: { en: "I use it for side projects and client work when frontend and backend belong together.", de: "Ich nutze es für Neben- und Kundenprojekte, wenn Frontend und Backend zusammengehören." } },
+  { name: "TYPO3", logo: "https://cdn.simpleicons.org/typo3/FF8700", href: "https://typo3.org/", detail: { en: "I use it for client CMS work, from templates to the occasional integration.", de: "CMS-Arbeit für Kunden, von Templates bis zu gelegentlichen Integrationen." } },
+  { name: "Angular", logo: "https://cdn.simpleicons.org/angular/DD0031", href: "https://angular.dev/", detail: { en: "I reach for it when a project needs a more structured frontend.", de: "Ich nehme es, wenn ein Projekt ein stärker strukturiertes Frontend braucht." } },
+  { name: "Vue", logo: "https://cdn.simpleicons.org/vuedotjs/4FC08D", href: "https://vuejs.org/", detail: { en: "I use it for smaller interfaces and projects that already have it in place.", de: "Ich nutze es für kleinere Oberflächen und Projekte, die Vue schon einsetzen." } },
+  { name: "GitHub", logo: "https://cdn.simpleicons.org/github/181717", href: "https://github.com/", darkModeLight: true, detail: { en: "I keep code here, review changes, and publish open-source work. The graph on this page comes from GitHub too.", de: "Hier halte ich Code, prüfe Änderungen und veröffentliche Open Source. Auch der Beitragsgraph kommt von hier." } },
+  { name: "GitLab", logo: "https://cdn.simpleicons.org/gitlab/FC6D26", href: "https://gitlab.com/", detail: { en: "I use it when a project needs its repository and CI in one place.", de: "Ich nutze es, wenn Repository und CI an einem Ort bleiben sollen." } },
+  { name: "Gitea", logo: "https://cdn.simpleicons.org/gitea/609926", href: "https://about.gitea.com/", detail: { en: "A small self-hosted Git server for projects I want to keep under my control.", de: "Ein kleiner selbst gehosteter Git-Server für Projekte, die ich selbst in der Hand behalten will." } },
+  { name: "Docker", logo: "https://cdn.simpleicons.org/docker/2496ED", href: "https://www.docker.com/", detail: { en: "I use it to keep local services predictable from one machine to the next.", de: "Damit laufen lokale Services von einer Maschine zur nächsten gleich." } },
+  { name: "Proxmox", logo: "https://cdn.simpleicons.org/proxmox/E57000", href: "https://www.proxmox.com/", detail: { en: "I use it for the virtual machines and services I run myself.", de: "Damit betreibe ich virtuelle Maschinen und Services selbst." } },
+  { name: "Linux", logo: "https://cdn.simpleicons.org/linux/FCC624", href: "https://www.linux.org/", detail: { en: "My choice when I want a close look at what the system is doing.", de: "Meine Wahl, wenn ich genau sehen will, was das System macht." } },
+  { name: "macOS", logo: "https://cdn.simpleicons.org/apple/000000", href: "https://www.apple.com/macos/", darkModeLight: true, detail: { en: "My everyday desktop for coding, checking designs, and shipping.", de: "Mein täglicher Desktop zum Coden, für Design-Checks und Releases." } },
+  { name: "Astro", logo: "https://cdn.simpleicons.org/astro/FF5D01", href: "https://astro.build/", detail: { en: "I use it for fast content pages like this one.", de: "Damit baue ich schnelle Inhaltsseiten wie diese." } },
+  { name: "Cloudflare", logo: "https://cdn.simpleicons.org/cloudflare/F38020", href: "https://www.cloudflare.com/", detail: { en: "I use it for DNS, edge hosting, and small services that sit in front of a site.", de: "Ich nutze es für DNS, Edge-Hosting und kleine Services vor einer Website." } },
+  { name: "Bun", logo: "https://cdn.simpleicons.org/bun/000000", href: "https://bun.sh/", darkModeLight: true, detail: { en: "I use it to run scripts and manage packages without much ceremony.", de: "Damit führe ich Skripte aus und verwalte Pakete ohne viel Aufwand." } },
+  { name: "Claude", logo: "https://cdn.simpleicons.org/claude/D97757", href: "https://claude.ai/", detail: { en: "I use it to think through ideas, review code, and tighten up copy.", de: "Damit denke ich Ideen durch, prüfe Code und schärfe Texte." } },
+  { name: "Codex", logo: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/openai.svg", href: "https://openai.com/codex", darkModeLight: true, detail: { en: "I use it when a rough idea needs to become a real code change.", de: "Ich nutze es, wenn aus einer groben Idee eine echte Code-Änderung werden soll." } },
+  { name: "Cursor", logo: "https://cdn.simpleicons.org/cursor/000000", href: "https://cursor.com/", darkModeLight: true, detail: { en: "I use it when I am moving quickly through a codebase and want the context close by.", de: "Ich nutze es, wenn ich schnell durch ein Projekt gehe und den Kontext direkt zur Hand haben will." } },
+  { name: "Gemini", logo: "https://cdn.simpleicons.org/googlegemini/8E75B2", href: "https://gemini.google.com/", detail: { en: "I use it for a second opinion on research, comparisons, and things with images.", de: "Ich nutze es für eine zweite Meinung bei Recherche, Vergleichen und Dingen mit Bildern." } },
+  { name: "Perplexity", logo: "https://cdn.simpleicons.org/perplexity/20B8CD", href: "https://www.perplexity.ai/", detail: { en: "I use it when I want a quick answer and sources I can follow up on.", de: "Ich nutze es, wenn ich schnell eine Antwort brauche und die Quellen prüfen will." } },
+  { name: "VS Code", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg", href: "https://code.visualstudio.com/", detail: { en: "The editor I open for everyday coding, debugging, and extensions.", de: "Der Editor für den Alltag, Debugging und Erweiterungen." } },
+  { name: "PhpStorm", logo: "https://cdn.simpleicons.org/phpstorm/000000", href: "https://www.jetbrains.com/phpstorm/", darkModeLight: true, detail: { en: "I use it when a PHP project gets big enough for serious navigation and refactoring.", de: "Ich nutze es, wenn ein PHP-Projekt groß genug für gründliche Navigation und Refactoring wird." } },
+  { name: "Windows", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/windows11/windows11-original.svg", href: "https://www.microsoft.com/windows", detail: { en: "The platform I started on and still use for Windows-first work.", de: "Die Plattform, mit der ich angefangen habe und die ich für Windows-Projekte weiter nutze." } },
+  { name: "Tailwind CSS", logo: "https://cdn.simpleicons.org/tailwindcss/06B6D4", href: "https://tailwindcss.com/", detail: { en: "I use it to keep spacing and styling decisions close to the markup.", de: "Damit halte ich Abstände und Styling-Entscheidungen nah am Markup." } },
 ];
 
 const en: Strings = {
@@ -270,6 +276,10 @@ const en: Strings = {
   backToTopAria: "Back to top",
   portfolio: {
     subtitle: (age) => `${age}-year-old software developer from Bremen`,
+    avatar: {
+      expand: "Expand profile picture",
+      collapse: "Close profile picture",
+    },
     intro: {
       beforeBremen: "I'm from ",
       afterBremen: ", where I finished a ",
@@ -282,6 +292,7 @@ const en: Strings = {
       aria: "Technologies Jan works with",
       cardLabel: "how I use it",
       visitLabel: (name) => `Click to visit ${name} ↗`,
+      hoverHint: "hover me",
       items: technologyLogos,
     },
     projects: "Projects",
@@ -419,6 +430,10 @@ const de: Strings = {
   backToTopAria: "Zurück nach oben",
   portfolio: {
     subtitle: (age) => `${age}-jähriger Softwareentwickler aus Bremen`,
+    avatar: {
+      expand: "Profilbild vergrößern",
+      collapse: "Profilbild schließen",
+    },
     intro: {
       beforeBremen: "Ich komme aus ",
       afterBremen: " und habe hier meine ",
@@ -431,6 +446,7 @@ const de: Strings = {
       aria: "Technologien, mit denen Jan arbeitet",
       cardLabel: "wofür ich es nutze",
       visitLabel: (name) => `${name} besuchen ↗`,
+      hoverHint: "Maus hier halten",
       items: technologyLogos,
     },
     projects: "Projekte",
