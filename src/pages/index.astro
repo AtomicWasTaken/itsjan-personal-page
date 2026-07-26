@@ -268,8 +268,14 @@ const stickerStyle = (index: number) => {
           </div>
           <div class="t-skel-content activity-grid">
             {activity.map((day, index) => (
-              <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} tabindex={day.count > 0 ? 0 : undefined} style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}>
-              </span>
+              day.count > 0 ? (
+                <span class="t-tt-wrap activity-tooltip-wrap">
+                  <span class="activity-day t-tt-trigger" data-level={day.level} data-project={day.project} aria-label={day.label} aria-describedby={`activity-tooltip-desktop-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>
+                  <span id={`activity-tooltip-desktop-${index}`} class="t-tt activity-tooltip" role="tooltip">{day.label}</span>
+                </span>
+              ) : (
+                <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>
+              )
             ))}
           </div>
         </div>
@@ -281,8 +287,14 @@ const stickerStyle = (index: number) => {
           </div>
           <div class="t-skel-content activity-grid activity-grid-mobile">
             {mobileActivity.map((day, index) => (
-              <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} tabindex={day.count > 0 ? 0 : undefined} style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}>
-              </span>
+              day.count > 0 ? (
+                <span class="t-tt-wrap activity-tooltip-wrap">
+                  <span class="activity-day t-tt-trigger" data-level={day.level} data-project={day.project} aria-label={day.label} aria-describedby={`activity-tooltip-mobile-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>
+                  <span id={`activity-tooltip-mobile-${index}`} class="t-tt activity-tooltip" role="tooltip">{day.label}</span>
+                </span>
+              ) : (
+                <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>
+              )
             ))}
           </div>
         </div>
