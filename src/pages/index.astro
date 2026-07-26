@@ -152,11 +152,23 @@ const stickerStyle = (index: number) => {
             href={technology.href}
             target="_blank"
             rel="noreferrer"
-            class={`tech-sticker tech-sticker--left tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
+            class={`t-tt-wrap t-tt-trigger tech-sticker tech-sticker--left tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
             style={stickerStyle(index)}
             aria-label={technology.name}
+            aria-describedby={`tech-tooltip-${index}`}
+            tabindex="0"
           >
             <img src={technology.logo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
+            <span id={`tech-tooltip-${index}`} class="t-tt tech-tool-card" role="tooltip">
+              <span class="tech-tool-card__surface">
+                <span class="tech-tool-card__head">
+                  <span class="tech-tool-card__logo"><img src={technology.logo} alt="" width="20" height="20" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" /></span>
+                  <span class="tech-tool-card__title"><strong>{technology.name}</strong><small>{copy.tech.cardLabel}</small></span>
+                </span>
+                <span class="tech-tool-card__body">{technology.detail[locale]}</span>
+                <span class="tech-tool-card__footer"><span class="tech-tool-card__action">{copy.tech.visitLabel(technology.name)}</span></span>
+              </span>
+            </span>
           </a>
         );
       })}
@@ -169,11 +181,23 @@ const stickerStyle = (index: number) => {
             href={technology.href}
             target="_blank"
             rel="noreferrer"
-            class={`tech-sticker tech-sticker--right tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
+            class={`t-tt-wrap t-tt-trigger tech-sticker tech-sticker--right tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
             style={stickerStyle(index)}
             aria-label={technology.name}
+            aria-describedby={`tech-tooltip-${index}`}
+            tabindex="0"
           >
             <img src={technology.logo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
+            <span id={`tech-tooltip-${index}`} class="t-tt tech-tool-card" role="tooltip">
+              <span class="tech-tool-card__surface">
+                <span class="tech-tool-card__head">
+                  <span class="tech-tool-card__logo"><img src={technology.logo} alt="" width="20" height="20" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" /></span>
+                  <span class="tech-tool-card__title"><strong>{technology.name}</strong><small>{copy.tech.cardLabel}</small></span>
+                </span>
+                <span class="tech-tool-card__body">{technology.detail[locale]}</span>
+                <span class="tech-tool-card__footer"><span class="tech-tool-card__action">{copy.tech.visitLabel(technology.name)}</span></span>
+              </span>
+            </span>
           </a>
         );
       })}
@@ -346,6 +370,51 @@ const stickerStyle = (index: number) => {
     });
 
     applyTheme(root.dataset.theme === "dark" ? "dark" : "light");
+  })();
+</script>
+
+<script is:inline>
+  (() => {
+    const shell = document.querySelector(".portfolio-shell");
+    const stickers = shell?.querySelectorAll(".tech-sticker");
+    if (!shell || !stickers?.length) return;
+
+    const rootStyles = getComputedStyle(document.documentElement);
+    const delay = parseFloat(rootStyles.getPropertyValue("--tech-card-delay")) || 1000;
+
+    stickers.forEach((sticker) => {
+      let timer = 0;
+      let hovering = false;
+      let focused = false;
+
+      const hide = () => {
+        if (timer) window.clearTimeout(timer);
+        timer = 0;
+        sticker.classList.remove("is-tool-card-active");
+        if (!shell.querySelector(".tech-sticker.is-tool-card-active")) {
+          shell.classList.remove("is-tool-card-active");
+        }
+      };
+
+      const show = () => {
+        if (timer || sticker.classList.contains("is-tool-card-active")) return;
+        timer = window.setTimeout(() => {
+          timer = 0;
+          sticker.classList.add("is-tool-card-active");
+          shell.classList.add("is-tool-card-active");
+        }, delay);
+      };
+
+      const sync = () => {
+        if (hovering || focused) show();
+        else hide();
+      };
+
+      sticker.addEventListener("pointerenter", () => { hovering = true; sync(); });
+      sticker.addEventListener("pointerleave", () => { hovering = false; sync(); });
+      sticker.addEventListener("focus", () => { focused = true; sync(); });
+      sticker.addEventListener("blur", () => { focused = false; sync(); });
+    });
   })();
 </script>
 
