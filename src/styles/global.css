@@ -16,7 +16,7 @@
   --divider: rgba(0, 0, 0, .08);
   --image-outline: rgba(0, 0, 0, .1);
   --button-bg: var(--deep-mocha);
-  --button-hover-bg: var(--brown-bark);
+  --button-hover-bg: var(--shadow-grey);
   --button-text: #fff;
   --button-shadow:
     0 0 0 1px rgba(51, 43, 36, .08),
