@@ -266,7 +266,7 @@ const stickerStyle = (index: number) => {
           </div>
           <div class="t-skel-content activity-grid">
             {activity.map((day, index) => (
-              <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}>
+              <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} tabindex={day.count > 0 ? 0 : undefined} style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}>
               </span>
             ))}
           </div>
@@ -279,7 +279,7 @@ const stickerStyle = (index: number) => {
           </div>
           <div class="t-skel-content activity-grid activity-grid-mobile">
             {mobileActivity.map((day, index) => (
-              <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}>
+              <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} tabindex={day.count > 0 ? 0 : undefined} style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}>
               </span>
             ))}
           </div>
