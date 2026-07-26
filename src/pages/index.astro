@@ -398,6 +398,7 @@ const stickerStyle = (index: number) => {
 
 <script>
   import { bind, play } from "cuelume";
+  import { WebHaptics } from "web-haptics";
 
   document.querySelectorAll(".social-link").forEach((link) => {
     link.dataset.cuelumeHover = "tick";
@@ -412,6 +413,23 @@ const stickerStyle = (index: number) => {
       if (event.target === sticker && !sticker.classList.contains("is-tool-card-active")) play("whisper");
     });
   });
+
+  const haptics = WebHaptics.isSupported ? new WebHaptics() : null;
+  const assignHaptic = (selector, pattern) => {
+    document.querySelectorAll(selector).forEach((element) => {
+      element.dataset.haptic = pattern;
+    });
+  };
+  assignHaptic("#profile-avatar, [data-avatar-close]", "nudge");
+  assignHaptic("#theme-toggle, .activity-day.t-tt-trigger, .tech-sticker", "selection");
+  assignHaptic(".project-preview-cta", "success");
+  assignHaptic(".social-link", "light");
+  document.addEventListener("pointerdown", (event) => {
+    if (!haptics || event.pointerType !== "touch" || !(event.target instanceof Element)) return;
+    const target = event.target.closest("[data-haptic]");
+    if (!target) return;
+    void haptics.trigger(target.dataset.haptic || "light");
+  }, { passive: true });
 
   bind();
 </script>
