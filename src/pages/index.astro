@@ -511,7 +511,7 @@ const stickerStyle = (index: number) => {
       if (unit.endsWith("s")) return value * 1000;
       return value;
     };
-    const delay = readMs(rootStyles.getPropertyValue("--tech-card-delay"), 1000);
+    const delay = readMs(rootStyles.getPropertyValue("--tech-card-delay"), 500);
     const closeDelay = readMs(rootStyles.getPropertyValue("--tech-card-close-delay"), 180);
 
     stickers.forEach((sticker) => {
