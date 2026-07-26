@@ -103,7 +103,9 @@ interface Strings {
     };
     tech: {
       aria: string;
-      items: { name: string; logo: string; href: string; darkModeLight?: boolean }[];
+      cardLabel: string;
+      visitLabel: (name: string) => string;
+      items: { name: string; logo: string; href: string; darkModeLight?: boolean; detail: { en: string; de: string } }[];
     };
     projects: string;
     theme: {
@@ -155,31 +157,31 @@ interface Strings {
 }
 
 const technologyLogos = [
-  { name: "PHP", logo: "https://cdn.simpleicons.org/php/777BB4", href: "https://www.php.net/" },
-  { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/3178C6", href: "https://www.typescriptlang.org/" },
-  { name: "React", logo: "https://cdn.simpleicons.org/react/61DAFB", href: "https://react.dev/" },
-  { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/000000", href: "https://nextjs.org/", darkModeLight: true },
-  { name: "TYPO3", logo: "https://cdn.simpleicons.org/typo3/FF8700", href: "https://typo3.org/" },
-  { name: "Angular", logo: "https://cdn.simpleicons.org/angular/DD0031", href: "https://angular.dev/" },
-  { name: "Vue", logo: "https://cdn.simpleicons.org/vuedotjs/4FC08D", href: "https://vuejs.org/" },
-  { name: "GitHub", logo: "https://cdn.simpleicons.org/github/181717", href: "https://github.com/", darkModeLight: true },
-  { name: "GitLab", logo: "https://cdn.simpleicons.org/gitlab/FC6D26", href: "https://gitlab.com/" },
-  { name: "Gitea", logo: "https://cdn.simpleicons.org/gitea/609926", href: "https://about.gitea.com/" },
-  { name: "Docker", logo: "https://cdn.simpleicons.org/docker/2496ED", href: "https://www.docker.com/" },
-  { name: "Proxmox", logo: "https://cdn.simpleicons.org/proxmox/E57000", href: "https://www.proxmox.com/" },
-  { name: "Linux", logo: "https://cdn.simpleicons.org/linux/FCC624", href: "https://www.linux.org/" },
-  { name: "macOS", logo: "https://cdn.simpleicons.org/apple/000000", href: "https://www.apple.com/macos/", darkModeLight: true },
-  { name: "Astro", logo: "https://cdn.simpleicons.org/astro/FF5D01", href: "https://astro.build/" },
-  { name: "Cloudflare", logo: "https://cdn.simpleicons.org/cloudflare/F38020", href: "https://www.cloudflare.com/" },
-  { name: "Bun", logo: "https://cdn.simpleicons.org/bun/000000", href: "https://bun.sh/", darkModeLight: true },
-  { name: "Claude", logo: "https://cdn.simpleicons.org/claude/D97757", href: "https://claude.ai/" },
-  { name: "Codex", logo: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/openai.svg", href: "https://openai.com/codex", darkModeLight: true },
-  { name: "Cursor", logo: "https://cdn.simpleicons.org/cursor/000000", href: "https://cursor.com/", darkModeLight: true },
-  { name: "Gemini", logo: "https://cdn.simpleicons.org/googlegemini/8E75B2", href: "https://gemini.google.com/" },
-  { name: "VS Code", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg", href: "https://code.visualstudio.com/" },
-  { name: "PhpStorm", logo: "https://cdn.simpleicons.org/phpstorm/000000", href: "https://www.jetbrains.com/phpstorm/", darkModeLight: true },
-  { name: "Windows", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/windows11/windows11-original.svg", href: "https://www.microsoft.com/windows" },
-  { name: "Tailwind CSS", logo: "https://cdn.simpleicons.org/tailwindcss/06B6D4", href: "https://tailwindcss.com/" },
+  { name: "PHP", logo: "https://cdn.simpleicons.org/php/777BB4", href: "https://www.php.net/", detail: { en: "Services, APIs, and the day-to-day work behind client projects.", de: "Services, APIs und die tägliche Arbeit hinter Kundenprojekten." } },
+  { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/3178C6", href: "https://www.typescriptlang.org/", detail: { en: "Typed APIs and interfaces that stay easier to change without surprises.", de: "Typisierte APIs und Interfaces, die sich ohne Überraschungen weiterentwickeln lassen." } },
+  { name: "React", logo: "https://cdn.simpleicons.org/react/61DAFB", href: "https://react.dev/", detail: { en: "Reusable app interfaces that keep small interactions easy to reason about.", de: "Wiederverwendbare App-Oberflächen, deren kleine Interaktionen überschaubar bleiben." } },
+  { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/000000", href: "https://nextjs.org/", darkModeLight: true, detail: { en: "Full-stack side projects and client builds with a clear structure.", de: "Neben- und Kundenprojekte mit klarer Full-Stack-Struktur." } },
+  { name: "TYPO3", logo: "https://cdn.simpleicons.org/typo3/FF8700", href: "https://typo3.org/", detail: { en: "CMS work for clients, from templates to integrations.", de: "CMS-Arbeit für Kunden, von Templates bis zu Integrationen." } },
+  { name: "Angular", logo: "https://cdn.simpleicons.org/angular/DD0031", href: "https://angular.dev/", detail: { en: "Structured application work when an opinionated framework fits best.", de: "Strukturierte Anwendungen, wenn ein festes Framework gut zum Projekt passt." } },
+  { name: "Vue", logo: "https://cdn.simpleicons.org/vuedotjs/4FC08D", href: "https://vuejs.org/", detail: { en: "Lightweight interfaces when Vue is the right fit for the project.", de: "Leichte Oberflächen, wenn Vue am besten zum Projekt passt." } },
+  { name: "GitHub", logo: "https://cdn.simpleicons.org/github/181717", href: "https://github.com/", darkModeLight: true, detail: { en: "Open-source code, reviews, issues, and the contribution graph on this page.", de: "Open-Source-Code, Reviews, Issues und der Beitragsgraph auf dieser Seite." } },
+  { name: "GitLab", logo: "https://cdn.simpleicons.org/gitlab/FC6D26", href: "https://gitlab.com/", detail: { en: "Repositories and CI workflows for projects that need one focused home.", de: "Repositories und CI-Workflows für Projekte mit einem zentralen Zuhause." } },
+  { name: "Gitea", logo: "https://cdn.simpleicons.org/gitea/609926", href: "https://about.gitea.com/", detail: { en: "Self-hosted Git repositories for smaller, controlled deployments.", de: "Selbst gehostete Git-Repositories für kleine, kontrollierte Deployments." } },
+  { name: "Docker", logo: "https://cdn.simpleicons.org/docker/2496ED", href: "https://www.docker.com/", detail: { en: "Repeatable local environments and services that behave the same everywhere.", de: "Reproduzierbare lokale Umgebungen und Services, die überall gleich laufen." } },
+  { name: "Proxmox", logo: "https://cdn.simpleicons.org/proxmox/E57000", href: "https://www.proxmox.com/", detail: { en: "Self-hosted virtual machines and infrastructure I can operate myself.", de: "Selbst gehostete virtuelle Maschinen und Infrastruktur, die ich selbst betreiben kann." } },
+  { name: "Linux", logo: "https://cdn.simpleicons.org/linux/FCC624", href: "https://www.linux.org/", detail: { en: "The environment I reach for when I want control over the system.", de: "Die Umgebung, zu der ich greife, wenn ich Kontrolle über das System will." } },
+  { name: "macOS", logo: "https://cdn.simpleicons.org/apple/000000", href: "https://www.apple.com/macos/", darkModeLight: true, detail: { en: "Daily development, design checks, and shipping from a Unix-like desktop.", de: "Tägliche Entwicklung, Design-Checks und Releases auf einem Unix-ähnlichen Desktop." } },
+  { name: "Astro", logo: "https://cdn.simpleicons.org/astro/FF5D01", href: "https://astro.build/", detail: { en: "Fast, content-focused pages with only the JavaScript that earns its place.", de: "Schnelle, inhaltsorientierte Seiten mit nur dem JavaScript, das wirklich nötig ist." } },
+  { name: "Cloudflare", logo: "https://cdn.simpleicons.org/cloudflare/F38020", href: "https://www.cloudflare.com/", detail: { en: "Edge hosting, DNS, and small services that stay close to visitors.", de: "Edge-Hosting, DNS und kleine Services nah an den Besuchern." } },
+  { name: "Bun", logo: "https://cdn.simpleicons.org/bun/000000", href: "https://bun.sh/", darkModeLight: true, detail: { en: "Fast scripts and package workflows when a lean toolchain helps.", de: "Schnelle Skripte und Paket-Workflows, wenn eine schlanke Toolchain hilft." } },
+  { name: "Claude", logo: "https://cdn.simpleicons.org/claude/D97757", href: "https://claude.ai/", detail: { en: "A thinking partner for exploring ideas, reviewing code, and sharpening copy.", de: "Ein Denkpartner für Ideen, Code-Reviews und klarere Texte." } },
+  { name: "Codex", logo: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/openai.svg", href: "https://openai.com/codex", darkModeLight: true, detail: { en: "Agentic coding help for turning a rough brief into a working change.", de: "Agentische Coding-Hilfe, die aus einem groben Briefing eine echte Änderung macht." } },
+  { name: "Cursor", logo: "https://cdn.simpleicons.org/cursor/000000", href: "https://cursor.com/", darkModeLight: true, detail: { en: "Context-aware editing when I am deep in a codebase.", de: "Kontextbewusstes Editieren, wenn ich tief in einem Codebase stecke." } },
+  { name: "Gemini", logo: "https://cdn.simpleicons.org/googlegemini/8E75B2", href: "https://gemini.google.com/", detail: { en: "A second perspective for research, comparisons, and multimodal ideas.", de: "Eine zweite Perspektive für Recherche, Vergleiche und multimodale Ideen." } },
+  { name: "VS Code", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg", href: "https://code.visualstudio.com/", detail: { en: "The dependable editor for debugging, extensions, and everyday code.", de: "Der verlässliche Editor für Debugging, Erweiterungen und den Alltag." } },
+  { name: "PhpStorm", logo: "https://cdn.simpleicons.org/phpstorm/000000", href: "https://www.jetbrains.com/phpstorm/", darkModeLight: true, detail: { en: "Deep PHP support when a codebase needs serious navigation and refactoring.", de: "Tiefe PHP-Unterstützung, wenn Navigation und Refactoring wichtig werden." } },
+  { name: "Windows", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/windows11/windows11-original.svg", href: "https://www.microsoft.com/windows", detail: { en: "The platform I know from the start, especially for Windows-first work.", de: "Die Plattform, mit der ich angefangen habe, besonders für Windows-Projekte." } },
+  { name: "Tailwind CSS", logo: "https://cdn.simpleicons.org/tailwindcss/06B6D4", href: "https://tailwindcss.com/", detail: { en: "Small, consistent utility decisions that keep interfaces quick to refine.", de: "Kleine, konsistente Utility-Entscheidungen für schnell verfeinerte Interfaces." } },
 ];
 
 const en: Strings = {
@@ -278,6 +280,8 @@ const en: Strings = {
     },
     tech: {
       aria: "Technologies Jan works with",
+      cardLabel: "how I use it",
+      visitLabel: (name) => `Click to visit ${name} ↗`,
       items: technologyLogos,
     },
     projects: "Projects",
@@ -425,6 +429,8 @@ const de: Strings = {
     },
     tech: {
       aria: "Technologien, mit denen Jan arbeitet",
+      cardLabel: "wofür ich es nutze",
+      visitLabel: (name) => `${name} besuchen ↗`,
       items: technologyLogos,
     },
     projects: "Projekte",
