@@ -470,14 +470,23 @@ const stickerStyle = (index: number) => {
       return value;
     };
     const delay = readMs(rootStyles.getPropertyValue("--tech-card-delay"), 1000);
+    const closeDelay = readMs(rootStyles.getPropertyValue("--tech-card-close-delay"), 180);
 
     stickers.forEach((sticker) => {
       let timer = 0;
+      let closeTimer = 0;
       let hovering = false;
       let focused = false;
+      let onCard = false;
       let dragging = false;
 
+      const clearCloseTimer = () => {
+        if (closeTimer) window.clearTimeout(closeTimer);
+        closeTimer = 0;
+      };
+
       const hide = () => {
+        clearCloseTimer();
         if (timer) window.clearTimeout(timer);
         timer = 0;
         sticker.classList.remove("is-tool-card-active");
@@ -487,18 +496,27 @@ const stickerStyle = (index: number) => {
       };
 
       const show = () => {
+        clearCloseTimer();
         if (timer || sticker.classList.contains("is-tool-card-active")) return;
         timer = window.setTimeout(() => {
-        timer = 0;
-        sticker.classList.add("is-tool-card-active");
-        shell.classList.add("is-tool-card-active");
-        sticker.dispatchEvent(new CustomEvent("tech-tooltip-open"));
-      }, delay);
+          timer = 0;
+          sticker.classList.add("is-tool-card-active");
+          shell.classList.add("is-tool-card-active");
+          sticker.dispatchEvent(new CustomEvent("tech-tooltip-open"));
+        }, delay);
+      };
+
+      const scheduleHide = () => {
+        clearCloseTimer();
+        closeTimer = window.setTimeout(() => {
+          closeTimer = 0;
+          if (!hovering && !focused && !onCard) hide();
+        }, closeDelay);
       };
 
       const sync = () => {
-        if (hovering || focused) show();
-        else hide();
+        if (hovering || focused || onCard) show();
+        else scheduleHide();
       };
 
       sticker.addEventListener("pointerdown", () => {
@@ -529,6 +547,10 @@ const stickerStyle = (index: number) => {
       sticker.addEventListener("pointerleave", () => { hovering = false; sync(); });
       sticker.addEventListener("focus", () => { if (!dragging) { focused = true; sync(); } });
       sticker.addEventListener("blur", () => { focused = false; sync(); });
+
+      const card = sticker.querySelector(".tech-tool-card");
+      card?.addEventListener("pointerenter", () => { onCard = true; sync(); });
+      card?.addEventListener("pointerleave", () => { onCard = false; sync(); });
     });
   })();
 </script>
