@@ -1,1346 +1,439 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Button from "../components/Button.astro";
-import SquigglyText from "../components/SquigglyText.astro";
-import portrait from "../assets/jan.jpg";
-import { BIRTHDATE_ISO, ageNow, ageYears, aOrAn } from "../lib/jan";
 import { detectLocale, tr } from "../lib/i18n";
 
-const locale     = detectLocale(Astro.request);
-const t          = tr(locale);
-const initialAge = ageNow().toFixed(8);
-const article    = aOrAn(ageYears()); // "a"/"an" for English (ignored by German)
+const locale = detectLocale(Astro.request);
+const copy = tr(locale).portfolio;
 
-const stack = t.stack.items;
+type GithubDay = { date: string; level: number; count: number };
+
+const parseGithubContributions = (html: string): GithubDay[] => {
+  const days: GithubDay[] = [];
+  const cellPattern = /<td\b([^>]*)><\/td>/gi;
+  let cell: RegExpExecArray | null;
+
+  while ((cell = cellPattern.exec(html))) {
+    const attributes = cell[1];
+    if (!/\bContributionCalendar-day\b/i.test(attributes)) continue;
+
+    const date = attributes.match(/\bdata-date="([^"]+)"/i)?.[1];
+    if (!date) continue;
+
+    const level = Number(attributes.match(/\bdata-level="(\d+)"/i)?.[1] ?? 0);
+    const tooltip = html
+      .slice(cell.index + cell[0].length, cell.index + cell[0].length + 600)
+      .match(/<tool-tip\b[^>]*>([\s\S]*?)<\/tool-tip>/i)?.[1]
+      ?.replace(/<[^>]+>/g, "")
+      .trim();
+    const count = Number(tooltip?.match(/\b(\d+)\s+contributions?\b/i)?.[1] ?? 0);
+
+    days.push({ date, level: Math.min(4, Math.max(0, level)), count });
+  }
+
+  return days.sort((a, b) => a.date.localeCompare(b.date));
+};
+
+const fetchGithubContributions = async (): Promise<GithubDay[]> => {
+  try {
+    const response = await fetch("https://github.com/users/AtomicWasTaken/contributions", {
+      headers: {
+        accept: "text/html",
+        "user-agent": "itsjan.dev contribution graph",
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) return [];
+
+    const days = parseGithubContributions(await response.text());
+    return days.length > 0 ? days : [];
+  } catch {
+    return [];
+  }
+};
+
+// This runs on every SSR request so the graph always reflects GitHub's latest public data.
+const githubDays = await fetchGithubContributions();
+const today = new Date();
+today.setUTCHours(12, 0, 0, 0);
+const dateKey = (date: Date) => date.toISOString().slice(0, 10);
+const formatter = new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", year: "numeric" });
+const githubByDate = new Map(githubDays.map((day) => [day.date, day]));
+const activityStart = githubDays.length
+  ? new Date(`${githubDays[0].date}T12:00:00Z`)
+  : new Date(today);
+
+if (!githubDays.length) activityStart.setUTCDate(today.getUTCDate() - 364);
+
+const activityLength = githubDays.length || 365;
+const activity = Array.from({ length: activityLength }, (_, index) => {
+  const date = new Date(activityStart);
+  date.setUTCDate(activityStart.getUTCDate() + index);
+  const contribution = githubByDate.get(dateKey(date));
+  const count = contribution?.count ?? 0;
+  const level = contribution?.level ?? 0;
+
+  return {
+    label: `${formatter.format(date)} · ${count} ${count === 1 ? copy.activity.contribution : copy.activity.contributions}`,
+    level,
+    project: count ? "other" : "none",
+    count,
+  };
+});
+const mobileActivity = activity;
+const activityColumns = Math.ceil(activity.length / 7);
+const mobileActivityColumns = activityColumns;
+// The DOM is column-major, matching the visual grid. Give every tile in a
+// column the same delay so all seven rows advance in parallel, left → right.
+const activityRevealOrder = (index: number, _columns: number) => Math.floor(index / 7);
+type StickerPlacement = { side: "left" | "right"; topPercent: number; offsetPercent: number; size: number; rotation: number };
+const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+const randomInBand = (index: number, count: number, start: number, end: number) => {
+  if (count <= 1) return (start + end) / 2;
+  const bandSize = (end - start) / count;
+  const bandStart = start + index * bandSize;
+  const inset = bandSize * 0.2;
+  return bandStart + inset + Math.random() * (bandSize - inset * 2);
+};
+const shuffle = <T>(items: T[]) => {
+  for (let index = items.length - 1; index > 0; index -= 1) {
+    const swapIndex = randomInt(0, index);
+    [items[index], items[swapIndex]] = [items[swapIndex], items[index]];
+  }
+  return items;
+};
+const createStickerLayout = (count: number): StickerPlacement[] => {
+  const rowCount = Math.ceil(count / 2);
+  const pairCount = Math.floor(count / 2);
+  const topPositions = Array.from({ length: rowCount }, (_, row) => randomInBand(row, rowCount, 5, 94));
+  const pairOffsets = shuffle(Array.from({ length: pairCount }, (_, column) => randomInBand(column, pairCount, 5, 100)));
+  const rows = Array.from({ length: rowCount }, (_, row) => {
+    // One random point per horizontal and vertical band keeps the composition
+    // loose without allowing clusters or large unused areas.
+    const topPercent = topPositions[row];
+    const offsetPercent = row < pairCount ? pairOffsets[row] : randomInt(20, 80);
+    const size = randomInt(32, 43);
+    const tilt = randomInt(4, 12) * (Math.random() < 0.5 ? -1 : 1);
+
+    if (row < pairCount) {
+      const left = { side: "left" as const, topPercent, offsetPercent, size, rotation: tilt };
+      const right = { side: "right" as const, topPercent, offsetPercent, size, rotation: -tilt };
+      return Math.random() < 0.5 ? [left, right] : [right, left];
+    }
+
+    // With an odd number of logos, keep the final one at the edge of a row;
+    // every other row remains a mirrored pair.
+    return [{
+      side: Math.random() < 0.5 ? "left" as const : "right" as const,
+      topPercent,
+      offsetPercent,
+      size,
+      rotation: randomInt(-12, 12),
+    }];
+  });
+
+  return shuffle(rows).flat().slice(0, count);
+};
+const stickerLayout = createStickerLayout(copy.tech.items.length);
+const stickerStyle = (index: number) => {
+  const placement = stickerLayout[index];
+  return `top:${placement.topPercent}%; --sticker-x:${placement.offsetPercent}%; --icon-size:${placement.size}px; --sticker-rotation:${placement.rotation}deg`;
+};
 ---
 
 <Layout>
+<div class="portfolio-shell">
+  <aside class="tech-stickers" aria-label={copy.tech.aria}>
+    <div class="tech-sticker-side tech-sticker-side--left">
+      {copy.tech.items.map((technology, index) => {
+        const placement = stickerLayout[index];
+        return placement.side === "left" && (
+          <a
+            href={technology.href}
+            target="_blank"
+            rel="noreferrer"
+            class={`tech-sticker tech-sticker--left tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
+            style={stickerStyle(index)}
+            aria-label={technology.name}
+          >
+            <img src={technology.logo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
+          </a>
+        );
+      })}
+    </div>
+    <div class="tech-sticker-side tech-sticker-side--right">
+      {copy.tech.items.map((technology, index) => {
+        const placement = stickerLayout[index];
+        return placement.side === "right" && (
+          <a
+            href={technology.href}
+            target="_blank"
+            rel="noreferrer"
+            class={`tech-sticker tech-sticker--right tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
+            style={stickerStyle(index)}
+            aria-label={technology.name}
+          >
+            <img src={technology.logo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
+          </a>
+        );
+      })}
+    </div>
+  </aside>
+<main class="portfolio-main mx-auto max-w-2xl space-y-12 pt-14 pb-12 md:space-y-14 md:pt-[72px] md:pb-16">
+  <section>
+    <div class="profile-row">
+      <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="48" height="48" class="profile-image h-12 w-12 rounded-full object-cover" />
+      <button
+        id="theme-toggle"
+        class="theme-toggle"
+        type="button"
+        aria-label={copy.theme.label}
+        aria-pressed="false"
+        data-label-dark={copy.theme.toDark}
+        data-label-light={copy.theme.toLight}
+      >
+        <span class="theme-icon theme-icon--sun" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2.5v2M12 19.5v2M4.5 12h-2M21.5 12h-2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"></path></svg>
+        </span>
+        <span class="theme-icon theme-icon--moon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"></path></svg>
+        </span>
+      </button>
+    </div>
+    <h1 class="text-2xl font-medium tracking-tight">Jan-Marlon Leibl</h1>
+    <p class="mt-4 max-w-lg text-[17px] font-normal leading-7 text-[var(--text-secondary)]">
+      {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{copy.intro.afterBremen}<span class="keyword">{copy.intro.apprenticeship}</span>{copy.intro.afterApprenticeship}<span class="keyword">{copy.intro.finny}</span>{copy.intro.afterFinny}
+    </p>
+  </section>
 
-  <!-- Multiplayer remote cursors render here -->
-  <div id="peers-layer" class="peers-layer" aria-hidden="true"></div>
-
-  <!-- Peer text selections - absolute, sit inside body so they scroll naturally -->
-  <div id="peers-selections" class="peers-selections" aria-hidden="true"></div>
-
-  <!-- Show/hide other people's cursors -->
-  <button id="peers-toggle" class="peers-toggle post-intro" type="button" aria-label="Toggle other visitors' cursors">
-    <span class="eye" aria-hidden="true"></span>
-    <span id="peers-count">0 others here</span>
-  </button>
-
-  <!-- Custom cursor - rounded macOS-style arrow with always-on squiggle -->
-  <div id="cursor" class="cursor" aria-hidden="true">
-    <svg class="cursor-arrow" viewBox="0 0 16 22" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <filter id={`cursor-wiggle-${i}`} x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed={i + 1} />
-            <feDisplacementMap in="SourceGraphic" scale="2" />
-          </filter>
-        ))}
-      </defs>
-      <path
-        id="cursor-arrow-path"
-        d="M 1.6 1.4
-           Q 1 1 1 2
-           L 1 16.6
-           Q 1 17.7 1.9 17.1
-           L 5.3 14.3
-           L 8.4 21
-           Q 8.8 21.9 9.7 21.5
-           L 11 20.9
-           Q 11.9 20.5 11.5 19.6
-           L 8.4 12.9
-           L 13.6 12.9
-           Q 14.7 12.9 13.9 12.2
-           Z"
-        filter="url(#cursor-wiggle-0)"
-      />
-    </svg>
-    <div class="cursor-beam"></div>
-  </div>
-
-  <!-- Floating top pill - live status (N5) -->
-  <a href="mailto:hi@itsjan.dev" class="float-pill post-intro" aria-label={t.topPillAria}>
-    <span class="live-dot" aria-hidden="true"></span>
-    <span>{t.topPill}</span>
-  </a>
-
-  <!-- Back-to-top floating pill (shown on scroll) -->
-  <button
-    id="back-to-top"
-    class="back-to-top"
-    aria-label={t.backToTopAria}
-    type="button"
-  >
-    <span class="bt-arrow" aria-hidden="true">↑</span>
-    <span>{locale === "de" ? "oben" : "top"}</span>
-  </button>
-
-  <main class="mx-auto w-full max-w-4xl px-5 pt-24 pb-12 md:px-8 md:pt-32">
-
-    <!-- ── HERO ─────────────────────────────────────────── -->
-    <section class="reveal-up">
-      <div class="intro-block">
-        <p class="label-muted">{t.hero.hey}</p>
-        <h1 class="hero-greeting mt-3">{locale === "de" ? "Ich bin " : "I'm "}<SquigglyText scale={8} stepDuration={100}>Jan-Marlon</SquigglyText></h1>
-        <p class="hero-aka"><span class="arrow">↳</span>{t.hero.aka}</p>
-      </div>
-
-      <div class="post-intro">
-      <p class="hero-prose mt-6">
-        {t.hero.ageBefore(article)}
-        <span class="age-ticker" id="age" data-birth={BIRTHDATE_ISO}>{initialAge}</span>
-        {t.hero.ageAfter}
-        <a
-          class="company-pill"
-          href="https://fnny.app"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Finny"
-        ><img src="/finny-favicon.png" alt="" width="32" height="32" loading="lazy" decoding="async" /><span>Finny</span></a>{t.hero.proseBeforeBold}<strong class="text-[var(--color-text-strong)] font-semibold">{t.hero.bold}</strong>{t.hero.proseAfterBold}
-      </p>
-
-      <p class="hero-prose mt-4 muted">
-        {t.hero.origin}
-      </p>
-
-      <div class="mt-7 flex flex-wrap gap-2.5">
-        <Button href="mailto:hi@itsjan.dev" variant="dark">{t.hero.buttons.email}</Button>
-        <Button href="https://github.com/AtomicWasTaken" variant="light" external>{t.hero.buttons.github}</Button>
-        <Button href="https://www.linkedin.com/in/janmarlonleibl/" variant="light" external>{t.hero.buttons.linkedin}</Button>
-        <Button href="https://x.com/janodersooo" variant="light" external>{t.hero.buttons.x}</Button>
-      </div>
-
-      <!-- Status block - fullag.ar's right-aligned aux line -->
-      <div class="mt-16 max-w-sm md:ml-auto md:text-right reveal-up">
-        <p class="aux-block">
-          <span class="key">{t.hero.aux.statusLabel}</span> {t.hero.aux.statusValue}
-        </p>
-        <p class="aux-block">
-          <span class="key">{t.hero.aux.basedLabel}</span> {t.hero.aux.basedValue}
-        </p>
-        <p class="aux-block">
-          <span class="key">{t.hero.aux.replyLabel}</span> {t.hero.aux.replyValue}
-        </p>
-      </div>
-      </div><!-- /.post-intro -->
-    </section>
-
-    <!-- ── STACK ────────────────────────────────────────── -->
-    <section class="section-block reveal-up post-intro">
-      <p class="label">{t.stack.eyebrow}</p>
-      <h2 class="section-heading mt-3">{t.stack.heading}</h2>
-      <p class="section-sub">{t.stack.sub}</p>
-
-      <div class="stack-list mt-10">
-        {stack.map((s) => (
-          <div class="stack-row">
-            <span class="stack-name">{s.name}</span>
-            <span class="stack-note">{s.note}</span>
+  <section>
+    <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.projects}</h2>
+    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <article class="project-preview w-full overflow-visible">
+        <div class="project-preview-surface">
+          <div class="project-preview-image project-preview-image--finny" role="img" aria-label={copy.finny.previewAria}>
+            <span class="preview-brand"><img src="/finny-favicon.png" alt="" width="28" height="28" />finny</span>
+            <span class="preview-receipt preview-receipt--one" aria-hidden="true"><b>{copy.finny.receiptTitle}</b><i>{copy.finny.receiptVendor}</i><i>{copy.finny.receiptDetail}</i></span>
+            <span class="preview-receipt preview-receipt--two" aria-hidden="true"><b>{copy.finny.warrantyTitle}</b><i>{copy.finny.warrantyDetail}</i><small>{copy.finny.warrantyUntil}</small></span>
           </div>
-        ))}
-      </div>
-    </section>
-
-    <!-- ── ARC ──────────────────────────────────────────── -->
-    <section class="section-block reveal-up post-intro">
-      <p class="label">{t.arc.eyebrow}</p>
-      <h2 class="section-heading mt-3">{t.arc.heading}</h2>
-      <p class="section-sub">{t.arc.sub}</p>
-
-      <div class="mt-10 grid gap-12 md:grid-cols-[1fr_14rem] md:items-start md:gap-16">
-        <div class="arc-list">
-          {t.arc.items.map((row) => (
-            <div class="arc-row">
-              <span class="arc-year">{row.year}</span>
-              <div>
-                <p class="arc-headline">{row.title}</p>
-                <p class="arc-body" set:html={row.body} />
-              </div>
-            </div>
-          ))}
+          <div class="project-preview-copy p-4">
+            <p class="text-[15px] font-normal leading-6 text-[var(--text-secondary)]">
+              {copy.finny.description.lead}<span class="keyword">{copy.finny.description.first}</span>{copy.finny.description.middle}<span class="keyword">{copy.finny.description.second}</span>{copy.finny.description.join}<span class="keyword">{copy.finny.description.third}</span>{copy.finny.description.end}
+            </p>
+            <div class="project-preview-action"><a href="https://fnny.app" target="_blank" rel="noreferrer" class="project-preview-cta">{copy.finny.cta.label}</a></div>
+          </div>
         </div>
+      </article>
 
-        <aside class="hidden md:block">
-          <div class="portrait-frame">
-            <img
-              src={portrait.src}
-              alt="Jan-Marlon Leibl"
-              loading="lazy"
-              decoding="async"
-            />
-            <div class="portrait-caption">
-              <span>Jan</span>
-              <span>Bremen '26</span>
-            </div>
+      <article class="project-preview w-full overflow-visible">
+        <div class="project-preview-surface">
+          <div class="project-preview-image project-preview-image--ventry" role="img" aria-label={copy.ventry.previewAria}>
+            <span class="preview-brand preview-brand--ventry">
+              <img class="ventry-mark" src="https://ventry.host/ventry-logo-white.png" alt="" width="28" height="28" loading="lazy" />
+              ventry.host
+            </span>
+            <span class="ventry-file-panel" aria-hidden="true">
+              <span class="ventry-file-panel-head"><b>{copy.ventry.panelTitle}</b><i>{copy.ventry.panelCount}</i></span>
+              <span class="ventry-file-row">
+                <span class="ventry-file-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4.5h8l4 4v11H6v-15Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /><path d="M14 4.5v4h4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg></span>
+                <span><b>portrait.jpg</b><small>{copy.ventry.fileStatus}</small></span>
+                <i>2.4 MB</i>
+              </span>
+              <span class="ventry-file-row ventry-file-row--muted">
+                <span class="ventry-file-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M8 12h8m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+                <span><b>{copy.ventry.shareLabel}</b><small>{copy.ventry.shareStatus}</small></span>
+                <i>{copy.ventry.shareAction}</i>
+              </span>
+            </span>
           </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- ── CONTACT ──────────────────────────────────────── -->
-    <section class="section-block reveal-up post-intro">
-      <p class="label">{t.contact.eyebrow}</p>
-      <h2 class="section-heading mt-3">{t.contact.heading}</h2>
-      <p class="section-sub">{t.contact.sub}</p>
-
-      <form id="contact-form" class="contact-form mt-10" novalidate>
-        <label class="field field-row">
-          <span class="field-label">
-            {t.contact.nameLabel}
-            <span class="field-hint">{t.contact.nameHint}</span>
-          </span>
-          <input
-            class="field-input"
-            type="text"
-            name="name"
-            autocomplete="name"
-            maxlength="100"
-            placeholder={t.contact.namePlaceholder}
-          />
-        </label>
-
-        <label class="field field-row">
-          <span class="field-label">{t.contact.emailLabel}</span>
-          <input
-            class="field-input"
-            type="email"
-            name="email"
-            autocomplete="email"
-            required
-            maxlength="200"
-            placeholder={t.contact.emailPlaceholder}
-          />
-        </label>
-
-        <label class="field field-row">
-          <span class="field-label">{t.contact.messageLabel}</span>
-          <textarea
-            class="field-textarea"
-            name="message"
-            required
-            maxlength="5000"
-            minlength="10"
-            rows="5"
-            placeholder={t.contact.messagePlaceholder}
-          ></textarea>
-        </label>
-
-        <!-- Honeypot: hidden, bots fill it, humans don't see it -->
-        <label class="honeypot" aria-hidden="true">
-          <span>Company (leave empty)</span>
-          <input type="text" name="company" tabindex="-1" autocomplete="off" />
-        </label>
-
-        <div class="contact-actions">
-          <div>
-            <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
-            <p class="contact-direct" set:html={t.contact.direct} />
+          <div class="project-preview-copy p-4">
+            <p class="text-[15px] font-normal leading-6 text-[var(--text-secondary)]">
+              {copy.ventry.description.lead}<span class="keyword">{copy.ventry.description.keyword}</span>{copy.ventry.description.end}
+            </p>
+            <div class="project-preview-action"><a href="https://ventry.host" target="_blank" rel="noreferrer" class="project-preview-cta">{copy.ventry.cta.label}</a></div>
           </div>
-          <button id="contact-submit" type="submit" class="btn-3d btn-3d-dark">
-            {t.contact.submit}
-          </button>
         </div>
-      </form>
-    </section>
+      </article>
+    </div>
+  </section>
 
-    <footer class="site-footer mt-24 post-intro">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <span>{t.footer.site}</span>
-        <span>{t.footer.sig}</span>
+  <section>
+    <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.activity.heading}</h2>
+    <div class="mt-6">
+      <div class="activity-scroll activity-scroll-desktop" aria-label={copy.activity.desktopAria}>
+        <div class="t-skel activity-reveal" data-state="loading">
+          <div class="t-skel-skeleton is-pulsing activity-grid" aria-hidden="true">
+            {activity.map((_, index) => <span class="activity-day" data-level="0" style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>)}
+          </div>
+          <div class="t-skel-content activity-grid">
+            {activity.map((day, index) => (
+              <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}>
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
-    </footer>
+      <div class="activity-scroll activity-scroll-mobile" aria-label={copy.activity.mobileAria}>
+        <div class="t-skel activity-reveal activity-reveal-mobile" data-state="loading">
+          <div class="t-skel-skeleton is-pulsing activity-grid activity-grid-mobile" aria-hidden="true">
+            {mobileActivity.map((_, index) => <span class="activity-day" data-level="0" style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>)}
+          </div>
+          <div class="t-skel-content activity-grid activity-grid-mobile">
+            {mobileActivity.map((day, index) => (
+              <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div class="activity-legend" aria-hidden="true"><span>{copy.activity.less}</span><i data-level="0"></i><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i><span>{copy.activity.more}</span></div>
+    </div>
+  </section>
 
-  </main>
-</Layout>
+  <section>
+    <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.connect.heading}</h2>
+    <div class="social-links mt-6 flex items-center text-[var(--text-tertiary)]">
+      <a href="https://x.com/janodersooo" target="_blank" rel="noreferrer" aria-label={copy.connect.xAria} class="social-link"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></a>
+      <a href="https://github.com/AtomicWasTaken" target="_blank" rel="noreferrer" aria-label={copy.connect.githubAria} class="social-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg></a>
+      <a href="https://www.linkedin.com/in/janmarlonleibl/" target="_blank" rel="noreferrer" aria-label={copy.connect.linkedinAria} class="social-link"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 1 1 2 4.5a1.5 1.5 0 0 1 3 0ZM2.5 8.5h3V21h-3V8.5ZM9 8.5h2.9v1.7h.1c.4-.8 1.5-2.1 3.6-2.1 3.9 0 4.6 2.6 4.6 6V21h-3v-6.1c0-1.5 0-3.5-2.1-3.5s-2.4 1.7-2.4 3.4V21H9V8.5Z"></path></svg></a>
+      <a href="mailto:hi@itsjan.dev" aria-label={copy.connect.emailAria} class="social-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="3"></rect><path d="m3 6 9 6 9-6"></path></svg></a>
+    </div>
+  </section>
+</main>
+</div>
 
-<!-- Locale-specific strings used by the client-side scripts below -->
-<script type="application/json" id="i18n-data" is:inline set:html={JSON.stringify({
-  formMessages: t.formMessages,
-  peers: {
-    none: t.peers.none,
-    one:  t.peers.one,
-    manyTemplate: t.peers.many(99).replace("99", "{n}"),
-  },
-  contact: { sending: t.formMessages.sending, sent: t.formMessages.sent, submit: t.contact.submit },
-})} />
-
-<script>
-  // Read locale strings emitted by the page
-  const I18N = (() => {
-    const el = document.getElementById("i18n-data");
-    try { return JSON.parse(el?.textContent || "{}"); } catch { return {}; }
-  })();
-
-  // ── Intro state machine - transform-only, zero layout shift ────────
-  //
-  //    The greeting block stays in document flow at ALL times. Its position
-  //    is shifted purely via `transform: translate()`. Nothing about page
-  //    layout changes between intro/post-intro states, so there is no shift.
-  //
+<script is:inline>
   (() => {
-    const body  = document.body;
-    const intro = document.querySelector<HTMLElement>(".intro-block");
-    if (!intro) return;
+    const root = document.documentElement;
+    const toggle = document.getElementById("theme-toggle");
+    if (!toggle) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const EASE    = "cubic-bezier(0.2, 0.7, 0.2, 1)";
-    const MOVE_MS = 950;
+    const storageKey = "itsjan-theme";
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const themeColor = document.getElementById("theme-color");
 
-    let isIntro   = body.classList.contains("is-intro");
-    let animating = false;
-
-    // Measure the delta needed to translate the greeting from its natural
-    // flow position to the viewport center.
-    const measureCenterOffset = () => {
-      const prevTransition = intro.style.transition;
-      const prevTransform  = intro.style.transform;
-      intro.style.transition = "none";
-      intro.style.transform  = "";
-      // Force a layout read so the measurement reflects the cleared state
-      const rect = intro.getBoundingClientRect();
-      const dx = (window.innerWidth  / 2) - (rect.left + rect.width  / 2);
-      const dy = (window.innerHeight / 2) - (rect.top  + rect.height / 2);
-      // Restore (we'll re-set below in caller)
-      intro.style.transform  = prevTransform;
-      intro.style.transition = prevTransition;
-      return { dx, dy };
-    };
-
-    // ── INITIAL - body.is-intro is set server-side; position greeting at
-    //    center on first frame, then make it visible (was hidden via CSS
-    //    until .is-positioned class is added).
-    if (isIntro) {
-      const { dx, dy } = measureCenterOffset();
-      intro.style.transition = "none";
-      intro.style.transform  = `translate(${dx}px, ${dy}px)`;
-      intro.classList.add("is-positioned");
-    }
-
-    // ── RELEASE - animate from current centered position to natural (0,0)
-    const release = () => {
-      if (animating || !isIntro) return;
-      animating = true;
-      isIntro   = false;
-      body.classList.remove("is-intro");
-
-      if (reduced) {
-        intro.style.transition = "";
-        intro.style.transform  = "";
-        animating = false;
-        return;
-      }
-
-      // Current transform is already translate(dx,dy) from init.
-      // Force layout, then animate to translate(0,0).
-      void intro.offsetWidth;
-      intro.style.transition = `transform ${MOVE_MS}ms ${EASE}`;
-      intro.style.transform  = "translate(0, 0)";
-
-      const done = (e: TransitionEvent) => {
-        if (e.propertyName !== "transform") return;
-        intro.removeEventListener("transitionend", done);
-        intro.style.transition = "";
-        intro.style.transform  = "";
-        animating = false;
-      };
-      intro.addEventListener("transitionend", done);
-    };
-
-    // ── RE-INTRO - animate from natural (0,0) back to centered (dx,dy)
-    const reIntro = () => {
-      if (animating || isIntro) return;
-      animating = true;
-      isIntro   = true;
-      body.classList.add("is-intro");
-
-      const { dx, dy } = measureCenterOffset();
-
-      if (reduced) {
-        intro.style.transition = "";
-        intro.style.transform  = `translate(${dx}px, ${dy}px)`;
-        animating = false;
-        return;
-      }
-
-      // Snap to (0,0) explicitly so the transition has a known starting point.
-      intro.style.transition = "none";
-      intro.style.transform  = "translate(0, 0)";
-      void intro.offsetWidth;
-      intro.style.transition = `transform ${MOVE_MS}ms ${EASE}`;
-      intro.style.transform  = `translate(${dx}px, ${dy}px)`;
-
-      const done = (e: TransitionEvent) => {
-        if (e.propertyName !== "transform") return;
-        intro.removeEventListener("transitionend", done);
-        animating = false;
-      };
-      intro.addEventListener("transitionend", done);
-    };
-
-    // ── Resize handling - if intro is up while the viewport changes, snap
-    //    to the new center without animation so the greeting stays centered.
-    let resizeRaf: number | null = null;
-    window.addEventListener("resize", () => {
-      if (!isIntro || animating) return;
-      if (resizeRaf) cancelAnimationFrame(resizeRaf);
-      resizeRaf = requestAnimationFrame(() => {
-        const { dx, dy } = measureCenterOffset();
-        intro.style.transition = "none";
-        intro.style.transform  = `translate(${dx}px, ${dy}px)`;
-      });
-    });
-
-    // ── Release triggers ─────────────────────────────────────────
-    window.addEventListener("pointerdown", () => { if (isIntro) release(); }, { passive: true });
-    window.addEventListener("keydown",     () => { if (isIntro) release(); }, { passive: true });
-    window.addEventListener("touchstart",  () => { if (isIntro) release(); }, { passive: true });
-
-    // ── Overscroll-up trigger (re-show intro) ────────────────────
-    let overscrollAccum = 0;
-    const OVERSCROLL_THRESHOLD = 80;
-
-    window.addEventListener("wheel", (e) => {
-      if (isIntro) {
-        release();
-        overscrollAccum = 0;
-        return;
-      }
-      if (window.scrollY <= 0 && e.deltaY < 0) {
-        overscrollAccum += Math.abs(e.deltaY);
-        if (overscrollAccum > OVERSCROLL_THRESHOLD) {
-          overscrollAccum = 0;
-          reIntro();
-        }
-      } else {
-        overscrollAccum = 0;
-      }
-    }, { passive: true });
-
-    // Touch pull-down (mobile)
-    let touchStartY = 0;
-    let touchActive = false;
-    window.addEventListener("touchstart", (e) => {
-      if (isIntro || window.scrollY > 0) return;
-      touchStartY = e.touches[0]?.clientY ?? 0;
-      touchActive = true;
-    }, { passive: true });
-
-    window.addEventListener("touchmove", (e) => {
-      if (!touchActive || isIntro) return;
-      const delta = (e.touches[0]?.clientY ?? 0) - touchStartY;
-      if (delta > 110) {
-        touchActive = false;
-        reIntro();
-      }
-    }, { passive: true });
-
-    window.addEventListener("touchend", () => { touchActive = false; }, { passive: true });
-  })();
-
-  // ── Live age ticker ───────────────────────────────────
-  const ageEl = document.getElementById("age");
-  if (ageEl) {
-    const birth = new Date(ageEl.dataset.birth!).getTime();
-    const YEAR_MS = 365.25 * 24 * 60 * 60 * 1000;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (reduced) {
-      ageEl.textContent = Math.floor((Date.now() - birth) / YEAR_MS).toString();
-    } else {
-      let running = true;
-      const tick = () => {
-        if (!running) return;
-        ageEl.textContent = ((Date.now() - birth) / YEAR_MS).toFixed(8);
-        requestAnimationFrame(tick);
-      };
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) {
-          running = false;
-        } else if (!running) {
-          running = true;
-          requestAnimationFrame(tick);
-        }
-      });
-      requestAnimationFrame(tick);
-    }
-  }
-
-  // ── Secret peers toggle: type the word "cursors" ─────────────
-  //   Shows/hides other users' cursors + selections + the peers-toggle
-  //   pill. Local custom cursor is always on. Default is HIDDEN (opt-in);
-  //   `itsjan:peers-on=1` in localStorage means the user has revealed it.
-  (() => {
-    const STORAGE = "itsjan:peers-on";
-    const SECRET  = "cursors";
-
-    // Default: peers HIDDEN. Only reveal when explicitly opted in.
-    if (localStorage.getItem(STORAGE) !== "1") {
-      document.body.dataset.cursorsOff = "true";
-    }
-
-    let buf = "";
-    document.addEventListener("keydown", (e) => {
-      const t = e.target;
-      if (
-        t instanceof HTMLInputElement ||
-        t instanceof HTMLTextAreaElement ||
-        (t instanceof HTMLElement && t.isContentEditable)
-      ) return;
-      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
-
-      buf = (buf + e.key.toLowerCase()).slice(-SECRET.length);
-      if (buf === SECRET) {
-        const off = document.body.dataset.cursorsOff === "true";
-        if (off) {
-          delete document.body.dataset.cursorsOff;
-          localStorage.setItem(STORAGE, "1");
-        } else {
-          document.body.dataset.cursorsOff = "true";
-          localStorage.removeItem(STORAGE);
-        }
-        buf = "";
-      }
-    }, { passive: true });
-  })();
-
-  // ── Custom cursor - smooth lerp + context-aware modes ─
-  (() => {
-    const fine    = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const cursor  = document.getElementById("cursor") as HTMLElement | null;
-    if (!cursor || !fine || reduced) return;
-
-    document.documentElement.classList.add("has-custom-cursor");
-
-    let tx = -100, ty = -100;
-    let cx = -100, cy = -100;
-    let lastModeEl: Element | null = null;
-
-    const setMode = (mode: string) => {
-      if (cursor.dataset.mode !== mode) {
-        cursor.dataset.mode = mode;
-        // Broadcast to peers IIFE → WebSocket
-        window.dispatchEvent(new CustomEvent("cursor:mode", { detail: { mode } }));
-      }
-    };
-
-    // Granular context map - each interactive element class gets its own mode.
-    // Order matters: more specific selectors come first.
-    const detectMode = (el: Element | null): string => {
-      if (!el) return "default";
-
-      // 1) Form fields → text I-beam
-      if (el.closest("input, textarea, [contenteditable='true']")) return "text";
-
-      // 2) Primary CTAs (amber buttons): Email me, Send a note
-      if (el.closest(".btn-3d-dark")) return "cta-primary";
-
-      // 3) Secondary CTAs (light/white buttons): GitHub, LinkedIn
-      if (el.closest(".btn-3d-light, .btn-3d-white")) return "cta-secondary";
-
-      // 4) Inline brand chip → amber link mode
-      if (el.closest(".company-pill")) return "link-amber";
-
-      // 5) Live age ticker (amber number) → accent mode
-      if (el.closest(".age-ticker")) return "accent";
-
-      // 6) Squiggly text (Jan-Marlon) → tilted "wink"
-      if (el.closest(".squiggly")) return "squiggly";
-
-      // 7) Portrait photo → view affordance
-      if (el.closest(".portrait-frame")) return "view";
-
-      // 8) Floating chrome pills → subtle pill ring
-      if (el.closest(".float-pill, .back-to-top")) return "pill";
-
-      // 9) Catch-all interactive (other links, label.field, role=button)
-      if (el.closest("a, button, [role='button'], label.field")) return "link";
-
-      return "default";
-    };
-
-    document.addEventListener("pointermove", (e) => {
-      tx = e.clientX;
-      ty = e.clientY;
-      if (!cursor.classList.contains("is-ready")) cursor.classList.add("is-ready");
-
-      const t = e.target as Element | null;
-      if (t !== lastModeEl) {
-        setMode(detectMode(t));
-        lastModeEl = t;
-      }
-    }, { passive: true });
-
-    // Action feedback: squeeze on press, release bounce on let-go
-    let releaseTimer: ReturnType<typeof setTimeout> | null = null;
-    document.addEventListener("pointerdown", () => {
-      cursor.classList.add("is-down");
-      cursor.classList.remove("is-released");
-      window.dispatchEvent(new CustomEvent("cursor:press", { detail: { pressed: true } }));
-    });
-    document.addEventListener("pointerup", () => {
-      cursor.classList.remove("is-down");
-      cursor.classList.add("is-released");
-      if (releaseTimer) clearTimeout(releaseTimer);
-      releaseTimer = setTimeout(() => cursor.classList.remove("is-released"), 290);
-      window.dispatchEvent(new CustomEvent("cursor:press", { detail: { pressed: false } }));
-    });
-
-    document.addEventListener("mouseleave", () => cursor.classList.remove("is-ready"));
-    document.addEventListener("mouseenter", () => cursor.classList.add("is-ready"));
-
-    const lerp = 0.22;
-    const loop = () => {
-      cx += (tx - cx) * lerp;
-      cy += (ty - cy) * lerp;
-      cursor.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
-      requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
-
-    // Subtle always-on squiggle - applied to the local cursor AND every
-    // peer cursor on the page. SVG filter IDs are document-scoped so one
-    // set of defs serves them all.
-    const arrowPath = document.getElementById("cursor-arrow-path");
-    {
-      let frame = 0;
-      const totalFrames = 5;
-      const frameDuration = 110;
-      let last = 0;
-      const wiggleLoop = (now: number) => {
-        if (now - last >= frameDuration) {
-          const filterUrl = `url(#cursor-wiggle-${frame})`;
-          if (arrowPath) arrowPath.setAttribute("filter", filterUrl);
-          document.querySelectorAll<SVGPathElement>(".peer-arrow path").forEach((p) => {
-            p.setAttribute("filter", filterUrl);
-          });
-          frame = (frame + 1) % totalFrames;
-          last = now;
-        }
-        requestAnimationFrame(wiggleLoop);
-      };
-      requestAnimationFrame(wiggleLoop);
-    }
-  })();
-
-  // ── Liquid glass pill: cursor-following sheen ─────────
-  const attachSheen = (el: HTMLElement) => {
-    if (window.matchMedia("(hover: none)").matches) return;
-    const setPos = (clientX: number, clientY: number) => {
-      const r = el.getBoundingClientRect();
-      const x = ((clientX - r.left) / r.width) * 100;
-      const y = ((clientY - r.top) / r.height) * 100;
-      el.style.setProperty("--mx", `${x}%`);
-      el.style.setProperty("--my", `${y}%`);
-    };
-    el.addEventListener("pointermove", (e) => setPos(e.clientX, e.clientY));
-    el.addEventListener("pointerleave", () => {
-      el.style.setProperty("--mx", "50%");
-      el.style.setProperty("--my", "0%");
-    });
-  };
-  document.querySelectorAll<HTMLElement>(".float-pill, .back-to-top").forEach(attachSheen);
-
-  // ── Back-to-top: show after scroll, smooth-scroll on click ─
-  const backTop = document.getElementById("back-to-top") as HTMLButtonElement | null;
-  if (backTop) {
-    const showThreshold = 600;
-    let lastVisible = false;
-    const onScroll = () => {
-      const visible = window.scrollY > showThreshold;
-      if (visible !== lastVisible) {
-        backTop.dataset.visible = visible ? "true" : "false";
-        lastVisible = visible;
-      }
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    backTop.addEventListener("click", () => {
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
-    });
-  }
-
-  // ── Multiplayer remote cursors ────────────────────────
-  (() => {
-    // Default to the public production worker so the feature works even
-    // when no env var is set (e.g., on a fresh Cloudflare Pages deploy
-    // before the dashboard env vars are configured). Override locally
-    // by setting PUBLIC_CURSORS_WSS in `.env` (e.g., to ws://localhost:8788/ws).
-    const WSS_URL =
-      (import.meta.env.PUBLIC_CURSORS_WSS as string | undefined) ||
-      "wss://itsjan-cursors.jleibl.workers.dev/ws";
-    if (!WSS_URL) return;
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const isTouch = window.matchMedia("(pointer: coarse)").matches;
-    if (reduced || isTouch) return;
-
-    const layer       = document.getElementById("peers-layer");
-    const selections  = document.getElementById("peers-selections");
-    const toggle      = document.getElementById("peers-toggle") as HTMLButtonElement | null;
-    const countEl     = document.getElementById("peers-count");
-    if (!layer || !selections || !toggle || !countEl) return;
-
-    type Peer = {
-      id: string;
-      name: string;
-      color: string;
-      el: HTMLDivElement;
-      selEl: HTMLDivElement; // per-peer container for selection rect overlays
-      tx: number; ty: number;
-      cx: number; cy: number;
-      firstFrame: boolean;
-      mode: string;
-      pressed: boolean;
-      // Last-known anchor data (for re-resolving on local layout change)
-      lastMove?: { anchor?: string; ax?: number; ay?: number; x: number; y: number };
-      lastSelection?: { anchor: string; startOffset: number; endOffset: number } | null;
-    };
-
-    const peers = new Map<string, Peer>();
-    let myId: string | null = null;
-
-    // Toggle persisted in localStorage
-    const STORAGE_KEY = "itsjan:peers";
-    if (localStorage.getItem(STORAGE_KEY) === "off") {
-      document.body.dataset.peers = "off";
-    }
-
-    const updateCount = () => {
-      const n = peers.size;
-      const p = I18N.peers || { none: "no one else here", one: "1 other here", manyTemplate: "{n} others here" };
-      countEl.textContent = n === 0
-        ? p.none
-        : n === 1 ? p.one
-        : p.manyTemplate.replace("{n}", String(n));
-      toggle.dataset.visible = n > 0 ? "true" : "false";
+    const applyTheme = (theme) => {
+      root.dataset.theme = theme;
+      root.style.colorScheme = theme;
+      toggle.setAttribute("aria-pressed", String(theme === "dark"));
+      toggle.setAttribute("aria-label", theme === "dark" ? toggle.dataset.labelLight : toggle.dataset.labelDark);
+      themeColor?.setAttribute("content", theme === "dark" ? "#0b0b0c" : "#ffffff");
     };
 
     toggle.addEventListener("click", () => {
-      const off = document.body.dataset.peers === "off";
-      if (off) {
-        delete document.body.dataset.peers;
-        localStorage.removeItem(STORAGE_KEY);
-      } else {
-        document.body.dataset.peers = "off";
-        localStorage.setItem(STORAGE_KEY, "off");
-      }
+      const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
+      try { window.localStorage.setItem(storageKey, nextTheme); } catch {}
+      applyTheme(nextTheme);
     });
 
-    // ── Build peer DOM via safe createElement (no innerHTML) ─
-    const SVG_NS  = "http://www.w3.org/2000/svg";
-    const ARROW_D = "M 1.6 1.4 Q 1 1 1 2 L 1 16.6 Q 1 17.7 1.9 17.1 L 5.3 14.3 L 8.4 21 Q 8.8 21.9 9.7 21.5 L 11 20.9 Q 11.9 20.5 11.5 19.6 L 8.4 12.9 L 13.6 12.9 Q 14.7 12.9 13.9 12.2 Z";
-    const HEX_RE  = /^#[0-9a-fA-F]{6}$/;
-
-    // WCAG relative luminance → pick the foreground that gives better contrast
-    // against the peer's color. Returns deep-ink or near-white.
-    const pickForeground = (hex: string): string => {
-      const n = parseInt(hex.slice(1), 16);
-      const toLin = (c: number) => {
-        const s = c / 255;
-        return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
-      };
-      const r = toLin((n >> 16) & 0xff);
-      const g = toLin((n >> 8)  & 0xff);
-      const b = toLin( n        & 0xff);
-      const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-      // Contrast ratios vs pure white (1.0) and near-black (~0.0)
-      const ratioWhite = 1.05 / (L + 0.05);
-      const ratioBlack = (L + 0.05) / 0.05;
-      return ratioBlack > ratioWhite ? "#0a0a0a" : "#ffffff";
-    };
-
-    const addPeer = (id: string, name: string, color: string) => {
-      if (peers.has(id)) return;
-      const safeColor = HEX_RE.test(color) ? color : "#888888";
-      const fg = pickForeground(safeColor);
-
-      const el = document.createElement("div");
-      el.className = "peer";
-      // Set color on the wrapper so children (arrow path, text-mode I-beam) inherit
-      el.style.color = safeColor;
-
-      const svg = document.createElementNS(SVG_NS, "svg");
-      svg.setAttribute("class", "peer-arrow");
-      svg.setAttribute("viewBox", "0 0 16 22");
-      const path = document.createElementNS(SVG_NS, "path");
-      path.setAttribute("d", ARROW_D);
-      // Inherit the shared wiggle filter - the wiggleLoop will cycle it
-      path.setAttribute("filter", "url(#cursor-wiggle-0)");
-      svg.appendChild(path);
-
-      const label = document.createElement("span");
-      label.className = "peer-label";
-      // background = peer color, text = whichever of white/ink beats contrast
-      label.style.backgroundColor = safeColor;
-      label.style.color = fg;
-      label.style.textShadow = "none"; // override CSS default that assumed white
-      label.textContent = name; // textContent escapes - safe
-
-      el.appendChild(svg);
-      el.appendChild(label);
-      layer.appendChild(el);
-
-      // Per-peer selection container - lives in the absolute selections layer
-      const selEl = document.createElement("div");
-      selEl.className = "peer-selection-set";
-      selections.appendChild(selEl);
-
-      peers.set(id, {
-        id, name, color: safeColor, el, selEl,
-        tx: -100, ty: -100, cx: -100, cy: -100,
-        firstFrame: true,
-        mode: "default",
-        pressed: false,
-      });
-      updateCount();
-    };
-
-    const updatePeerState = (id: string, mode?: string, pressed?: boolean) => {
-      const p = peers.get(id);
-      if (!p) return;
-      if (typeof mode === "string" && p.mode !== mode) {
-        p.mode = mode;
-        p.el.dataset.mode = mode;
-      }
-      if (typeof pressed === "boolean" && p.pressed !== pressed) {
-        p.pressed = pressed;
-        if (pressed) p.el.dataset.pressed = "true";
-        else         delete p.el.dataset.pressed;
-      }
-    };
-
-    const removePeer = (id: string) => {
-      const p = peers.get(id);
-      if (!p) return;
-      p.el.remove();
-      p.selEl.remove();
-      peers.delete(id);
-      updateCount();
-    };
-
-    // Walk text nodes inside `root` counting characters; return char count
-    // between `root` start and (targetNode, targetOffset).
-    const textOffsetWithin = (root: Node, target: Node, targetOffset: number): number => {
-      if (root === target) return targetOffset;
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-      let offset = 0;
-      let n: Node | null;
-      while ((n = walker.nextNode())) {
-        if (n === target) return offset + targetOffset;
-        offset += (n.nodeValue || "").length;
-      }
-      return offset;
-    };
-
-    // Inverse: find the text node + offset N characters into `root`.
-    const textNodeAt = (root: Node, target: number): { node: Text; offset: number } | null => {
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-      let offset = 0;
-      let n: Node | null;
-      while ((n = walker.nextNode())) {
-        const len = (n.nodeValue || "").length;
-        if (offset + len >= target) {
-          return { node: n as Text, offset: Math.max(0, Math.min(len, target - offset)) };
-        }
-        offset += len;
-      }
-      // Past the end - return last text node end position
-      if (n) {
-        const len = (n.nodeValue || "").length;
-        return { node: n as Text, offset: len };
-      }
-      return null;
-    };
-
-    // Render a peer's selection using anchor + text offsets - reconstructs
-    // the Range on THIS client so rects are pixel-perfect on our layout.
-    const renderPeerSelectionFromAnchor = (
-      id: string, anchor: string, startOffset: number, endOffset: number,
-    ) => {
-      const p = peers.get(id);
-      if (!p) return;
-      p.lastSelection = { anchor, startOffset, endOffset };
-      while (p.selEl.firstChild) p.selEl.removeChild(p.selEl.firstChild);
-      if (startOffset === endOffset) return;
-
-      let root: Element | null;
-      try { root = document.querySelector(anchor); } catch { return; }
-      if (!root) return;
-
-      const a = textNodeAt(root, Math.min(startOffset, endOffset));
-      const b = textNodeAt(root, Math.max(startOffset, endOffset));
-      if (!a || !b) return;
-
-      const range = document.createRange();
-      try {
-        range.setStart(a.node, a.offset);
-        range.setEnd(b.node, b.offset);
-      } catch { return; }
-
-      const sx = window.scrollX, sy = window.scrollY;
-      for (const r of Array.from(range.getClientRects())) {
-        if (r.width <= 0 || r.height <= 0) continue;
-        const rect = document.createElement("div");
-        rect.className = "peer-selection";
-        rect.style.transform = `translate(${r.left + sx}px, ${r.top + sy}px)`;
-        rect.style.width  = `${r.width}px`;
-        rect.style.height = `${r.height}px`;
-        rect.style.backgroundColor = p.color;
-        p.selEl.appendChild(rect);
-      }
-    };
-
-    // Legacy fallback - render pre-computed rects (from older senders)
-    const renderPeerSelection = (id: string, rects: number[][]) => {
-      const p = peers.get(id);
-      if (!p) return;
-      p.lastSelection = null;
-      while (p.selEl.firstChild) p.selEl.removeChild(p.selEl.firstChild);
-      for (const r of rects) {
-        const [x, y, w, h] = r;
-        if (typeof x !== "number" || typeof y !== "number" ||
-            typeof w !== "number" || typeof h !== "number") continue;
-        if (w <= 0 || h <= 0) continue;
-        const rect = document.createElement("div");
-        rect.className = "peer-selection";
-        rect.style.transform = `translate(${x}px, ${y}px)`;
-        rect.style.width  = `${w}px`;
-        rect.style.height = `${h}px`;
-        rect.style.backgroundColor = p.color;
-        p.selEl.appendChild(rect);
-      }
-    };
-
-    // Peer positions are DOM-anchored - they travel as (element, ax, ay)
-    // where ax/ay are fractions within the element's bounding rect. The
-    // receiver resolves the element by CSS path on THEIR layout and computes
-    // the local pixel position. This is what makes cursors land on the same
-    // CONTENT across different viewport sizes / responsive breakpoints.
-    //
-    // Legacy fallback: if anchor doesn't resolve, the message also carries
-    // viewport-fraction x/y so we still render something sensible.
-    const docSize = () => ({
-      w: Math.max(document.documentElement.scrollWidth,  window.innerWidth),
-      h: Math.max(document.documentElement.scrollHeight, window.innerHeight),
+    systemTheme.addEventListener?.("change", (event) => {
+      let stored = null;
+      try { stored = window.localStorage.getItem(storageKey); } catch {}
+      if (!stored) applyTheme(event.matches ? "dark" : "light");
     });
 
-    // Resolve an incoming move to a document-pixel target position.
-    const resolveTarget = (
-      anchor: string | undefined,
-      ax: number | undefined,
-      ay: number | undefined,
-      x01: number,
-      y01: number,
-    ): { x: number; y: number } => {
-      if (anchor && typeof ax === "number" && typeof ay === "number") {
-        try {
-          const el = document.querySelector(anchor) as HTMLElement | null;
-          if (el) {
-            const r = el.getBoundingClientRect();
-            if (r.width > 0 && r.height > 0) {
-              return {
-                x: r.left + ax * r.width  + window.scrollX,
-                y: r.top  + ay * r.height + window.scrollY,
-              };
-            }
-          }
-        } catch { /* invalid selector - fall through to legacy */ }
-      }
-      const { w, h } = docSize();
-      return { x: Math.max(0, Math.min(1, x01)) * w, y: Math.max(0, Math.min(1, y01)) * h };
-    };
-
-    const updatePeerTarget = (
-      id: string,
-      x01: number,
-      y01: number,
-      anchor?: string,
-      ax?: number,
-      ay?: number,
-    ) => {
-      const p = peers.get(id);
-      if (!p) return;
-      p.lastMove = { anchor, ax, ay, x: x01, y: y01 };
-      const { x, y } = resolveTarget(anchor, ax, ay, x01, y01);
-      p.tx = x;
-      p.ty = y;
-      if (p.firstFrame) {
-        p.cx = p.tx;
-        p.cy = p.ty;
-        p.firstFrame = false;
-      }
-    };
-
-    // Render loop - lerps peers toward target (in document coords), then
-    // renders relative to current scroll. Scrolling instantly re-anchors
-    // every peer to its document point on the next frame.
-    const tick = () => {
-      const sx = window.scrollX;
-      const sy = window.scrollY;
-      for (const p of peers.values()) {
-        p.cx += (p.tx - p.cx) * 0.22;
-        p.cy += (p.ty - p.cy) * 0.22;
-        p.el.style.transform = `translate3d(${p.cx - sx}px, ${p.cy - sy}px, 0)`;
-      }
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-
-    // ── WebSocket with reconnect backoff ─────────────────
-    let ws: WebSocket | null = null;
-    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
-    let reconnectDelay = 1000;
-
-    const connect = () => {
-      try { ws = new WebSocket(WSS_URL); }
-      catch { scheduleReconnect(); return; }
-
-      ws.addEventListener("open", () => { reconnectDelay = 1000; });
-
-      ws.addEventListener("message", (e) => {
-        let msg: unknown;
-        try { msg = JSON.parse(String(e.data)); } catch { return; }
-        if (typeof msg !== "object" || msg === null) return;
-        const m = msg as { type?: string; [k: string]: unknown };
-
-        switch (m.type) {
-          case "welcome":
-            myId = (m.self as { id?: string } | undefined)?.id ?? null;
-            if (Array.isArray(m.peers)) {
-              for (const p of m.peers) {
-                if (p && typeof p.id === "string" && typeof p.name === "string" && typeof p.color === "string") {
-                  addPeer(p.id, p.name, p.color);
-                }
-              }
-            }
-            break;
-          case "join":
-            if (typeof m.id === "string" && typeof m.name === "string" && typeof m.color === "string" && m.id !== myId) {
-              addPeer(m.id, m.name, m.color);
-            }
-            break;
-          case "leave":
-            if (typeof m.id === "string") removePeer(m.id);
-            break;
-          case "move":
-            if (typeof m.id === "string" && typeof m.x === "number" && typeof m.y === "number") {
-              updatePeerTarget(
-                m.id, m.x, m.y,
-                typeof m.anchor === "string" ? m.anchor : undefined,
-                typeof m.ax === "number" ? m.ax : undefined,
-                typeof m.ay === "number" ? m.ay : undefined,
-              );
-            }
-            break;
-          case "state":
-            if (typeof m.id === "string") {
-              updatePeerState(
-                m.id,
-                typeof m.mode === "string" ? m.mode : undefined,
-                typeof m.pressed === "boolean" ? m.pressed : undefined,
-              );
-            }
-            break;
-          case "selection":
-            if (typeof m.id === "string") {
-              // Prefer anchor-based selection (reconstructs Range on this client)
-              if (
-                typeof m.anchor === "string" &&
-                typeof m.startOffset === "number" &&
-                typeof m.endOffset === "number"
-              ) {
-                renderPeerSelectionFromAnchor(m.id, m.anchor, m.startOffset, m.endOffset);
-              } else if (Array.isArray(m.rects)) {
-                renderPeerSelection(m.id, m.rects as number[][]);
-              } else {
-                // Empty selection - clear
-                renderPeerSelection(m.id, []);
-              }
-            }
-            break;
-        }
-      });
-
-      ws.addEventListener("close", () => {
-        for (const id of [...peers.keys()]) removePeer(id);
-        myId = null;
-        scheduleReconnect();
-      });
-
-      ws.addEventListener("error", () => { try { ws?.close(); } catch {} });
-    };
-
-    const scheduleReconnect = () => {
-      if (reconnectTimer) return;
-      reconnectTimer = setTimeout(() => {
-        reconnectTimer = null;
-        reconnectDelay = Math.min(reconnectDelay * 2, 30_000);
-        connect();
-      }, reconnectDelay);
-    };
-
-    connect();
-
-    window.addEventListener("beforeunload", () => { try { ws?.close(); } catch {} });
-
-    // ── DOM-anchor helpers - same selector on any client of this page ─
-
-    // Build a CSS selector that uniquely identifies `el` within the document.
-    // Bails out early if it hits an id (most stable). Caps depth at 12.
-    const pathTo = (el: Element | null): string => {
-      if (!el || el === document.documentElement) return "";
-      if (el === document.body) return "body";
-      const parts: string[] = [];
-      let cur: Element | null = el;
-      let depth = 0;
-      while (cur && cur !== document.body && depth < 12) {
-        if (cur.id) {
-          parts.unshift(`#${CSS.escape(cur.id)}`);
-          return parts.join(" > ");
-        }
-        const parent: Element | null = cur.parentElement;
-        if (!parent) break;
-        const siblings = Array.from(parent.children).filter(s => s.tagName === cur!.tagName);
-        if (siblings.length === 1) {
-          parts.unshift(cur.tagName.toLowerCase());
-        } else {
-          const idx = siblings.indexOf(cur) + 1;
-          parts.unshift(`${cur.tagName.toLowerCase()}:nth-of-type(${idx})`);
-        }
-        cur = parent;
-        depth++;
-      }
-      return parts.length ? `body > ${parts.join(" > ")}` : "body";
-    };
-
-    // ── Outgoing cursor position (throttled to rAF cadence) ─
-    let outX = 0, outY = 0;
-    let outAnchor: string | undefined;
-    let outAx: number | undefined;
-    let outAy: number | undefined;
-    let dirty = false;
-    let lastSentSig = "";
-
-    window.addEventListener("pointermove", (e) => {
-      // Legacy doc-fraction fallback (used if anchor doesn't resolve elsewhere)
-      const { w, h } = docSize();
-      outX = (e.clientX + window.scrollX) / w;
-      outY = (e.clientY + window.scrollY) / h;
-
-      // Preferred DOM anchor: which element is the cursor over, where inside it?
-      const target = document.elementFromPoint(e.clientX, e.clientY);
-      if (target && target !== document.documentElement) {
-        const r = target.getBoundingClientRect();
-        if (r.width > 0 && r.height > 0) {
-          outAnchor = pathTo(target);
-          outAx = (e.clientX - r.left) / r.width;
-          outAy = (e.clientY - r.top)  / r.height;
-        } else {
-          outAnchor = undefined;
-        }
-      } else {
-        outAnchor = undefined;
-      }
-
-      dirty = true;
-    }, { passive: true });
-
-    const sendLoop = () => {
-      if (dirty && ws && ws.readyState === WebSocket.OPEN) {
-        // Dedup against last sent signature so an identical frame doesn't re-emit
-        const sig = `${outAnchor ?? ""}|${outAx ?? ""}|${outAy ?? ""}|${outX}|${outY}`;
-        if (sig !== lastSentSig) {
-          ws.send(JSON.stringify({
-            type: "move",
-            x: outX, y: outY,
-            anchor: outAnchor, ax: outAx, ay: outAy,
-          }));
-          lastSentSig = sig;
-        }
-        dirty = false;
-      }
-      requestAnimationFrame(sendLoop);
-    };
-    requestAnimationFrame(sendLoop);
-
-    // ── Mirror local cursor mode/press to peers via WebSocket ───
-    let lastSentMode    = "default";
-    let lastSentPressed = false;
-
-    const sendState = (next: { mode?: string; pressed?: boolean }) => {
-      if (!ws || ws.readyState !== WebSocket.OPEN) return;
-      const mode    = next.mode    ?? lastSentMode;
-      const pressed = next.pressed ?? lastSentPressed;
-      if (mode === lastSentMode && pressed === lastSentPressed) return;
-      lastSentMode    = mode;
-      lastSentPressed = pressed;
-      ws.send(JSON.stringify({ type: "state", mode, pressed }));
-    };
-
-    window.addEventListener("cursor:mode", (e) => {
-      const mode = (e as CustomEvent<{ mode: string }>).detail.mode;
-      sendState({ mode });
-    });
-    window.addEventListener("cursor:press", (e) => {
-      const pressed = (e as CustomEvent<{ pressed: boolean }>).detail.pressed;
-      sendState({ pressed });
-    });
-
-    // ── Broadcast local text selection as anchor + text offsets ─────
-    //
-    // Anchor = CSS path to the selection's common ancestor element.
-    // startOffset/endOffset = character positions within that ancestor's
-    // concatenated text content. Receivers reconstruct the exact same Range
-    // on their own DOM and compute rects on THEIR layout - so the highlight
-    // wraps the same words regardless of viewport size.
-    let selectionDirty = false;
-    let lastSelectionKey = "";
-
-    const captureSelectionAnchor = (): { anchor: string; startOffset: number; endOffset: number } | null => {
-      const sel = window.getSelection();
-      if (!sel || sel.isCollapsed || sel.rangeCount === 0) return null;
-      const range = sel.getRangeAt(0);
-      const common = range.commonAncestorContainer.nodeType === 1
-        ? (range.commonAncestorContainer as Element)
-        : range.commonAncestorContainer.parentElement;
-      if (!common) return null;
-      const anchor = pathTo(common);
-      if (!anchor) return null;
-      const startOffset = textOffsetWithin(common, range.startContainer, range.startOffset);
-      const endOffset   = textOffsetWithin(common, range.endContainer,   range.endOffset);
-      return { anchor, startOffset, endOffset };
-    };
-
-    const sendSelection = () => {
-      if (!ws || ws.readyState !== WebSocket.OPEN) return;
-      const data = captureSelectionAnchor();
-      const key = data
-        ? `${data.anchor}|${data.startOffset}|${data.endOffset}`
-        : "0";
-      if (key === lastSelectionKey) return;
-      lastSelectionKey = key;
-      if (data) {
-        ws.send(JSON.stringify({
-          type: "selection",
-          anchor: data.anchor,
-          startOffset: data.startOffset,
-          endOffset: data.endOffset,
-        }));
-      } else {
-        ws.send(JSON.stringify({ type: "selection" })); // cleared
-      }
-    };
-
-    document.addEventListener("selectionchange", () => { selectionDirty = true; }, { passive: true });
-
-    const selectionLoop = () => {
-      if (selectionDirty) {
-        selectionDirty = false;
-        sendSelection();
-      }
-      requestAnimationFrame(selectionLoop);
-    };
-    requestAnimationFrame(selectionLoop);
-
-    // On local layout change, re-resolve every peer's stored anchor data
-    // against the new layout so their cursors + selections stay anchored
-    // to the same DOM content.
-    const relayoutPeers = () => {
-      for (const p of peers.values()) {
-        if (p.lastMove) {
-          const { x, y } = resolveTarget(
-            p.lastMove.anchor, p.lastMove.ax, p.lastMove.ay,
-            p.lastMove.x, p.lastMove.y,
-          );
-          p.tx = x; p.ty = y;
-          // Don't reset cx/cy - the lerp will catch up smoothly
-        }
-        if (p.lastSelection) {
-          // Re-render selection rects from the same anchor data
-          const { anchor, startOffset, endOffset } = p.lastSelection;
-          renderPeerSelectionFromAnchor(p.id, anchor, startOffset, endOffset);
-        }
-      }
-    };
-
-    window.addEventListener("resize", () => {
-      relayoutPeers();
-      // Also re-emit our own selection so other peers re-render against
-      // their new layouts (anchor + offsets are layout-independent, but
-      // their rendered rects need a refresh).
-      lastSelectionKey = "";
-      selectionDirty = true;
-    });
+    applyTheme(root.dataset.theme === "dark" ? "dark" : "light");
   })();
+</script>
 
-  // ── Contact form submission ───────────────────────────
-  const form = document.getElementById("contact-form") as HTMLFormElement | null;
-  const submit = document.getElementById("contact-submit") as HTMLButtonElement | null;
-  const status = document.getElementById("form-status");
+<script is:inline>
+  (() => {
+    const skeletons = document.querySelectorAll(".t-skel");
+    if (!skeletons.length) return;
 
-  if (form && submit && status) {
-    const setStatus = (msg: string, state: "" | "error" | "ok") => {
-      status.textContent = msg;
-      if (state) {
-        status.setAttribute("data-state", state);
-      } else {
-        status.removeAttribute("data-state");
-      }
+    const cs = getComputedStyle(document.documentElement);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const num = (name, fallback) => {
+      const value = parseFloat(cs.getPropertyValue(name));
+      return Number.isFinite(value) ? value : fallback;
     };
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      setStatus("", "");
+    skeletons.forEach((skel) => {
+      const skeleton = skel.querySelector(".t-skel-skeleton");
+      if (!skeleton) return;
 
-      const data = new FormData(form);
-      const payload = {
-        name:    String(data.get("name")    ?? ""),
-        email:   String(data.get("email")   ?? ""),
-        message: String(data.get("message") ?? ""),
-        company: String(data.get("company") ?? ""),
-      };
-
-      const M = I18N.formMessages || {};
-      const SUBMIT_LABEL = I18N.contact?.submit ?? "Send a note";
-
-      if (!payload.email || !payload.message) {
-        setStatus(M.required ?? "Email and message are required.", "error");
+      if (reducedMotion) {
+        skel.classList.add("is-revealed");
         return;
       }
 
-      submit.setAttribute("aria-busy", "true");
-      submit.textContent = M.sending ?? "Sending...";
+      skel.classList.add("is-resetting");
+      skel.classList.remove("is-revealed");
+      skeleton.classList.remove("is-pulsing");
+      void skeleton.offsetWidth;
+      skel.classList.remove("is-resetting");
+      skeleton.classList.add("is-pulsing");
 
-      try {
-        const res = await fetch("/api/contact", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const json = (await res.json()) as { ok?: boolean; error?: string };
-
-        if (res.ok && json.ok) {
-          form.reset();
-          submit.textContent = M.sent ?? "Sent";
-          setStatus(M.success ?? "Got it. I'll reply to that email today.", "ok");
-          setTimeout(() => {
-            submit.textContent = SUBMIT_LABEL;
-            submit.removeAttribute("aria-busy");
-          }, 2400);
-        } else {
-          submit.textContent = SUBMIT_LABEL;
-          submit.removeAttribute("aria-busy");
-          setStatus(json.error ?? M.genericError ?? "Something went wrong.", "error");
-        }
-      } catch {
-        submit.textContent = SUBMIT_LABEL;
-        submit.removeAttribute("aria-busy");
-        setStatus(M.networkError ?? "Network error.", "error");
-      }
+      window.setTimeout(() => {
+        skel.classList.add("is-revealed");
+      }, num("--pulse-dur", 1000) * num("--pulse-count", 1));
     });
-  }
+  })();
 </script>
+
+<script is:inline>
+  (() => {
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+    const maxDrag = 5;
+    const maxFollow = 5;
+
+    document.querySelectorAll(".tech-sticker").forEach((sticker) => {
+      let dragging = false;
+      let moved = false;
+      let suppressClick = false;
+      let pointerStartX = 0;
+      let pointerStartY = 0;
+
+      const reset = () => {
+        dragging = false;
+        sticker.classList.remove("is-peeling", "is-following");
+        sticker.style.setProperty("--drag-x", "0px");
+        sticker.style.setProperty("--drag-y", "0px");
+      };
+
+      sticker.addEventListener("pointerdown", (event) => {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        dragging = true;
+        moved = false;
+        pointerStartX = event.clientX;
+        pointerStartY = event.clientY;
+        sticker.classList.add("is-peeling");
+        sticker.setPointerCapture?.(event.pointerId);
+      });
+
+      sticker.addEventListener("pointermove", (event) => {
+        if (event.pointerType !== "mouse" && !dragging) return;
+        let x;
+        let y;
+        if (dragging) {
+          x = clamp(event.clientX - pointerStartX, -maxDrag, maxDrag);
+          y = clamp(event.clientY - pointerStartY, -maxDrag, maxDrag);
+          moved ||= Math.abs(event.clientX - pointerStartX) > 1 || Math.abs(event.clientY - pointerStartY) > 1;
+        } else {
+          const rect = sticker.getBoundingClientRect();
+          x = clamp((event.clientX - (rect.left + rect.width / 2)) / (rect.width / 2) * maxFollow, -maxFollow, maxFollow);
+          y = clamp((event.clientY - (rect.top + rect.height / 2)) / (rect.height / 2) * maxFollow, -maxFollow, maxFollow);
+          sticker.classList.add("is-following");
+        }
+        sticker.style.setProperty("--drag-x", `${x}px`);
+        sticker.style.setProperty("--drag-y", `${y}px`);
+      });
+
+      sticker.addEventListener("pointerleave", () => {
+        if (!dragging) reset();
+      });
+      sticker.addEventListener("pointerup", () => {
+        if (moved) suppressClick = true;
+        reset();
+      });
+      sticker.addEventListener("pointercancel", reset);
+      sticker.addEventListener("lostpointercapture", reset);
+      sticker.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        suppressClick = false;
+      });
+    });
+  })();
+</script>
+
+</Layout>

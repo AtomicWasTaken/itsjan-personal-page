@@ -1,10 +1,6 @@
 /// <reference path="../.astro/types.d.ts" />
 
-type ENV = {
-  RESEND_API_KEY: string;
-};
-
-type Runtime = import("@astrojs/cloudflare").Runtime<ENV>;
+type Runtime = import("@astrojs/cloudflare").Runtime;
 
 declare namespace App {
   interface Locals extends Runtime {}
