@@ -45,6 +45,7 @@
   --tt-bg: var(--text);
   --tt-fg: var(--page);
   --tech-card-delay: 750ms;
+  --tech-card-close-delay: 180ms;
   --tech-card-blur: 5px;
   --tech-hover-scale: 1.08;
   --modal-open-dur: 250ms;
@@ -690,6 +691,7 @@ html[data-theme="dark"] .ventry-file-row b {
   background: var(--button-bg);
   box-shadow: var(--button-shadow);
   color: var(--button-text);
+  cursor: pointer;
   font-size: 13px;
   font-weight: 500;
   line-height: 1;
@@ -828,7 +830,10 @@ html[data-theme="dark"] .ventry-file-row b {
   text-align: left;
   white-space: normal;
 }
-.tech-sticker.is-tool-card-active .tech-tool-card { pointer-events: auto; }
+.tech-sticker.is-tool-card-active .tech-tool-card {
+  cursor: pointer;
+  pointer-events: auto;
+}
 .tech-tool-card__surface {
   display: grid;
   gap: 11px;
@@ -860,6 +865,7 @@ html[data-theme="dark"] .ventry-file-row b {
 .tech-sticker.is-peeling .tech-tool-card {
   opacity: 0 !important;
   pointer-events: none;
+  cursor: grabbing;
   transition-delay: 0ms !important;
 }
 .tech-tool-card__head {
@@ -929,6 +935,7 @@ html[data-theme="dark"] .tech-sticker--dark-logo .tech-tool-card__logo img {
   background: var(--button-bg);
   box-shadow: var(--button-shadow);
   color: var(--button-text);
+  cursor: pointer;
   font-size: 10px;
   font-weight: 500;
   line-height: 1;
@@ -940,7 +947,12 @@ html[data-theme="dark"] .tech-sticker--dark-logo .tech-tool-card__logo img {
 .tech-sticker.is-tool-card-active > img,
 .tech-sticker.is-tool-card-active:hover > img,
 .tech-sticker.is-tool-card-active:focus-visible > img {
+  filter: grayscale(0);
+  opacity: 1;
   transform: rotate(0deg) scale(var(--tech-hover-scale));
+}
+html[data-theme="dark"] .tech-sticker--dark-logo.is-tool-card-active > img {
+  filter: brightness(0) invert(1);
 }
 .tech-hover-hint {
   position: absolute;
@@ -1098,18 +1110,28 @@ html[data-theme="dark"] .tech-hover-arrow { color: #fff; }
   height: 40px;
   align-items: center;
   justify-content: center;
+  border-radius: 10px;
+  background: transparent;
   color: var(--text-tertiary);
-  transition-property: transform;
+  cursor: pointer;
+  transition-property: background-color, color, transform;
   transition-duration: 150ms;
   transition-timing-function: var(--ease-smooth-out);
 }
+.social-link:hover {
+  background: var(--card-shell);
+  color: var(--text);
+  transform: translateY(-2px) scale(1.04);
+}
 .social-link:active { transform: scale(.96); }
 .social-link:focus-visible {
-  border-radius: 10px;
   outline: 2px solid var(--text);
   outline-offset: -4px;
 }
-.social-link svg { width: 19px; height: 19px; }
+.social-link svg {
+  width: 19px;
+  height: 19px;
+}
 
 @media (max-width: 520px) {
   .portfolio-main { padding-inline: 20px; }
