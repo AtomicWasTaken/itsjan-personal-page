@@ -92,6 +92,7 @@ interface Strings {
   topPillAria: string;
   backToTopAria: string;
   portfolio: {
+    subtitle: string;
     intro: {
       beforeBremen: string;
       afterBremen: string;
@@ -266,6 +267,7 @@ const en: Strings = {
   topPillAria:  "Building Finny, email me",
   backToTopAria: "Back to top",
   portfolio: {
+    subtitle: "Software developer from Bremen",
     intro: {
       beforeBremen: "I'm from ",
       afterBremen: ", where I finished a ",
@@ -412,6 +414,7 @@ const de: Strings = {
   topPillAria:  "Jan baut Finny, schreib mir",
   backToTopAria: "Zurück nach oben",
   portfolio: {
+    subtitle: "Softwareentwickler aus Bremen",
     intro: {
       beforeBremen: "Ich komme aus ",
       afterBremen: " und habe hier meine ",
