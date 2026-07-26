@@ -224,6 +224,11 @@ html[data-theme="dark"] .tech-sticker--dark-logo.is-following img {
   justify-content: space-between;
   margin-bottom: 20px;
 }
+.profile-subtitle {
+  color: var(--text-tertiary);
+  font-size: 14px;
+  line-height: 20px;
+}
 .theme-toggle {
   position: relative;
   display: grid;
