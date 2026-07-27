@@ -302,7 +302,7 @@ const en: Strings = {
       toLight: "Switch to light mode",
     },
     activity: {
-      heading: "Activity",
+      heading: "GitHub activity",
       desktopAria: "GitHub contribution activity for the past year",
       mobileAria: "GitHub contribution activity for the past year",
       less: "less",
@@ -456,7 +456,7 @@ const de: Strings = {
       toLight: "Hellmodus einschalten",
     },
     activity: {
-      heading: "Aktivität",
+      heading: "GitHub-Aktivität",
       desktopAria: "GitHub-Beitragsaktivität der letzten zwölf Monate",
       mobileAria: "GitHub-Beitragsaktivität der letzten zwölf Monate",
       less: "weniger",
