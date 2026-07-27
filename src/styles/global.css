@@ -6,11 +6,13 @@
   --sandy-clay: #ddaf89;
   --camel: #c29e7f;
   --brown-bark: #744a24;
-  --text: var(--deep-mocha);
-  --text-secondary: var(--brown-bark);
-  --text-tertiary: var(--camel);
+  --text: #111113;
+  --text-secondary: #4a4a4f;
+  --text-tertiary: #7a7a80;
   --page: #fff;
   --surface: #fff;
+  --selection-bg: var(--sandy-clay);
+  --selection-text: #000;
   --card-shell: #f2f2f2;
   --card-shadow: 0 0 0 1px rgba(0, 0, 0, .08);
   --divider: rgba(0, 0, 0, .08);
@@ -69,6 +71,8 @@ html[data-theme="dark"] {
   --text-tertiary: #85858a;
   --page: #0b0b0c;
   --surface: #151517;
+  --selection-bg: var(--brown-bark);
+  --selection-text: #fff;
   --card-shell: #222225;
   --card-shadow: 0 0 0 1px rgba(255, 255, 255, .08);
   --divider: rgba(255, 255, 255, .1);
@@ -98,6 +102,8 @@ html[data-theme="dark"] {
     --text-tertiary: #85858a;
     --page: #0b0b0c;
     --surface: #151517;
+    --selection-bg: var(--brown-bark);
+    --selection-text: #fff;
     --card-shell: #222225;
     --card-shadow: 0 0 0 1px rgba(255, 255, 255, .08);
     --divider: rgba(255, 255, 255, .1);
@@ -121,6 +127,14 @@ html[data-theme="dark"] {
 }
 
 * { box-sizing: border-box; }
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+::-moz-selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
 html {
   background: var(--page);
   color-scheme: light;
