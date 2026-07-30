@@ -118,9 +118,7 @@ interface Strings {
       mobileHeading: string;
       mobileViewMore: string;
       mobileViewLess: string;
-      cardLabel: string;
       visitLabel: (name: string) => string;
-      hoverHint: string;
       items: { name: string; logo: string; href: string; darkModeLight?: boolean; detail: { en: string; de: string } }[];
     };
     experience: {
@@ -326,9 +324,7 @@ const en: Strings = {
       mobileHeading: "Technologies",
       mobileViewMore: "View more",
       mobileViewLess: "Show less",
-      cardLabel: "how I use it",
       visitLabel: (name) => `Click to visit ${name} ↗`,
-      hoverHint: "hover me",
       items: technologyLogos,
     },
     experience: {
@@ -529,9 +525,7 @@ const de: Strings = {
       mobileHeading: "Technologien",
       mobileViewMore: "Mehr anzeigen",
       mobileViewLess: "Weniger anzeigen",
-      cardLabel: "wofür ich es nutze",
       visitLabel: (name) => `${name} besuchen ↗`,
-      hoverHint: "Maus hier halten",
       items: technologyLogos,
     },
     experience: {
