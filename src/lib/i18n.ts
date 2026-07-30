@@ -1,5 +1,7 @@
 // Bilingual content + locale detection from Accept-Language header.
 
+import type { Technology } from "./portfolio";
+
 export type Locale = "en" | "de";
 
 export function detectLocale(request: Request): Locale {
@@ -119,7 +121,7 @@ interface Strings {
       mobileViewMore: string;
       mobileViewLess: string;
       visitLabel: (name: string) => string;
-      items: { name: string; logo: string; href: string; darkModeLight?: boolean; detail: { en: string; de: string } }[];
+      items: Technology[];
     };
     experience: {
       heading: string;
@@ -187,7 +189,7 @@ interface Strings {
   };
 }
 
-const technologyLogos = [
+const technologyLogos: Technology[] = [
   { name: "PHP", logo: "https://cdn.simpleicons.org/php/777BB4", href: "https://www.php.net/", detail: { en: "The backend work I do every day: services and APIs.", de: "Backend-Arbeit für jeden Tag: Services und APIs." } },
   { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/3178C6", href: "https://www.typescriptlang.org/", detail: { en: "For APIs and interfaces that should stay easy to change.", de: "Für APIs und Oberflächen, die sich später leicht ändern lassen." } },
   { name: "React", logo: "https://cdn.simpleicons.org/react/61DAFB", href: "https://react.dev/", detail: { en: "My usual choice for app interfaces and reusable UI.", de: "Meine Standardwahl für App-Oberflächen und wiederverwendbare UI." } },

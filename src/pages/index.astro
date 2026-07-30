@@ -2,170 +2,22 @@
 import Layout from "../layouts/Layout.astro";
 import { detectLocale, tr } from "../lib/i18n";
 import { ageYears } from "../lib/jan";
+import {
+  activityRevealOrder,
+  buildActivity,
+  createStickerLayout,
+  createTechnologyCollections,
+  fetchGithubContributions,
+  toStickerStyle,
+} from "../lib/portfolio";
 
 const locale = detectLocale(Astro.request);
 const copy = tr(locale).portfolio;
 const currentAge = ageYears();
-const experienceOnlyTechnologies = [
-  {
-    name: "Symfony",
-    logo: "https://cdn.simpleicons.org/symfony/000000",
-    href: "https://symfony.com/",
-    darkModeLight: true,
-    detail: { en: "Backend framework used during my apprenticeship.", de: "Backend-Framework aus meiner Ausbildung." },
-  },
-  {
-    name: "Git",
-    logo: "https://cdn.simpleicons.org/git/F05032",
-    href: "https://git-scm.com/",
-    detail: { en: "Version control used during my apprenticeship.", de: "Versionsverwaltung aus meiner Ausbildung." },
-  },
-];
-const experienceTechnologyItems = [...copy.tech.items, ...experienceOnlyTechnologies];
-const technologyByName = new Map(experienceTechnologyItems.map((technology) => [technology.name, technology]));
-const featuredMobileTechnologyNames = ["PHP", "TypeScript", "React", "Next.js", "TYPO3", "Symfony", "Git", "Docker"];
-const mobileTechnologies = featuredMobileTechnologyNames
-  .map((name) => technologyByName.get(name))
-  .filter((technology): technology is (typeof experienceTechnologyItems)[number] => Boolean(technology));
-const mobileAdditionalTechnologies = experienceTechnologyItems.filter((technology) => !featuredMobileTechnologyNames.includes(technology.name));
-const technologiesFor = (names: string[]) => names
-  .map((name) => technologyByName.get(name))
-  .filter((technology): technology is (typeof experienceTechnologyItems)[number] => Boolean(technology));
-
-type GithubDay = { date: string; level: number; count: number };
-
-const parseGithubContributions = (html: string): GithubDay[] => {
-  const days: GithubDay[] = [];
-  const cellPattern = /<td\b([^>]*)><\/td>/gi;
-  let cell: RegExpExecArray | null;
-
-  while ((cell = cellPattern.exec(html))) {
-    const attributes = cell[1];
-    if (!/\bContributionCalendar-day\b/i.test(attributes)) continue;
-
-    const date = attributes.match(/\bdata-date="([^"]+)"/i)?.[1];
-    if (!date) continue;
-
-    const level = Number(attributes.match(/\bdata-level="(\d+)"/i)?.[1] ?? 0);
-    const tooltip = html
-      .slice(cell.index + cell[0].length, cell.index + cell[0].length + 600)
-      .match(/<tool-tip\b[^>]*>([\s\S]*?)<\/tool-tip>/i)?.[1]
-      ?.replace(/<[^>]+>/g, "")
-      .trim();
-    const count = Number(tooltip?.match(/\b(\d+)\s+contributions?\b/i)?.[1] ?? 0);
-
-    days.push({ date, level: Math.min(4, Math.max(0, level)), count });
-  }
-
-  return days.sort((a, b) => a.date.localeCompare(b.date));
-};
-
-const fetchGithubContributions = async (): Promise<GithubDay[]> => {
-  try {
-    const response = await fetch("https://github.com/users/AtomicWasTaken/contributions", {
-      headers: {
-        accept: "text/html",
-        "user-agent": "itsjan.dev contribution graph",
-      },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!response.ok) return [];
-
-    const days = parseGithubContributions(await response.text());
-    return days.length > 0 ? days : [];
-  } catch {
-    return [];
-  }
-};
-
-// This runs on every SSR request so the graph always reflects GitHub's latest public data.
 const githubDays = await fetchGithubContributions();
-const today = new Date();
-today.setUTCHours(12, 0, 0, 0);
-const dateKey = (date: Date) => date.toISOString().slice(0, 10);
-const formatter = new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", year: "numeric" });
-const githubByDate = new Map(githubDays.map((day) => [day.date, day]));
-const activityStart = githubDays.length
-  ? new Date(`${githubDays[0].date}T12:00:00Z`)
-  : new Date(today);
-
-if (!githubDays.length) activityStart.setUTCDate(today.getUTCDate() - 364);
-
-const activityLength = githubDays.length || 365;
-const activity = Array.from({ length: activityLength }, (_, index) => {
-  const date = new Date(activityStart);
-  date.setUTCDate(activityStart.getUTCDate() + index);
-  const contribution = githubByDate.get(dateKey(date));
-  const count = contribution?.count ?? 0;
-  const level = contribution?.level ?? 0;
-
-  return {
-    label: `${formatter.format(date)} · ${count} ${count === 1 ? copy.activity.contribution : copy.activity.contributions}`,
-    level,
-    project: count ? "other" : "none",
-    count,
-  };
-});
-const mobileActivity = activity;
-const activityColumns = Math.ceil(activity.length / 7);
-const mobileActivityColumns = activityColumns;
-// The DOM is column-major, matching the visual grid. Give every tile in a
-// column the same delay so all seven rows advance in parallel, left → right.
-const activityRevealOrder = (index: number, _columns: number) => Math.floor(index / 7);
-type StickerPlacement = { side: "left" | "right"; topPercent: number; offsetPercent: number; size: number; rotation: number };
-const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
-const shuffle = <T>(items: T[]) => {
-  for (let index = items.length - 1; index > 0; index -= 1) {
-    const swapIndex = randomInt(0, index);
-    [items[index], items[swapIndex]] = [items[swapIndex], items[index]];
-  }
-  return items;
-};
-const horizontalBands = [[7, 24], [36, 59], [72, 94]] as const;
-const createBandOrder = (count: number) => {
-  const order: number[] = [];
-  while (order.length < count) {
-    const group = shuffle([0, 1, 2]);
-    if (order.at(-1) === group[0]) [group[0], group[1]] = [group[1], group[0]];
-    order.push(...group);
-  }
-  return order.slice(0, count);
-};
-const createSideLayout = (side: "left" | "right", count: number): StickerPlacement[] => {
-  const firstTop = 4;
-  const lastTop = 88;
-  const step = count > 1 ? (lastTop - firstTop) / (count - 1) : 0;
-  const verticalJitter = step * .02;
-  const bandOrder = createBandOrder(count);
-
-  return Array.from({ length: count }, (_, row) => {
-    const [bandStart, bandEnd] = horizontalBands[bandOrder[row]];
-    const topPercent = count > 1
-      ? firstTop + row * step + (Math.random() * 2 - 1) * verticalJitter
-      : (firstTop + lastTop) / 2;
-
-    return {
-      side,
-      topPercent,
-      offsetPercent: bandStart + Math.random() * (bandEnd - bandStart),
-      size: randomInt(31, 43),
-      rotation: randomInt(-10, 10),
-    };
-  });
-};
-const createStickerLayout = (count: number): StickerPlacement[] => {
-  const leftCount = Math.ceil(count / 2);
-  const rightCount = count - leftCount;
-  return shuffle([
-    ...createSideLayout("left", leftCount),
-    ...createSideLayout("right", rightCount),
-  ]);
-};
+const technologies = createTechnologyCollections(copy.tech.items);
+const activity = buildActivity(githubDays, locale, copy.activity);
 const stickerLayout = createStickerLayout(copy.tech.items.length);
-const stickerStyle = (index: number) => {
-  const placement = stickerLayout[index];
-  return `top:${placement.topPercent}%; --sticker-x:${placement.offsetPercent}%; --icon-size:min(${placement.size}px,5vh); --sticker-rotation:${placement.rotation}deg`;
-};
 ---
 
 <Layout>
@@ -187,7 +39,7 @@ const stickerStyle = (index: number) => {
             target="_blank"
             rel="noreferrer"
             class={`tech-sticker tech-sticker--left tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
-            style={stickerStyle(index)}
+            style={toStickerStyle(placement)}
             aria-label={technology.name}
           >
             <img src={technology.logo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
@@ -204,7 +56,7 @@ const stickerStyle = (index: number) => {
             target="_blank"
             rel="noreferrer"
             class={`tech-sticker tech-sticker--right tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
-            style={stickerStyle(index)}
+            style={toStickerStyle(placement)}
             aria-label={technology.name}
           >
             <img src={technology.logo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
@@ -288,7 +140,7 @@ const stickerStyle = (index: number) => {
             {item.bullets.map((bullet) => <li>{bullet}</li>)}
           </ul>
           <ul class="experience-technologies" aria-label={copy.tech.aria}>
-            {technologiesFor(item.technologies).map((technology) => (
+            {technologies.find(item.technologies).map((technology) => (
               <li>
                 <a
                   class={technology.darkModeLight ? "squircle experience-technology experience-technology--dark-logo" : "squircle experience-technology"}
@@ -368,7 +220,7 @@ const stickerStyle = (index: number) => {
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.tech.mobileHeading}</h2>
     <div id="mobile-tech-accordion" class="t-acc mobile-tech-accordion" data-open="false">
       <ul id="mobile-tech-list" class="mobile-tech-grid mt-6" aria-label={copy.tech.aria}>
-        {mobileTechnologies.map((technology) => (
+        {technologies.featured.map((technology) => (
           <li>
             <a
               class={`mobile-tech-link${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
@@ -389,7 +241,7 @@ const stickerStyle = (index: number) => {
       <div id="mobile-tech-additional" class="t-acc-panel">
         <div class="t-acc-panel-inner">
           <ul class="mobile-tech-grid" aria-label={copy.tech.aria}>
-            {mobileAdditionalTechnologies.map((technology) => (
+            {technologies.additional.map((technology) => (
               <li>
                 <a
                   class={`mobile-tech-link${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
@@ -434,17 +286,17 @@ const stickerStyle = (index: number) => {
       <div class="activity-scroll activity-scroll-desktop" role="group" aria-label={copy.activity.desktopAria}>
         <div class="t-skel activity-reveal" data-state="loading">
           <div class="t-skel-skeleton is-pulsing activity-grid" aria-hidden="true">
-            {activity.map((_, index) => <span class="activity-day" data-level="0" style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>)}
+            {activity.map((_, index) => <span class="activity-day" data-level="0" style={`--activity-order:${activityRevealOrder(index)}`}></span>)}
           </div>
           <div class="t-skel-content activity-grid">
             {activity.map((day, index) => (
               day.count > 0 ? (
                 <span class="t-tt-wrap activity-tooltip-wrap">
-                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} aria-describedby={`activity-tooltip-desktop-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>
+                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} aria-describedby={`activity-tooltip-desktop-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index)}`}></span>
                   <span id={`activity-tooltip-desktop-${index}`} class="t-tt activity-tooltip" role="tooltip">{day.label}</span>
                 </span>
               ) : (
-                <span class="activity-day" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>
+                <span class="activity-day" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} style={`--activity-order:${activityRevealOrder(index)}`}></span>
               )
             ))}
           </div>
@@ -453,17 +305,17 @@ const stickerStyle = (index: number) => {
       <div class="activity-scroll activity-scroll-mobile" role="group" aria-label={copy.activity.mobileAria}>
         <div class="t-skel activity-reveal activity-reveal-mobile" data-state="loading">
           <div class="t-skel-skeleton is-pulsing activity-grid activity-grid-mobile" aria-hidden="true">
-            {mobileActivity.map((_, index) => <span class="activity-day" data-level="0" style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>)}
+            {activity.map((_, index) => <span class="activity-day" data-level="0" style={`--activity-order:${activityRevealOrder(index)}`}></span>)}
           </div>
           <div class="t-skel-content activity-grid activity-grid-mobile">
-            {mobileActivity.map((day, index) => (
+            {activity.map((day, index) => (
               day.count > 0 ? (
                 <span class="t-tt-wrap activity-tooltip-wrap">
-                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} aria-describedby={`activity-tooltip-mobile-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>
+                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} aria-describedby={`activity-tooltip-mobile-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index)}`}></span>
                   <span id={`activity-tooltip-mobile-${index}`} class="t-tt activity-tooltip" role="tooltip">{day.label}</span>
                 </span>
               ) : (
-                <span class="activity-day" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>
+                <span class="activity-day" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} style={`--activity-order:${activityRevealOrder(index)}`}></span>
               )
             ))}
           </div>

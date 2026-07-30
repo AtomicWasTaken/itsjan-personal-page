@@ -1,6 +1,13 @@
 ---
 import "../styles/global.css";
 import { detectLocale, tr } from "../lib/i18n";
+import {
+  CONTACT_EMAIL,
+  OPEN_GRAPH_IMAGE_URL,
+  PROFILE_IMAGE_URL,
+  SITE_ORIGIN,
+  SOCIAL_LINKS,
+} from "../lib/site";
 
 const locale = detectLocale(Astro.request);
 const copy = tr(locale);
@@ -8,14 +15,11 @@ const title = locale === "de" ? "Jan-Marlon Leibl · Entwickler aus Bremen" : "J
 const description = locale === "de"
   ? "Jan-Marlon Leibl ist Softwareentwickler aus Bremen. Er baut Finny, eine App für Belege und Garantie-Erinnerungen."
   : "Jan-Marlon Leibl is a software developer from Bremen. He is building Finny, an app for receipts and warranty reminders.";
-const siteUrl = "https://itsjan.dev";
 const requestUrl = new URL(Astro.request.url);
 const requestLocale = requestUrl.searchParams.get("lang") ?? requestUrl.pathname.split("/")[1];
 const localizedPath = requestLocale === "de" || requestLocale === "en" ? `/${requestLocale}` : "/";
-const url = `${siteUrl}${localizedPath}`;
-const markdownUrl = `${siteUrl}${localizedPath === "/" ? "/index.md" : `${localizedPath}.md`}`;
-const ogImage = `${siteUrl}/og.png`;
-const profileImage = `${siteUrl}/jan-profile.jpg`;
+const url = `${SITE_ORIGIN}${localizedPath}`;
+const markdownUrl = `${SITE_ORIGIN}${localizedPath === "/" ? "/index.md" : `${localizedPath}.md`}`;
 
 Astro.response.headers.set("Vary", "Accept-Language");
 if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
@@ -47,9 +51,9 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
     </script>
     <link rel="canonical" href={url} />
     <link rel="alternate" type="text/markdown" href={markdownUrl} />
-    <link rel="alternate" hreflang="en" href={`${siteUrl}/en`} />
-    <link rel="alternate" hreflang="de" href={`${siteUrl}/de`} />
-    <link rel="alternate" hreflang="x-default" href={siteUrl} />
+    <link rel="alternate" hreflang="en" href={`${SITE_ORIGIN}/en`} />
+    <link rel="alternate" hreflang="de" href={`${SITE_ORIGIN}/de`} />
+    <link rel="alternate" hreflang="x-default" href={SITE_ORIGIN} />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/jan-profile.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -60,7 +64,7 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
     <meta property="og:url" content={url} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={OPEN_GRAPH_IMAGE_URL} />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -68,32 +72,32 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={OPEN_GRAPH_IMAGE_URL} />
     <meta name="twitter:image:alt" content={copy.meta.imageAlt} />
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": "Person",
-          "@id": `${siteUrl}/#person`,
+          "@id": `${SITE_ORIGIN}/#person`,
           name: "Jan-Marlon Leibl",
-          url: siteUrl,
-          image: profileImage,
+          url: SITE_ORIGIN,
+          image: PROFILE_IMAGE_URL,
           jobTitle: copy.meta.jobTitle,
-          email: "hi@itsjan.dev",
+          email: CONTACT_EMAIL,
           address: { "@type": "PostalAddress", addressLocality: "Bremen", addressCountry: "DE" },
-          sameAs: ["https://github.com/AtomicWasTaken", "https://www.linkedin.com/in/janmarlonleibl/", "https://x.com/janodersooo"],
+          sameAs: Object.values(SOCIAL_LINKS),
           knowsAbout: ["PHP", "TypeScript", "React", "Next.js", "TYPO3", "Symfony", "Cloudflare"],
           mainEntityOfPage: url,
         },
         {
           "@type": "WebSite",
-          "@id": `${siteUrl}/#website`,
+          "@id": `${SITE_ORIGIN}/#website`,
           name: "itsjan.dev",
-          url: siteUrl,
+          url: SITE_ORIGIN,
           description,
           inLanguage: copy.htmlLang,
-          publisher: { "@id": `${siteUrl}/#person` },
+          publisher: { "@id": `${SITE_ORIGIN}/#person` },
         },
       ],
     })} />
