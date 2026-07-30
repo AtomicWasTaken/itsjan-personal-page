@@ -1,4 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
+import { env } from "cloudflare:workers";
 
 const markdownRoutes: Record<string, string> = {
   "/": "/index.md",
@@ -19,9 +20,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const markdownUrl = new URL(markdownRoutes[pathname], request.url);
     // Fetch the public asset directly. Rewriting the request through Astro's
     // page fallback can redirect back to `/`, creating a loop for agents.
-    const assetResponse = await fetch(markdownUrl, {
-      headers: { accept: "*/*" },
-    });
+    const assetResponse = await env.ASSETS.fetch(markdownUrl);
     if (!assetResponse.ok) return next();
 
     const response = new Response(assetResponse.body, assetResponse);
