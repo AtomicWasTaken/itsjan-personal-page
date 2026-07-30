@@ -1,6 +1,10 @@
+import type { ImageMetadata, SvgComponent } from "astro";
+import gitLogo from "../assets/logos/git.svg";
+import symfonyLogo from "../assets/logos/symfony.svg";
+
 export type Technology = {
   name: string;
-  logo: string;
+  logo: SvgComponent & ImageMetadata;
   href: string;
   darkModeLight?: boolean;
 };
@@ -29,13 +33,13 @@ export type StickerPlacement = {
 const EXPERIENCE_ONLY_TECHNOLOGIES: Technology[] = [
   {
     name: "Symfony",
-    logo: "/logos/symfony.svg",
+    logo: symfonyLogo,
     href: "https://symfony.com/",
     darkModeLight: true,
   },
   {
     name: "Git",
-    logo: "/logos/git.svg",
+    logo: gitLogo,
     href: "https://git-scm.com/",
   },
 ];
