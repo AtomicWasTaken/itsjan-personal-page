@@ -13,10 +13,14 @@ const requestUrl = new URL(Astro.request.url);
 const requestLocale = requestUrl.searchParams.get("lang") ?? requestUrl.pathname.split("/")[1];
 const localizedPath = requestLocale === "de" || requestLocale === "en" ? `/${requestLocale}` : "/";
 const url = `${siteUrl}${localizedPath}`;
+const markdownUrl = `${siteUrl}${localizedPath === "/" ? "/index.md" : `${localizedPath}.md`}`;
 const ogImage = `${siteUrl}/og.png`;
 const profileImage = `${siteUrl}/jan-profile.jpg`;
 
 Astro.response.headers.set("Vary", "Accept-Language");
+if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
+  Astro.response.headers.set("Link", "</llms.txt>; rel=\"describedby\"");
+}
 ---
 
 <!doctype html>
@@ -42,6 +46,7 @@ Astro.response.headers.set("Vary", "Accept-Language");
       })();
     </script>
     <link rel="canonical" href={url} />
+    <link rel="alternate" type="text/markdown" href={markdownUrl} />
     <link rel="alternate" hreflang="en" href={`${siteUrl}/en`} />
     <link rel="alternate" hreflang="de" href={`${siteUrl}/de`} />
     <link rel="alternate" hreflang="x-default" href={siteUrl} />
@@ -67,14 +72,30 @@ Astro.response.headers.set("Vary", "Accept-Language");
     <meta name="twitter:image:alt" content={copy.meta.imageAlt} />
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
-      "@type": "Person",
-      name: "Jan-Marlon Leibl",
-      url,
-      image: profileImage,
-      jobTitle: copy.meta.jobTitle,
-      email: "hi@itsjan.dev",
-      address: { "@type": "PostalAddress", addressLocality: "Bremen", addressCountry: "DE" },
-      sameAs: ["https://github.com/AtomicWasTaken", "https://www.linkedin.com/in/janmarlonleibl/", "https://x.com/janodersooo"],
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": `${siteUrl}/#person`,
+          name: "Jan-Marlon Leibl",
+          url: siteUrl,
+          image: profileImage,
+          jobTitle: copy.meta.jobTitle,
+          email: "hi@itsjan.dev",
+          address: { "@type": "PostalAddress", addressLocality: "Bremen", addressCountry: "DE" },
+          sameAs: ["https://github.com/AtomicWasTaken", "https://www.linkedin.com/in/janmarlonleibl/", "https://x.com/janodersooo"],
+          knowsAbout: ["PHP", "TypeScript", "React", "Next.js", "TYPO3", "Symfony", "Cloudflare"],
+          mainEntityOfPage: url,
+        },
+        {
+          "@type": "WebSite",
+          "@id": `${siteUrl}/#website`,
+          name: "itsjan.dev",
+          url: siteUrl,
+          description,
+          inLanguage: copy.htmlLang,
+          publisher: { "@id": `${siteUrl}/#person` },
+        },
+      ],
     })} />
     <meta name="generator" content={Astro.generator} />
   </head>

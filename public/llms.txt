@@ -1,0 +1,37 @@
+# Jan-Marlon Leibl
+
+> Jan-Marlon Leibl is a software developer from Bremen, Germany. He is building Finny, an app that keeps receipts and purchase details together and reminds people before warranties expire.
+
+## About
+
+- Name: Jan-Marlon Leibl
+- Location: Bremen, Germany
+- Role: Software Developer
+- Website: https://itsjan.dev
+- Email: hi@itsjan.dev
+- Languages: German and English
+
+## Work
+
+- Jan finished a three-year software development apprenticeship at team neusta in Bremen from 2023 to 2026.
+- His day-to-day work includes PHP, TypeScript, React, Next.js, and TYPO3.
+- He started coding at age 11 after seeing a friend build a small C# app.
+
+## Projects
+
+- [Finny](https://fnny.app): An app for keeping receipts and purchase details together, with reminders before warranties expire.
+- [Ventry](https://ventry.host): Temporary file sharing with links that expire and remove the shared file.
+
+## Technologies
+
+PHP, TypeScript, React, Next.js, TYPO3, Symfony, Git, Docker, Cloudflare, Tailwind CSS, Bun, and AI-assisted development tools.
+
+## Links
+
+- [English profile](https://itsjan.dev/en): English version of the personal website.
+- [German profile](https://itsjan.dev/de): German version of the personal website.
+- [Full machine-readable context](https://itsjan.dev/llms-full.txt): Expanded profile, work history, projects, and contact details.
+- [Markdown profile](https://itsjan.dev/index.md): Clean Markdown version of the homepage.
+- [GitHub](https://github.com/AtomicWasTaken)
+- [LinkedIn](https://www.linkedin.com/in/janmarlonleibl/)
+- [X](https://x.com/janodersooo)
