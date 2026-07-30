@@ -8,3 +8,8 @@ mechanism.
 
 No agent registration or credentials are required to read the published site
 content and Markdown resources.
+
+## Agent registration
+
+There is no registration endpoint because this site has no authenticated agent
+API. Agents can access the public resources directly without credentials.
