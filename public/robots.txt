@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
+# Content Signals: allow search and real-time agent use, not model training.
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+
 Sitemap: https://itsjan.dev/sitemap-index.xml
