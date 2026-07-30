@@ -72,6 +72,8 @@
   --acc-collapse: 250ms;
   --acc-chevron: 250ms;
   --acc-ease: cubic-bezier(.22, 1, .36, 1);
+  --theme-ripple-duration: 560ms;
+  --theme-ripple-ease: cubic-bezier(.16, 1, .3, 1);
 }
 
 html[data-theme="dark"] {
@@ -154,6 +156,23 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 html[data-theme="dark"] { color-scheme: dark; }
+@supports (view-transition-name: root) {
+  ::view-transition-old(root) {
+    animation: none;
+    z-index: 0;
+  }
+  ::view-transition-new(root) {
+    z-index: 1;
+    clip-path: circle(0 at var(--theme-ripple-x) var(--theme-ripple-y));
+    animation: theme-ripple-expand var(--theme-ripple-duration) var(--theme-ripple-ease) both;
+    backface-visibility: hidden;
+    will-change: clip-path;
+  }
+}
+@keyframes theme-ripple-expand {
+  from { clip-path: circle(0 at var(--theme-ripple-x) var(--theme-ripple-y)); }
+  to { clip-path: circle(var(--theme-ripple-radius) at var(--theme-ripple-x) var(--theme-ripple-y)); }
+}
 body {
   min-width: 320px;
   margin: 0;
@@ -1750,6 +1769,10 @@ html[data-theme="dark"] .tech-hover-arrow { color: #fff; }
   .tech-hover-arrow path {
     animation: none !important;
     stroke-dashoffset: 0;
+  }
+  ::view-transition-new(root) {
+    animation: none !important;
+    clip-path: none !important;
   }
   .t-skel-skeleton, .t-skel-content { transition: none !important; }
   .t-skel-skeleton.is-pulsing > * { animation: none !important; }
