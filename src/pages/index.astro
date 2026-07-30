@@ -585,8 +585,10 @@ const stickerStyle = (index: number) => {
       root.style.setProperty("--theme-ripple-x", `${x}px`);
       root.style.setProperty("--theme-ripple-y", `${y}px`);
       root.style.setProperty("--theme-ripple-radius", `${radius}px`);
+      root.classList.add("is-theme-changing");
 
-      const clearRipple = () => {
+      const clearTransition = () => {
+        root.classList.remove("is-theme-changing");
         root.style.removeProperty("--theme-ripple-x");
         root.style.removeProperty("--theme-ripple-y");
         root.style.removeProperty("--theme-ripple-radius");
@@ -595,17 +597,17 @@ const stickerStyle = (index: number) => {
 
       if (typeof document.startViewTransition !== "function") {
         applyTheme(theme);
-        clearRipple();
+        window.requestAnimationFrame(() => window.requestAnimationFrame(clearTransition));
         return;
       }
 
       try {
         const transition = document.startViewTransition(() => applyTheme(theme));
         activeTransition = transition;
-        transition.finished.then(clearRipple, clearRipple);
+        transition.finished.then(clearTransition, clearTransition);
       } catch {
         applyTheme(theme);
-        clearRipple();
+        clearTransition();
       }
     };
 
