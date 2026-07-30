@@ -114,13 +114,6 @@ const mobileActivityColumns = activityColumns;
 const activityRevealOrder = (index: number, _columns: number) => Math.floor(index / 7);
 type StickerPlacement = { side: "left" | "right"; topPercent: number; offsetPercent: number; size: number; rotation: number };
 const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
-const randomInBand = (index: number, count: number, start: number, end: number) => {
-  if (count <= 1) return (start + end) / 2;
-  const bandSize = (end - start) / count;
-  const bandStart = start + index * bandSize;
-  const inset = bandSize * 0.2;
-  return bandStart + inset + Math.random() * (bandSize - inset * 2);
-};
 const shuffle = <T>(items: T[]) => {
   for (let index = items.length - 1; index > 0; index -= 1) {
     const swapIndex = randomInt(0, index);
@@ -128,46 +121,50 @@ const shuffle = <T>(items: T[]) => {
   }
   return items;
 };
-const createStickerLayout = (count: number): StickerPlacement[] => {
-  const rowCount = Math.ceil(count / 2);
-  const pairCount = Math.floor(count / 2);
-  const topPositions = Array.from({ length: rowCount }, (_, row) => randomInBand(row, rowCount, 5, 94));
-  const pairOffsets = shuffle(Array.from({ length: pairCount }, (_, column) => randomInBand(column, pairCount, 5, 100)));
-  const rows = Array.from({ length: rowCount }, (_, row) => {
-    // One random point per horizontal and vertical band keeps the composition
-    // loose without allowing clusters or large unused areas.
-    const topPercent = topPositions[row];
-    const offsetPercent = row < pairCount ? pairOffsets[row] : randomInt(20, 80);
-    const size = randomInt(32, 43);
-    const tilt = randomInt(4, 12) * (Math.random() < 0.5 ? -1 : 1);
+const horizontalBands = [[7, 24], [36, 59], [72, 94]] as const;
+const createBandOrder = (count: number) => {
+  const order: number[] = [];
+  while (order.length < count) {
+    const group = shuffle([0, 1, 2]);
+    if (order.at(-1) === group[0]) [group[0], group[1]] = [group[1], group[0]];
+    order.push(...group);
+  }
+  return order.slice(0, count);
+};
+const createSideLayout = (side: "left" | "right", count: number): StickerPlacement[] => {
+  const firstTop = 4;
+  const lastTop = 88;
+  const step = count > 1 ? (lastTop - firstTop) / (count - 1) : 0;
+  const verticalJitter = step * .02;
+  const bandOrder = createBandOrder(count);
 
-    if (row < pairCount) {
-      const left = { side: "left" as const, topPercent, offsetPercent, size, rotation: tilt };
-      const right = { side: "right" as const, topPercent, offsetPercent, size, rotation: -tilt };
-      return Math.random() < 0.5 ? [left, right] : [right, left];
-    }
+  return Array.from({ length: count }, (_, row) => {
+    const [bandStart, bandEnd] = horizontalBands[bandOrder[row]];
+    const topPercent = count > 1
+      ? firstTop + row * step + (Math.random() * 2 - 1) * verticalJitter
+      : (firstTop + lastTop) / 2;
 
-    // With an odd number of logos, keep the final one at the edge of a row;
-    // every other row remains a mirrored pair.
-    return [{
-      side: Math.random() < 0.5 ? "left" as const : "right" as const,
+    return {
+      side,
       topPercent,
-      offsetPercent,
-      size,
-      rotation: randomInt(-12, 12),
-    }];
+      offsetPercent: bandStart + Math.random() * (bandEnd - bandStart),
+      size: randomInt(31, 43),
+      rotation: randomInt(-10, 10),
+    };
   });
-
-  return shuffle(rows).flat().slice(0, count);
+};
+const createStickerLayout = (count: number): StickerPlacement[] => {
+  const leftCount = Math.ceil(count / 2);
+  const rightCount = count - leftCount;
+  return shuffle([
+    ...createSideLayout("left", leftCount),
+    ...createSideLayout("right", rightCount),
+  ]);
 };
 const stickerLayout = createStickerLayout(copy.tech.items.length);
-if (stickerLayout[0]) stickerLayout[0].side = "left";
 const stickerStyle = (index: number) => {
   const placement = stickerLayout[index];
-  if (index === 0) {
-    return `top:clamp(48px,14vh,112px); --sticker-x:48px; --icon-size:${placement.size}px; --sticker-rotation:${placement.rotation}deg`;
-  }
-  return `top:${placement.topPercent}%; --sticker-x:${placement.offsetPercent}%; --icon-size:${placement.size}px; --sticker-rotation:${placement.rotation}deg`;
+  return `top:${placement.topPercent}%; --sticker-x:${placement.offsetPercent}%; --icon-size:min(${placement.size}px,5vh); --sticker-rotation:${placement.rotation}deg`;
 };
 ---
 
@@ -180,7 +177,7 @@ const stickerStyle = (index: number) => {
     <div class="top-edge-blur__layer top-edge-blur__layer--3"></div>
     <div class="top-edge-blur__layer top-edge-blur__layer--4"></div>
   </div>
-  <aside class="tech-stickers" aria-label={copy.tech.aria} data-hover-hint={copy.tech.hoverHint}>
+  <aside class="tech-stickers" aria-label={copy.tech.aria}>
     <div class="tech-sticker-side tech-sticker-side--left">
       {copy.tech.items.map((technology, index) => {
         const placement = stickerLayout[index];
@@ -189,23 +186,11 @@ const stickerStyle = (index: number) => {
             href={technology.href}
             target="_blank"
             rel="noreferrer"
-            class={`t-tt-wrap t-tt-trigger tech-sticker tech-sticker--left tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
+            class={`tech-sticker tech-sticker--left tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
             style={stickerStyle(index)}
             aria-label={technology.name}
-            aria-describedby={`tech-tooltip-${index}`}
-            tabindex="0"
           >
             <img src={technology.logo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
-            <span id={`tech-tooltip-${index}`} class="t-tt tech-tool-card" role="tooltip">
-              <span class="tech-tool-card__surface">
-                <span class="tech-tool-card__head">
-                  <span class="tech-tool-card__logo"><img src={technology.logo} alt="" width="20" height="20" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" /></span>
-                  <span class="tech-tool-card__title"><strong>{technology.name}</strong><small>{copy.tech.cardLabel}</small></span>
-                </span>
-                <span class="tech-tool-card__body">{technology.detail[locale]}</span>
-                <span class="tech-tool-card__footer"><span class="tech-tool-card__action">{copy.tech.visitLabel(technology.name)}</span></span>
-              </span>
-            </span>
           </a>
         );
       })}
@@ -218,23 +203,11 @@ const stickerStyle = (index: number) => {
             href={technology.href}
             target="_blank"
             rel="noreferrer"
-            class={`t-tt-wrap t-tt-trigger tech-sticker tech-sticker--right tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
+            class={`tech-sticker tech-sticker--right tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
             style={stickerStyle(index)}
             aria-label={technology.name}
-            aria-describedby={`tech-tooltip-${index}`}
-            tabindex="0"
           >
             <img src={technology.logo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
-            <span id={`tech-tooltip-${index}`} class="t-tt tech-tool-card" role="tooltip">
-              <span class="tech-tool-card__surface">
-                <span class="tech-tool-card__head">
-                  <span class="tech-tool-card__logo"><img src={technology.logo} alt="" width="20" height="20" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" /></span>
-                  <span class="tech-tool-card__title"><strong>{technology.name}</strong><small>{copy.tech.cardLabel}</small></span>
-                </span>
-                <span class="tech-tool-card__body">{technology.detail[locale]}</span>
-                <span class="tech-tool-card__footer"><span class="tech-tool-card__action">{copy.tech.visitLabel(technology.name)}</span></span>
-              </span>
-            </span>
           </a>
         );
       })}
@@ -733,9 +706,8 @@ const stickerStyle = (index: number) => {
   document.querySelectorAll(".tech-sticker").forEach((sticker) => {
     sticker.dataset.cuelumePress = "press";
     sticker.dataset.cuelumeRelease = "release";
-    sticker.addEventListener("tech-tooltip-open", () => play("bloom"));
     sticker.addEventListener("pointerenter", (event) => {
-      if (event.target === sticker && !sticker.classList.contains("is-tool-card-active")) play("whisper");
+      if (event.target === sticker) play("whisper");
     });
   });
 
@@ -819,107 +791,6 @@ const stickerStyle = (index: number) => {
     modal.querySelectorAll("[data-avatar-close]").forEach((button) => button.addEventListener("click", closeModal));
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") closeModal();
-    });
-  })();
-</script>
-
-<script is:inline>
-  (() => {
-    const shell = document.querySelector(".portfolio-shell");
-    const stickers = shell?.querySelectorAll(".tech-sticker");
-    if (!shell || !stickers?.length) return;
-
-    const rootStyles = getComputedStyle(document.documentElement);
-    const readMs = (raw, fallback) => {
-      const value = parseFloat(raw);
-      if (!Number.isFinite(value)) return fallback;
-      const unit = raw.trim().toLowerCase();
-      if (unit.endsWith("ms")) return value;
-      if (unit.endsWith("s")) return value * 1000;
-      return value;
-    };
-    const delay = readMs(rootStyles.getPropertyValue("--tech-card-delay"), 500);
-    const closeDelay = readMs(rootStyles.getPropertyValue("--tech-card-close-delay"), 180);
-
-    stickers.forEach((sticker) => {
-      let timer = 0;
-      let closeTimer = 0;
-      let hovering = false;
-      let focused = false;
-      let onCard = false;
-      let dragging = false;
-
-      const clearCloseTimer = () => {
-        if (closeTimer) window.clearTimeout(closeTimer);
-        closeTimer = 0;
-      };
-
-      const hide = () => {
-        clearCloseTimer();
-        if (timer) window.clearTimeout(timer);
-        timer = 0;
-        sticker.classList.remove("is-tool-card-active");
-        if (!shell.querySelector(".tech-sticker.is-tool-card-active")) {
-          shell.classList.remove("is-tool-card-active");
-        }
-      };
-
-      const show = () => {
-        clearCloseTimer();
-        if (timer || sticker.classList.contains("is-tool-card-active")) return;
-        timer = window.setTimeout(() => {
-          timer = 0;
-          sticker.classList.add("is-tool-card-active");
-          shell.classList.add("is-tool-card-active");
-          sticker.dispatchEvent(new CustomEvent("tech-tooltip-open"));
-        }, delay);
-      };
-
-      const scheduleHide = () => {
-        clearCloseTimer();
-        closeTimer = window.setTimeout(() => {
-          closeTimer = 0;
-          if (!hovering && !focused && !onCard) hide();
-        }, closeDelay);
-      };
-
-      const sync = () => {
-        if (hovering || focused || onCard) show();
-        else scheduleHide();
-      };
-
-      sticker.addEventListener("pointerdown", () => {
-        dragging = true;
-        hovering = false;
-        focused = false;
-        hide();
-      });
-      sticker.addEventListener("pointerup", () => {
-        dragging = false;
-        hovering = false;
-        focused = false;
-        hide();
-      });
-      sticker.addEventListener("pointercancel", () => {
-        dragging = false;
-        hovering = false;
-        focused = false;
-        hide();
-      });
-      sticker.addEventListener("lostpointercapture", () => {
-        dragging = false;
-        hovering = false;
-        focused = false;
-        hide();
-      });
-      sticker.addEventListener("pointerenter", () => { if (!dragging) { hovering = true; sync(); } });
-      sticker.addEventListener("pointerleave", () => { hovering = false; sync(); });
-      sticker.addEventListener("focus", () => { if (!dragging) { focused = true; sync(); } });
-      sticker.addEventListener("blur", () => { focused = false; sync(); });
-
-      const card = sticker.querySelector(".tech-tool-card");
-      card?.addEventListener("pointerenter", () => { onCard = true; sync(); });
-      card?.addEventListener("pointerleave", () => { onCard = false; sync(); });
     });
   })();
 </script>
@@ -1023,101 +894,6 @@ const stickerStyle = (index: number) => {
       });
     });
   })();
-</script>
-
-<script>
-  import { annotate } from "rough-notation";
-
-  const techAside = document.querySelector(".tech-stickers");
-  const canAnnotate = window.matchMedia("(min-width: 1100px)").matches;
-  const stickers = techAside ? Array.from(techAside.querySelectorAll(".tech-sticker")) : [];
-
-  if (techAside && canAnnotate && stickers.length > 0) {
-    const directions = {
-      up: {
-        path: '<path d="M40 39C38 27 29 13 19 4"/><path d="M19 4l10 1M19 4l2 10"/>',
-        reserve: (bounds) => ({
-          left: bounds.left - 40,
-          right: bounds.right + 100,
-          top: bounds.top - 16,
-          bottom: bounds.bottom + 108,
-        }),
-      },
-      down: {
-        path: '<path d="M6 3C8 15 17 29 27 38"/><path d="M27 38l-10-1M27 38l-2-10"/>',
-        reserve: (bounds) => ({
-          left: bounds.left - 84,
-          right: bounds.right + 32,
-          top: bounds.top - 108,
-          bottom: bounds.bottom + 16,
-        }),
-      },
-    };
-    const viewportBounds = { left: 0, right: window.innerWidth, top: 0, bottom: window.innerHeight };
-    const viewportPlacements = stickers.flatMap((candidate) => {
-      const bounds = candidate.getBoundingClientRect();
-      return Object.entries(directions).flatMap(([direction, config]) => {
-        const reserved = config.reserve(bounds);
-        const withinInitialViewport = (
-          reserved.left >= viewportBounds.left + 8 &&
-          reserved.right <= viewportBounds.right - 8 &&
-          reserved.top >= viewportBounds.top + 8 &&
-          reserved.bottom <= viewportBounds.bottom - 8
-        );
-        return withinInitialViewport
-          ? [{ candidate, direction, path: config.path }]
-          : [];
-      });
-    });
-    const selected = viewportPlacements[Math.floor(Math.random() * viewportPlacements.length)];
-    const featured = selected?.candidate;
-    const icon = featured?.querySelector(":scope > img");
-
-    if (featured && icon && selected) {
-      const arrow = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      arrow.setAttribute("class", `tech-hover-arrow tech-hover-arrow--${selected.direction}`);
-      arrow.setAttribute("viewBox", "0 0 46 42");
-      arrow.setAttribute("aria-hidden", "true");
-      arrow.innerHTML = selected.path;
-
-      const hint = document.createElement("span");
-      hint.className = `tech-hover-hint tech-hover-hint--${selected.direction}`;
-      hint.setAttribute("aria-hidden", "true");
-      hint.textContent = techAside.dataset.hoverHint || "hover me";
-      featured.append(arrow, hint);
-
-      const getAnnotationColor = () => document.documentElement.dataset.theme === "dark"
-        ? "#ffffff"
-        : "#000000";
-      const annotation = annotate(icon, {
-        type: "circle",
-        color: getAnnotationColor(),
-        padding: 11,
-        strokeWidth: 2.4,
-        iterations: 2,
-        animationDuration: 800,
-      });
-      window.addEventListener("itsjan-theme-change", () => {
-        annotation.color = getAnnotationColor();
-      });
-
-      let dismissed = false;
-      window.requestAnimationFrame(() => {
-        if (!dismissed) annotation.show();
-      });
-
-      const dismiss = () => {
-        if (dismissed) return;
-        dismissed = true;
-        arrow.classList.add("is-dismissed");
-        hint.classList.add("is-dismissed");
-        annotation.hide();
-      };
-      stickers.forEach((sticker) => {
-        sticker.addEventListener("tech-tooltip-open", dismiss, { once: true });
-      });
-    }
-  }
 </script>
 
 </Layout>
