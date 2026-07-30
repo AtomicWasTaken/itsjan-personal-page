@@ -1,10 +1,12 @@
 import { defineMiddleware } from "astro:middleware";
-import { env } from "cloudflare:workers";
+import indexMarkdown from "../public/index.md?raw";
+import enMarkdown from "../public/en.md?raw";
+import deMarkdown from "../public/de.md?raw";
 
 const markdownRoutes: Record<string, string> = {
-  "/": "/index.md",
-  "/en": "/en.md",
-  "/de": "/de.md",
+  "/": indexMarkdown,
+  "/en": enMarkdown,
+  "/de": deMarkdown,
 };
 
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -17,16 +19,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     .some((value) => value.trim().split(";", 1)[0] === "text/markdown");
 
   if (acceptsMarkdown && markdownRoutes[pathname]) {
-    const markdownUrl = new URL(markdownRoutes[pathname], request.url);
-    // Fetch the public asset directly. Rewriting the request through Astro's
-    // page fallback can redirect back to `/`, creating a loop for agents.
-    const assetResponse = await env.ASSETS.fetch(markdownUrl);
-    if (!assetResponse.ok) return next();
-
-    const response = new Response(assetResponse.body, assetResponse);
-    response.headers.set("Content-Type", "text/markdown; charset=utf-8");
-    response.headers.append("Vary", "Accept");
-    return response;
+    return new Response(markdownRoutes[pathname], {
+      headers: {
+        "Content-Type": "text/markdown; charset=utf-8",
+        Vary: "Accept",
+      },
+    });
   }
 
   const response = await next();
