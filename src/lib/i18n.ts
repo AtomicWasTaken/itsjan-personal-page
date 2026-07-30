@@ -224,7 +224,7 @@ const en: Strings = {
     title: "Jan-Marlon Leibl, developer in Bremen",
     description: (years, article) =>
       `I'm ${article} ${years}-year-old software developer from Bremen. I finished a three-year apprenticeship and I'm building Finny, an app for receipts and warranty reminders.`,
-    imageAlt: "Portrait of Jan-Marlon Leibl",
+    imageAlt: "Preview of Jan-Marlon Leibl's personal page",
     jobTitle: "Software Developer",
   },
   topPill: "building Finny",
@@ -427,7 +427,7 @@ const de: Strings = {
     title: "Jan-Marlon Leibl, Entwickler in Bremen",
     description: (years) =>
       `Ich bin ${years} Jahre alt, Softwareentwickler aus Bremen und baue Finny. Nach meiner dreijährigen Ausbildung arbeite ich meist mit PHP und TypeScript.`,
-    imageAlt: "Porträt von Jan-Marlon Leibl",
+    imageAlt: "Vorschau der persönlichen Website von Jan-Marlon Leibl",
     jobTitle: "Softwareentwickler",
   },
   topPill: "baue Finny",
