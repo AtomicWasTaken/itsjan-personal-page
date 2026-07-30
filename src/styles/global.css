@@ -884,6 +884,7 @@ html[data-theme="dark"] .mobile-tech-link--dark-logo:is(:hover, :focus-visible) 
   background: transparent;
   object-fit: contain;
   outline: 0;
+  mix-blend-mode: screen;
 }
 .preview-receipt {
   position: absolute;
