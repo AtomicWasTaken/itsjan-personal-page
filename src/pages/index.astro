@@ -395,7 +395,6 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
       toggle.setAttribute("aria-pressed", String(theme === "dark"));
       toggle.setAttribute("aria-label", theme === "dark" ? toggle.dataset.labelLight : toggle.dataset.labelDark);
       themeColor?.setAttribute("content", theme === "dark" ? "#0b0b0c" : "#ffffff");
-      window.dispatchEvent(new CustomEvent("itsjan-theme-change", { detail: theme }));
     };
 
     const transitionTheme = (theme) => {
