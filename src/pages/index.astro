@@ -38,7 +38,6 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
     <div class="tech-sticker-side tech-sticker-side--left">
       {copy.tech.items.map((technology, index) => {
         const placement = stickerLayout[index];
-        const Logo = technology.logo;
         return placement.side === "left" && (
           <a
             href={technology.href}
@@ -48,7 +47,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
             style={toStickerStyle(placement)}
             aria-label={technology.name}
           >
-            <Logo width="28" height="28" aria-hidden="true" focusable="false" />
+            <img src={technology.logo.src} alt="" width="28" height="28" decoding="async" draggable="false" />
           </a>
         );
       })}
@@ -56,7 +55,6 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
     <div class="tech-sticker-side tech-sticker-side--right">
       {copy.tech.items.map((technology, index) => {
         const placement = stickerLayout[index];
-        const Logo = technology.logo;
         return placement.side === "right" && (
           <a
             href={technology.href}
@@ -66,7 +64,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
             style={toStickerStyle(placement)}
             aria-label={technology.name}
           >
-            <Logo width="28" height="28" aria-hidden="true" focusable="false" />
+            <img src={technology.logo.src} alt="" width="28" height="28" decoding="async" draggable="false" />
           </a>
         );
       })}
