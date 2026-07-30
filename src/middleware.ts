@@ -17,8 +17,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   if (acceptsMarkdown && markdownRoutes[pathname]) {
     const markdownUrl = new URL(markdownRoutes[pathname], request.url);
-    const rewritten = new Request(markdownUrl, request);
-    const response = await context.rewrite(rewritten);
+    // Fetch the public asset directly. Rewriting the request through Astro's
+    // page fallback can redirect back to `/`, creating a loop for agents.
+    const assetResponse = await fetch(markdownUrl, {
+      headers: { accept: "*/*" },
+    });
+    if (!assetResponse.ok) return next();
+
+    const response = new Response(assetResponse.body, assetResponse);
     response.headers.set("Content-Type", "text/markdown; charset=utf-8");
     response.headers.append("Vary", "Accept");
     return response;
