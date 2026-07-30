@@ -8,7 +8,8 @@
   --shadow-grey: #29292b;
   --text: #111113;
   --text-secondary: #4a4a4f;
-  --text-tertiary: #7a7a80;
+  /* Keeps secondary metadata and mobile tech labels above WCAG AA on white. */
+  --text-tertiary: #66666c;
   --page: #fff;
   --surface: #fff;
   --selection-bg: var(--accent-soft);
