@@ -43,8 +43,6 @@ public/
   *.md                    Markdown representations of portfolio pages
   .well-known/            Agent discovery documents
   skills/                 Public Agent Skill definitions
-
-cursors-worker/           Independent Durable Object cursor service
 ```
 
 ## Agent-readable content
@@ -63,14 +61,7 @@ agent use while opting out of model training.
 
 ## Deployment
 
-The primary site uses the configuration in `wrangler.toml`. The cursor service
-has its own `cursors-worker/wrangler.toml` and is deployed separately:
-
-```sh
-cd cursors-worker
-bun install
-bun run deploy
-```
+The site uses the configuration in `wrangler.toml`.
 
 Do not publish OAuth, MCP, or API-discovery metadata unless the matching
 service actually exists.
