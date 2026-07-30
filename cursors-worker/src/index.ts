@@ -15,6 +15,30 @@ interface Env {
   CURSORS: DurableObjectNamespace;
 }
 
+type CursorMode =
+  | "default"
+  | "link"
+  | "pill"
+  | "link-amber"
+  | "cta-primary"
+  | "cta-secondary"
+  | "text"
+  | "view"
+  | "accent"
+  | "squiggly";
+
+type MoveMessage = {
+  type: "move";
+  x: number;
+  y: number;
+  anchor?: unknown;
+  ax?: unknown;
+  ay?: unknown;
+};
+
+type StateMessage = { type: "state"; mode?: unknown; pressed?: unknown };
+type SelectionMessage = { type: "selection"; anchor?: unknown; startOffset?: unknown; endOffset?: unknown };
+
 const ADJ = [
   "Quiet", "Curious", "Brave", "Calm", "Bright", "Kind", "Wise", "Sneaky",
   "Gentle", "Cosmic", "Mellow", "Hidden", "Lone", "Eager", "Bold", "Quick",
@@ -42,6 +66,13 @@ const COLORS = [
   "#f43f5e", // rose
   "#facc15", // yellow
 ];
+
+const ROOM_NAME = "global";
+const MAX_ANCHOR_LENGTH = 500;
+const ALLOWED_MODES = new Set<string>([
+  "default", "link", "pill", "link-amber", "cta-primary", "cta-secondary",
+  "text", "view", "accent", "squiggly",
+]);
 
 const pick = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 const generateName = () => `${pick(ADJ)} ${pick(ANIMAL)}`;
@@ -94,7 +125,7 @@ export class CursorsRoom implements DurableObject {
   }
 
   async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer): Promise<void> {
-    const attachment = ws.deserializeAttachment() as Attachment | null;
+    const attachment = getAttachment(ws);
     if (!attachment) return;
 
     let data: unknown;
@@ -115,7 +146,7 @@ export class CursorsRoom implements DurableObject {
         id: attachment.id,
         x: clamp01(data.x),
         y: clamp01(data.y),
-        anchor: typeof data.anchor === "string" ? data.anchor.slice(0, 500) : undefined,
+        anchor: truncateAnchor(data.anchor),
         ax: typeof data.ax === "number" ? data.ax : undefined,
         ay: typeof data.ay === "number" ? data.ay : undefined,
       }, ws);
@@ -138,7 +169,7 @@ export class CursorsRoom implements DurableObject {
       this.broadcast({
         type: "selection",
         id: attachment.id,
-        anchor: typeof data.anchor === "string" ? data.anchor.slice(0, 500) : undefined,
+        anchor: truncateAnchor(data.anchor),
         startOffset: typeof data.startOffset === "number" ? data.startOffset : undefined,
         endOffset: typeof data.endOffset === "number" ? data.endOffset : undefined,
       }, ws);
@@ -147,7 +178,7 @@ export class CursorsRoom implements DurableObject {
   }
 
   async webSocketClose(ws: WebSocket): Promise<void> {
-    const attachment = ws.deserializeAttachment() as Attachment | null;
+    const attachment = getAttachment(ws);
     if (attachment?.id) {
       this.broadcast({ type: "leave", id: attachment.id });
     }
@@ -166,41 +197,41 @@ export class CursorsRoom implements DurableObject {
   }
 }
 
-function isMoveMessage(d: unknown): d is { type: "move"; x: number; y: number; anchor?: unknown; ax?: unknown; ay?: unknown } {
+function isMoveMessage(d: unknown): d is MoveMessage {
   return (
-    typeof d === "object" && d !== null &&
-    (d as { type?: unknown }).type === "move" &&
-    typeof (d as { x?: unknown }).x === "number" &&
-    typeof (d as { y?: unknown }).y === "number"
+    isRecord(d) &&
+    d.type === "move" &&
+    typeof d.x === "number" &&
+    typeof d.y === "number"
   );
 }
 
-function isStateMessage(d: unknown): d is { type: "state"; mode?: unknown; pressed?: unknown } {
-  return (
-    typeof d === "object" && d !== null &&
-    (d as { type?: unknown }).type === "state"
-  );
+function isStateMessage(d: unknown): d is StateMessage {
+  return isRecord(d) && d.type === "state";
 }
 
-function isSelectionMessage(d: unknown): d is { type: "selection"; anchor?: unknown; startOffset?: unknown; endOffset?: unknown } {
-  return (
-    typeof d === "object" && d !== null &&
-    (d as { type?: unknown }).type === "selection"
-  );
+function isSelectionMessage(d: unknown): d is SelectionMessage {
+  return isRecord(d) && d.type === "selection";
 }
 
-const ALLOWED_MODES = new Set([
-  "default", "link", "pill", "link-amber",
-  "cta-primary", "cta-secondary", "text",
-  "view", "accent", "squiggly",
-]);
-
-function sanitizeMode(m: unknown): string {
-  return typeof m === "string" && ALLOWED_MODES.has(m) ? m : "default";
+function sanitizeMode(m: unknown): CursorMode {
+  return typeof m === "string" && ALLOWED_MODES.has(m) ? m as CursorMode : "default";
 }
 
 function clamp01(n: number): number {
   return Math.max(0, Math.min(1, n));
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getAttachment(socket: WebSocket): Attachment | null {
+  return socket.deserializeAttachment() as Attachment | null;
+}
+
+function truncateAnchor(value: unknown): string | undefined {
+  return typeof value === "string" ? value.slice(0, MAX_ANCHOR_LENGTH) : undefined;
 }
 
 // CORS headers. The main site lives at itsjan.dev, worker at workers.dev subdomain.
@@ -220,7 +251,7 @@ export default {
 
     if (url.pathname === "/ws") {
       // Single global room. Every visitor joins the same one.
-      const id = env.CURSORS.idFromName("global");
+      const id = env.CURSORS.idFromName(ROOM_NAME);
       const room = env.CURSORS.get(id);
       return room.fetch(request);
     }
