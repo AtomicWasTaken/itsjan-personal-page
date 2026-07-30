@@ -741,11 +741,20 @@ html[data-theme="dark"] .experience-technology--dark-logo img {
   width: 28px;
   height: 28px;
   outline: 0;
-  filter: grayscale(1);
-  opacity: .68;
+  filter: var(--tech-filter);
+  opacity: var(--tech-opacity);
+  transition: filter 150ms var(--ease-smooth-out), opacity 150ms var(--ease-smooth-out);
 }
 html[data-theme="dark"] .mobile-tech-link--dark-logo img {
-  filter: grayscale(1) brightness(0) invert(1);
+  filter: var(--tech-filter);
+}
+.mobile-tech-link:is(:hover, :focus-visible) img {
+  filter: none;
+  opacity: 1;
+}
+html[data-theme="dark"] .mobile-tech-link--dark-logo:is(:hover, :focus-visible) img {
+  filter: var(--tech-filter);
+  opacity: 1;
 }
 .t-acc-panel {
   display: grid;
@@ -1765,7 +1774,8 @@ html[data-theme="dark"] .tech-hover-arrow { color: #fff; }
   .copy-email-button,
   .copy-email-icon,
   .copy-email-label,
-  .mobile-tech-toggle-label {
+  .mobile-tech-toggle-label,
+  .mobile-tech-link img {
     transition: none !important;
   }
   .theme-toggle:active,
