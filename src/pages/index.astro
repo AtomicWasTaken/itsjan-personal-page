@@ -240,7 +240,7 @@ const stickerStyle = (index: number) => {
       })}
     </div>
   </aside>
-  <div id="avatar-modal" class="t-modal avatar-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label={copy.avatar.expand}>
+  <div id="avatar-modal" class="t-modal avatar-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label={copy.avatar.expand} inert>
     <button type="button" class="avatar-modal-backdrop" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}></button>
     <div class="avatar-modal-content">
       <button type="button" class="squircle avatar-modal-close" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}>
@@ -458,7 +458,7 @@ const stickerStyle = (index: number) => {
   <section>
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.activity.heading}</h2>
     <div class="mt-6">
-      <div class="activity-scroll activity-scroll-desktop" aria-label={copy.activity.desktopAria}>
+      <div class="activity-scroll activity-scroll-desktop" role="group" aria-label={copy.activity.desktopAria}>
         <div class="t-skel activity-reveal" data-state="loading">
           <div class="t-skel-skeleton is-pulsing activity-grid" aria-hidden="true">
             {activity.map((_, index) => <span class="activity-day" data-level="0" style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>)}
@@ -467,17 +467,17 @@ const stickerStyle = (index: number) => {
             {activity.map((day, index) => (
               day.count > 0 ? (
                 <span class="t-tt-wrap activity-tooltip-wrap">
-                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} aria-label={day.label} aria-describedby={`activity-tooltip-desktop-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>
+                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} aria-describedby={`activity-tooltip-desktop-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>
                   <span id={`activity-tooltip-desktop-${index}`} class="t-tt activity-tooltip" role="tooltip">{day.label}</span>
                 </span>
               ) : (
-                <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>
+                <span class="activity-day" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, activityColumns)}`}></span>
               )
             ))}
           </div>
         </div>
       </div>
-      <div class="activity-scroll activity-scroll-mobile" aria-label={copy.activity.mobileAria}>
+      <div class="activity-scroll activity-scroll-mobile" role="group" aria-label={copy.activity.mobileAria}>
         <div class="t-skel activity-reveal activity-reveal-mobile" data-state="loading">
           <div class="t-skel-skeleton is-pulsing activity-grid activity-grid-mobile" aria-hidden="true">
             {mobileActivity.map((_, index) => <span class="activity-day" data-level="0" style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>)}
@@ -486,11 +486,11 @@ const stickerStyle = (index: number) => {
             {mobileActivity.map((day, index) => (
               day.count > 0 ? (
                 <span class="t-tt-wrap activity-tooltip-wrap">
-                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} aria-label={day.label} aria-describedby={`activity-tooltip-mobile-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>
+                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} aria-describedby={`activity-tooltip-mobile-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>
                   <span id={`activity-tooltip-mobile-${index}`} class="t-tt activity-tooltip" role="tooltip">{day.label}</span>
                 </span>
               ) : (
-                <span class="activity-day" data-level={day.level} data-project={day.project} aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>
+                <span class="activity-day" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} style={`--activity-order:${activityRevealOrder(index, mobileActivityColumns)}`}></span>
               )
             ))}
           </div>
@@ -793,6 +793,7 @@ const stickerStyle = (index: number) => {
     const openModal = () => {
       previousFocus = document.activeElement;
       setMorphOrigin();
+      modal.removeAttribute("inert");
       modal.classList.remove("is-closing");
       modal.classList.add("is-open");
       modal.setAttribute("aria-hidden", "false");
@@ -804,6 +805,7 @@ const stickerStyle = (index: number) => {
       if (!modal.classList.contains("is-open")) return;
       modal.classList.remove("is-open");
       modal.classList.add("is-closing");
+      modal.setAttribute("inert", "");
       modal.setAttribute("aria-hidden", "true");
       document.body.classList.remove("is-avatar-modal-open");
       window.setTimeout(() => modal.classList.remove("is-closing"), closeMs);
