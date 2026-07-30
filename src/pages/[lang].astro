@@ -1,0 +1,9 @@
+---
+const lang = Astro.params.lang;
+
+if (lang !== "de" && lang !== "en") {
+  return Astro.redirect("/");
+}
+
+return Astro.rewrite(new URL(`/?lang=${lang}`, Astro.url));
+---

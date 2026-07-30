@@ -5,6 +5,32 @@ import { ageYears } from "../lib/jan";
 
 const locale = detectLocale(Astro.request);
 const copy = tr(locale).portfolio;
+const currentAge = ageYears();
+const experienceOnlyTechnologies = [
+  {
+    name: "Symfony",
+    logo: "https://cdn.simpleicons.org/symfony/000000",
+    href: "https://symfony.com/",
+    darkModeLight: true,
+    detail: { en: "Backend framework used during my apprenticeship.", de: "Backend-Framework aus meiner Ausbildung." },
+  },
+  {
+    name: "Git",
+    logo: "https://cdn.simpleicons.org/git/F05032",
+    href: "https://git-scm.com/",
+    detail: { en: "Version control used during my apprenticeship.", de: "Versionsverwaltung aus meiner Ausbildung." },
+  },
+];
+const experienceTechnologyItems = [...copy.tech.items, ...experienceOnlyTechnologies];
+const technologyByName = new Map(experienceTechnologyItems.map((technology) => [technology.name, technology]));
+const featuredMobileTechnologyNames = ["PHP", "TypeScript", "React", "Next.js", "TYPO3", "Symfony", "Git", "Docker"];
+const mobileTechnologies = featuredMobileTechnologyNames
+  .map((name) => technologyByName.get(name))
+  .filter((technology): technology is (typeof experienceTechnologyItems)[number] => Boolean(technology));
+const mobileAdditionalTechnologies = experienceTechnologyItems.filter((technology) => !featuredMobileTechnologyNames.includes(technology.name));
+const technologiesFor = (names: string[]) => names
+  .map((name) => technologyByName.get(name))
+  .filter((technology): technology is (typeof experienceTechnologyItems)[number] => Boolean(technology));
 
 type GithubDay = { date: string; level: number; count: number };
 
@@ -135,14 +161,25 @@ const createStickerLayout = (count: number): StickerPlacement[] => {
   return shuffle(rows).flat().slice(0, count);
 };
 const stickerLayout = createStickerLayout(copy.tech.items.length);
+if (stickerLayout[0]) stickerLayout[0].side = "left";
 const stickerStyle = (index: number) => {
   const placement = stickerLayout[index];
+  if (index === 0) {
+    return `top:clamp(48px,14vh,112px); --sticker-x:48px; --icon-size:${placement.size}px; --sticker-rotation:${placement.rotation}deg`;
+  }
   return `top:${placement.topPercent}%; --sticker-x:${placement.offsetPercent}%; --icon-size:${placement.size}px; --sticker-rotation:${placement.rotation}deg`;
 };
 ---
 
 <Layout>
 <div class="portfolio-shell">
+  <div class="top-edge-blur" aria-hidden="true">
+    <div class="top-edge-blur__wash"></div>
+    <div class="top-edge-blur__layer top-edge-blur__layer--1"></div>
+    <div class="top-edge-blur__layer top-edge-blur__layer--2"></div>
+    <div class="top-edge-blur__layer top-edge-blur__layer--3"></div>
+    <div class="top-edge-blur__layer top-edge-blur__layer--4"></div>
+  </div>
   <aside class="tech-stickers" aria-label={copy.tech.aria} data-hover-hint={copy.tech.hoverHint}>
     <div class="tech-sticker-side tech-sticker-side--left">
       {copy.tech.items.map((technology, index) => {
@@ -206,13 +243,13 @@ const stickerStyle = (index: number) => {
   <div id="avatar-modal" class="t-modal avatar-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label={copy.avatar.expand}>
     <button type="button" class="avatar-modal-backdrop" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}></button>
     <div class="avatar-modal-content">
-      <button type="button" class="avatar-modal-close" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}>
+      <button type="button" class="squircle avatar-modal-close" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}>
         <span aria-hidden="true">×</span>
       </button>
       <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="320" height="320" class="avatar-modal-image" />
     </div>
   </div>
-<main class="portfolio-main mx-auto max-w-2xl space-y-12 pt-14 pb-12 md:space-y-14 md:pt-[72px] md:pb-16">
+<main class="portfolio-main mx-auto max-w-2xl space-y-12 pt-36 pb-12 md:space-y-14 md:pb-16">
   <section>
     <div class="profile-row">
       <button
@@ -229,7 +266,7 @@ const stickerStyle = (index: number) => {
       </button>
       <button
         id="theme-toggle"
-        class="theme-toggle"
+        class="squircle theme-toggle"
         type="button"
         data-cuelume-toggle="toggle"
         aria-label={copy.theme.label}
@@ -246,11 +283,60 @@ const stickerStyle = (index: number) => {
       </button>
     </div>
     <h1 class="text-2xl font-medium tracking-tight">Jan-Marlon Leibl</h1>
-    <p class="profile-subtitle mt-1">{copy.subtitle(ageYears())}</p>
+    <p class="profile-subtitle mt-1" data-text-states={JSON.stringify(copy.subtitleStates(currentAge))}>
+      <span class="t-text-swap">{copy.subtitle(currentAge)}</span>
+    </p>
     <p class="mt-4 max-w-lg text-[17px] font-normal leading-7 text-[var(--text-secondary)]">
       {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{copy.intro.afterBremen}<span class="keyword">{copy.intro.apprenticeship}</span>{copy.intro.afterApprenticeship}<span class="keyword">{copy.intro.finny}</span>{copy.intro.afterFinny}
     </p>
   </section>
+  <hr class="wave" aria-hidden="true" />
+
+  <section>
+    <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.experience.heading}</h2>
+    <ol class="experience-list mt-6">
+      {copy.experience.items.map((item) => (
+        <li class="experience-item">
+          <p class="experience-period">{item.period}<span aria-hidden="true">, </span>{item.location}</p>
+          <h3>
+            {item.title}
+            <span class="experience-organization">
+              {item.organization}
+            </span>
+          </h3>
+          {item.secondary && (
+            <div class="experience-secondary">
+              <div class="experience-role-branch border-border absolute left-2 h-7 w-4.5 rounded-bl-lg border-b-2 border-l-2" aria-hidden="true"></div>
+              <p>{item.secondary.period}</p>
+              <strong>{item.secondary.title}</strong>
+            </div>
+          )}
+          <ul class="experience-bullets">
+            {item.bullets.map((bullet) => <li>{bullet}</li>)}
+          </ul>
+          <ul class="experience-technologies" aria-label={copy.tech.aria}>
+            {technologiesFor(item.technologies).map((technology) => (
+              <li>
+                <a
+                  class={technology.darkModeLight ? "squircle experience-technology experience-technology--dark-logo" : "squircle experience-technology"}
+                  href={technology.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  data-cuelume-hover="tick"
+                  data-cuelume-press="press"
+                  data-cuelume-release="release"
+                >
+                  <img src={technology.logo} alt="" width="16" height="16" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
+                  <span>{technology.name}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </section>
+  <hr class="wave" aria-hidden="true" />
 
   <section>
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.projects}</h2>
@@ -266,7 +352,7 @@ const stickerStyle = (index: number) => {
             <p class="text-[15px] font-normal leading-6 text-[var(--text-secondary)]">
               {copy.finny.description.lead}<span class="keyword">{copy.finny.description.first}</span>{copy.finny.description.middle}<span class="keyword">{copy.finny.description.second}</span>{copy.finny.description.join}<span class="keyword">{copy.finny.description.third}</span>{copy.finny.description.end}
             </p>
-            <div class="project-preview-action"><a href="https://fnny.app" target="_blank" rel="noreferrer" class="project-preview-cta" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.finny.cta.label}</a></div>
+            <div class="project-preview-action"><a href="https://fnny.app" target="_blank" rel="noreferrer" class="button-style squircle project-preview-cta" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.finny.cta.label}</a></div>
           </div>
         </div>
       </article>
@@ -296,13 +382,78 @@ const stickerStyle = (index: number) => {
             <p class="text-[15px] font-normal leading-6 text-[var(--text-secondary)]">
               {copy.ventry.description.lead}<span class="keyword">{copy.ventry.description.keyword}</span>{copy.ventry.description.end}
             </p>
-            <div class="project-preview-action"><a href="https://ventry.host" target="_blank" rel="noreferrer" class="project-preview-cta" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.ventry.cta.label}</a></div>
+            <div class="project-preview-action"><a href="https://ventry.host" target="_blank" rel="noreferrer" class="button-style squircle project-preview-cta" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.ventry.cta.label}</a></div>
           </div>
         </div>
       </article>
 
     </div>
   </section>
+  <hr class="wave" aria-hidden="true" />
+
+  <section class="mobile-tech-section">
+    <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.tech.mobileHeading}</h2>
+    <div id="mobile-tech-accordion" class="t-acc mobile-tech-accordion" data-open="false">
+      <ul id="mobile-tech-list" class="mobile-tech-grid mt-6" aria-label={copy.tech.aria}>
+        {mobileTechnologies.map((technology) => (
+          <li>
+            <a
+              class={`mobile-tech-link${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
+              href={technology.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={copy.tech.visitLabel(technology.name)}
+              data-cuelume-hover="tick"
+              data-cuelume-press="press"
+              data-cuelume-release="release"
+            >
+              <img src={technology.logo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
+              <span>{technology.name}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div id="mobile-tech-additional" class="t-acc-panel">
+        <div class="t-acc-panel-inner">
+          <ul class="mobile-tech-grid" aria-label={copy.tech.aria}>
+            {mobileAdditionalTechnologies.map((technology) => (
+              <li>
+                <a
+                  class={`mobile-tech-link${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
+                  href={technology.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={copy.tech.visitLabel(technology.name)}
+                  data-cuelume-hover="tick"
+                  data-cuelume-press="press"
+                  data-cuelume-release="release"
+                >
+                  <img src={technology.logo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" />
+                  <span>{technology.name}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <button
+        id="mobile-tech-toggle"
+        class="button-style squircle t-acc-head mobile-tech-toggle"
+        type="button"
+        aria-controls="mobile-tech-additional"
+        aria-expanded="false"
+        data-label-more={copy.tech.mobileViewMore}
+        data-label-less={copy.tech.mobileViewLess}
+        data-cuelume-hover="tick"
+        data-cuelume-press="press"
+        data-cuelume-release="release"
+      >
+        <span class="mobile-tech-toggle-label">{copy.tech.mobileViewMore}</span>
+        <span class="t-acc-chevron" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><path d="M4 6.5L8 10.5L12 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+      </button>
+    </div>
+  </section>
+  <hr class="wave wave--mobile" aria-hidden="true" />
 
   <section>
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.activity.heading}</h2>
@@ -348,17 +499,58 @@ const stickerStyle = (index: number) => {
       <div class="activity-legend" aria-hidden="true"><span>{copy.activity.less}</span><i data-level="0"></i><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i><span>{copy.activity.more}</span></div>
     </div>
   </section>
+  <hr class="wave" aria-hidden="true" />
 
   <section>
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.connect.heading}</h2>
-    <div class="social-links mt-6 flex items-center text-[var(--text-tertiary)]">
-      <a href="https://x.com/janodersooo" target="_blank" rel="noreferrer" aria-label={copy.connect.xAria} class="social-link"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></a>
-      <a href="https://github.com/AtomicWasTaken" target="_blank" rel="noreferrer" aria-label={copy.connect.githubAria} class="social-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg></a>
-      <a href="https://www.linkedin.com/in/janmarlonleibl/" target="_blank" rel="noreferrer" aria-label={copy.connect.linkedinAria} class="social-link"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 1 1 2 4.5a1.5 1.5 0 0 1 3 0ZM2.5 8.5h3V21h-3V8.5ZM9 8.5h2.9v1.7h.1c.4-.8 1.5-2.1 3.6-2.1 3.9 0 4.6 2.6 4.6 6V21h-3v-6.1c0-1.5 0-3.5-2.1-3.5s-2.4 1.7-2.4 3.4V21H9V8.5Z"></path></svg></a>
-      <a href="mailto:hi@itsjan.dev" aria-label={copy.connect.emailAria} class="social-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="3"></rect><path d="m3 6 9 6 9-6"></path></svg></a>
+    <div class="connect-row mt-6">
+      <div class="social-links flex items-center text-[var(--text-tertiary)]">
+        <a href="https://x.com/janodersooo" target="_blank" rel="noreferrer" aria-label={copy.connect.xAria} class="social-link"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></a>
+        <a href="https://github.com/AtomicWasTaken" target="_blank" rel="noreferrer" aria-label={copy.connect.githubAria} class="social-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg></a>
+        <a href="https://www.linkedin.com/in/janmarlonleibl/" target="_blank" rel="noreferrer" aria-label={copy.connect.linkedinAria} class="social-link"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 1 1 2 4.5a1.5 1.5 0 0 1 3 0ZM2.5 8.5h3V21h-3V8.5ZM9 8.5h2.9v1.7h.1c.4-.8 1.5-2.1 3.6-2.1 3.9 0 4.6 2.6 4.6 6V21h-3v-6.1c0-1.5 0-3.5-2.1-3.5s-2.4 1.7-2.4 3.4V21H9V8.5Z"></path></svg></a>
+        <a href="mailto:hi@itsjan.dev" aria-label={copy.connect.emailAria} class="social-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="3"></rect><path d="m3 6 9 6 9-6"></path></svg></a>
+      </div>
+      <button
+        id="copy-email"
+        class="button-style squircle copy-email-button"
+        type="button"
+        data-email="hi@itsjan.dev"
+        data-label-copy={copy.connect.copyEmail}
+        data-label-copied={copy.connect.emailCopied}
+        aria-label={copy.connect.copyEmail}
+        data-cuelume-hover="tick"
+        data-cuelume-press="press"
+        data-cuelume-release="release"
+      >
+        <span class="copy-email-icon copy-email-icon--copy" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg></span>
+        <span class="copy-email-icon copy-email-icon--check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"></path></svg></span>
+        <span class="copy-email-label-slot">
+          <span class="copy-email-label t-text-swap" aria-live="polite">{copy.connect.copyEmail}</span>
+          <span class="copy-email-label-measure" aria-hidden="true">{copy.connect.copyEmail}</span>
+          <span class="copy-email-label-measure" aria-hidden="true">{copy.connect.emailCopied}</span>
+        </span>
+      </button>
     </div>
   </section>
 </main>
+<script is:inline>
+  (() => {
+    const accordion = document.getElementById("mobile-tech-accordion");
+    const toggle = document.getElementById("mobile-tech-toggle");
+    const label = toggle?.querySelector(".mobile-tech-toggle-label");
+    if (!accordion || !toggle || !label) return;
+
+    toggle.addEventListener("click", () => {
+      const open = accordion.getAttribute("data-open") === "true";
+      const nextOpen = !open;
+      accordion.setAttribute("data-open", String(nextOpen));
+      toggle.setAttribute("aria-expanded", String(nextOpen));
+      label.textContent = nextOpen
+        ? (toggle.dataset.labelLess || "Show less")
+        : (toggle.dataset.labelMore || "View more");
+    });
+  })();
+</script>
 </div>
 
 <script is:inline>
@@ -396,6 +588,99 @@ const stickerStyle = (index: number) => {
   })();
 </script>
 
+<script is:inline>
+  (() => {
+    const subtitle = document.querySelector(".profile-subtitle");
+    const label = subtitle?.querySelector(".t-text-swap");
+    if (!subtitle || !label || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let states = [];
+    try { states = JSON.parse(subtitle.dataset.textStates || "[]"); } catch {}
+    if (states.length < 2) return;
+
+    let index = 0;
+    let swapTimer = 0;
+    let isSwapping = false;
+    const readMs = (name, fallback) => {
+      const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      const value = parseFloat(raw);
+      return Number.isFinite(value) ? value : fallback;
+    };
+    const swapText = (nextText) => {
+      if (isSwapping) return;
+      isSwapping = true;
+      label.classList.add("is-exit");
+      window.clearTimeout(swapTimer);
+      swapTimer = window.setTimeout(() => {
+        label.textContent = nextText;
+        label.classList.remove("is-exit");
+        label.classList.add("is-enter-start");
+        void label.offsetHeight;
+        label.classList.remove("is-enter-start");
+        isSwapping = false;
+      }, readMs("--text-swap-dur", 150));
+    };
+
+    window.setInterval(() => {
+      if (document.hidden) return;
+      index = (index + 1) % states.length;
+      swapText(states[index]);
+    }, 3600);
+  })();
+</script>
+
+<script is:inline>
+  (() => {
+    const button = document.getElementById("copy-email");
+    if (!button) return;
+
+    const label = button.querySelector(".copy-email-label");
+    const email = button.dataset.email;
+    let resetTimer = 0;
+    let swapTimer = 0;
+    let isSwapping = false;
+
+    const readMs = (name, fallback) => {
+      const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      const value = parseFloat(raw);
+      return Number.isFinite(value) ? value : fallback;
+    };
+
+    const swapText = (nextText) => {
+      if (!label || isSwapping || label.textContent === nextText) return;
+      isSwapping = true;
+      label.classList.add("is-exit");
+      window.clearTimeout(swapTimer);
+      swapTimer = window.setTimeout(() => {
+        label.textContent = nextText;
+        label.classList.remove("is-exit");
+        label.classList.add("is-enter-start");
+        void label.offsetHeight;
+        label.classList.remove("is-enter-start");
+        isSwapping = false;
+      }, readMs("--text-swap-dur", 150));
+    };
+
+    button.addEventListener("click", async () => {
+      if (!email) return;
+      try {
+        await navigator.clipboard.writeText(email);
+        button.dataset.copied = "true";
+        button.setAttribute("aria-label", button.dataset.labelCopied || "Email copied");
+        swapText(button.dataset.labelCopied || "Email copied");
+        window.clearTimeout(resetTimer);
+        resetTimer = window.setTimeout(() => {
+          delete button.dataset.copied;
+          button.setAttribute("aria-label", button.dataset.labelCopy || "Copy email");
+          swapText(button.dataset.labelCopy || "Copy email");
+        }, 3000);
+      } catch {
+        window.location.assign(`mailto:${email}`);
+      }
+    });
+  })();
+</script>
+
 <script>
   import { bind, play } from "cuelume";
   import { WebHaptics } from "web-haptics";
@@ -421,7 +706,7 @@ const stickerStyle = (index: number) => {
     });
   };
   assignHaptic("#profile-avatar, [data-avatar-close]", "nudge");
-  assignHaptic("#theme-toggle, .activity-day.t-tt-trigger, .tech-sticker", "selection");
+  assignHaptic("#theme-toggle, #copy-email, #mobile-tech-toggle, .mobile-tech-link, .experience-technology, .activity-day.t-tt-trigger, .tech-sticker", "selection");
   assignHaptic(".project-preview-cta", "success");
   assignHaptic(".social-link", "light");
   document.addEventListener("pointerdown", (event) => {
@@ -726,38 +1011,23 @@ const stickerStyle = (index: number) => {
         }),
       },
     };
-    const overlaps = (first, second) => (
-      first.left < second.right &&
-      first.right > second.left &&
-      first.top < second.bottom &&
-      first.bottom > second.top
-    );
-    const asideBounds = techAside.getBoundingClientRect();
-    const mainBounds = document.querySelector(".portfolio-main")?.getBoundingClientRect();
-    const safePlacements = stickers.flatMap((candidate) => {
+    const viewportBounds = { left: 0, right: window.innerWidth, top: 0, bottom: window.innerHeight };
+    const viewportPlacements = stickers.flatMap((candidate) => {
       const bounds = candidate.getBoundingClientRect();
       return Object.entries(directions).flatMap(([direction, config]) => {
         const reserved = config.reserve(bounds);
-        const withinPage = (
-          reserved.left >= asideBounds.left + 8 &&
-          reserved.right <= asideBounds.right - 8 &&
-          reserved.top >= asideBounds.top + 8 &&
-          reserved.bottom <= asideBounds.bottom - 8
+        const withinInitialViewport = (
+          reserved.left >= viewportBounds.left + 8 &&
+          reserved.right <= viewportBounds.right - 8 &&
+          reserved.top >= viewportBounds.top + 8 &&
+          reserved.bottom <= viewportBounds.bottom - 8
         );
-        const outsideContent = !mainBounds || (
-          candidate.classList.contains("tech-sticker--left")
-            ? reserved.right <= mainBounds.left - 12
-            : reserved.left >= mainBounds.right + 12
-        );
-        const clearOfTools = !stickers.some((other) => (
-          other !== candidate && overlaps(reserved, other.getBoundingClientRect())
-        ));
-        return withinPage && outsideContent && clearOfTools
+        return withinInitialViewport
           ? [{ candidate, direction, path: config.path }]
           : [];
       });
     });
-    const selected = safePlacements[Math.floor(Math.random() * safePlacements.length)];
+    const selected = viewportPlacements[Math.floor(Math.random() * viewportPlacements.length)];
     const featured = selected?.candidate;
     const icon = featured?.querySelector(":scope > img");
 
