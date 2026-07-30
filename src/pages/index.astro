@@ -71,7 +71,11 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
       <button type="button" class="squircle avatar-modal-close" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}>
         <span aria-hidden="true">×</span>
       </button>
-      <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="320" height="320" class="avatar-modal-image" />
+      <picture class="block">
+        <source srcset="/jan-profile-320.avif" type="image/avif" />
+        <source srcset="/jan-profile-320.webp" type="image/webp" />
+        <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="320" height="320" class="avatar-modal-image" />
+      </picture>
     </div>
   </div>
 <main class="portfolio-main mx-auto min-h-screen w-full max-w-2xl space-y-12 px-6 pt-36 pb-12 transition-[filter] max-[520px]:px-5 md:space-y-14 md:pb-16">
@@ -87,7 +91,11 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
         aria-haspopup="dialog"
         aria-controls="avatar-modal"
       >
-        <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="160" height="160" class="profile-image" />
+        <picture class="block">
+          <source srcset="/jan-profile-160.avif" type="image/avif" />
+          <source srcset="/jan-profile-160.webp" type="image/webp" />
+          <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="160" height="160" class="profile-image" fetchpriority="high" />
+        </picture>
       </button>
       <button
         id="theme-toggle"
@@ -358,7 +366,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
     </div>
   </section>
 </main>
-<script is:inline>
+<script>
   (() => {
     const accordion = document.getElementById("mobile-tech-accordion");
     const toggle = document.getElementById("mobile-tech-toggle");
@@ -378,7 +386,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
 </script>
 </div>
 
-<script is:inline>
+<script>
   (() => {
     const root = document.documentElement;
     const toggle = document.getElementById("theme-toggle");
@@ -452,7 +460,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
   })();
 </script>
 
-<script is:inline>
+<script>
   (() => {
     const subtitle = document.querySelector(".profile-subtitle");
     const label = subtitle?.querySelector(".t-text-swap");
@@ -493,7 +501,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
   })();
 </script>
 
-<script is:inline>
+<script>
   (() => {
     const button = document.getElementById("copy-email");
     if (!button) return;
@@ -547,7 +555,6 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
 
 <script>
   import { bind, play } from "cuelume";
-  import { WebHaptics } from "web-haptics";
 
   document.querySelectorAll(".social-link").forEach((link) => {
     link.dataset.cuelumeHover = "tick";
@@ -562,7 +569,9 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
     });
   });
 
-  const haptics = WebHaptics.isSupported ? new WebHaptics() : null;
+  const haptics = window.matchMedia("(pointer: coarse)").matches
+    ? import("web-haptics").then(({ WebHaptics }) => WebHaptics.isSupported ? new WebHaptics() : null)
+    : Promise.resolve(null);
   const assignHaptic = (selector, pattern) => {
     document.querySelectorAll(selector).forEach((element) => {
       element.dataset.haptic = pattern;
@@ -572,17 +581,18 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
   assignHaptic("#theme-toggle, #copy-email, #mobile-tech-toggle, .mobile-tech-link, .experience-technology, .activity-day.t-tt-trigger, .tech-sticker", "selection");
   assignHaptic(".project-preview-cta", "success");
   assignHaptic(".social-link", "light");
-  document.addEventListener("pointerdown", (event) => {
-    if (!haptics || event.pointerType !== "touch" || !(event.target instanceof Element)) return;
+  document.addEventListener("pointerdown", async (event) => {
+    if (event.pointerType !== "touch" || !(event.target instanceof Element)) return;
     const target = event.target.closest("[data-haptic]");
     if (!target) return;
-    void haptics.trigger(target.dataset.haptic || "light");
+    const device = await haptics;
+    if (device) void device.trigger(target.dataset.haptic || "light");
   }, { passive: true });
 
   bind();
 </script>
 
-<script is:inline>
+<script>
   (() => {
     const avatar = document.getElementById("profile-avatar");
     const modal = document.getElementById("avatar-modal");
@@ -646,7 +656,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
   })();
 </script>
 
-<script is:inline>
+<script>
   (() => {
     const skeletons = document.querySelectorAll(".t-skel");
     if (!skeletons.length) return;
@@ -681,7 +691,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
   })();
 </script>
 
-<script is:inline>
+<script>
   (() => {
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     const maxDrag = 5;
