@@ -13,7 +13,8 @@ const requestUrl = new URL(Astro.request.url);
 const requestLocale = requestUrl.searchParams.get("lang") ?? requestUrl.pathname.split("/")[1];
 const localizedPath = requestLocale === "de" || requestLocale === "en" ? `/${requestLocale}` : "/";
 const url = `${siteUrl}${localizedPath}`;
-const image = `${siteUrl}/jan-profile.jpg`;
+const ogImage = `${siteUrl}/og.png`;
+const profileImage = `${siteUrl}/jan-profile.jpg`;
 
 Astro.response.headers.set("Vary", "Accept-Language");
 ---
@@ -54,18 +55,22 @@ Astro.response.headers.set("Vary", "Accept-Language");
     <meta property="og:url" content={url} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={copy.meta.imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={copy.meta.imageAlt} />
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "Person",
       name: "Jan-Marlon Leibl",
       url,
-      image,
+      image: profileImage,
       jobTitle: copy.meta.jobTitle,
       email: "hi@itsjan.dev",
       address: { "@type": "PostalAddress", addressLocality: "Bremen", addressCountry: "DE" },
