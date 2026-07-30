@@ -1,53 +1,76 @@
 # itsjan.dev
 
-_a small note to future me (and anyone else reading this)_
+Personal portfolio for Jan-Marlon Leibl. Built with Astro, Tailwind CSS, and
+the Cloudflare adapter; deployed as a server-rendered Cloudflare Worker.
 
-This is my personal website.
-Built with Astro + Tailwind, deployed with Cloudflare.
+## Requirements
 
-It is intentionally simple:
-- one page
-- clear layout
-- fast load
-- easy to maintain
+- Bun 1.x
+- Node.js 22.12 or newer
 
-## local setup
+## Local development
 
 ```sh
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
-Dev server runs at `http://localhost:4321`.
-
-## build
+The local site runs at [http://localhost:4321](http://localhost:4321).
 
 ```sh
-npm run build
-npm run preview
+bun run build
+bun run preview
 ```
 
-The build output goes to `dist/`.
+`bun run build` produces the Cloudflare Worker and static assets in `dist/`.
 
-## quick structure
+## Project structure
 
 ```text
 src/
-  pages/index.astro      # the page
-  layouts/Layout.astro   # head/meta/fonts
-  styles/global.css      # design system + global styles
-  components/Button.astro
+  layouts/Layout.astro    Document head, metadata, JSON-LD, WebMCP context
+  pages/index.astro       Portfolio markup and browser interactions
+  pages/[lang].astro      `/en` and `/de` routing
+  lib/i18n.ts             English and German content
+  lib/portfolio.ts        GitHub activity, technology, and sticker helpers
+  lib/site.ts             Canonical URLs, contact details, social links
+  middleware.ts           Markdown content negotiation for agents
+  styles/global.css       Design tokens and responsive styles
+
+public/
+  llms.txt                Curated AI-agent entry point
+  llms-full.txt           Expanded public profile content
+  *.md                    Markdown representations of portfolio pages
+  .well-known/            Agent discovery documents
+  skills/                 Public Agent Skill definitions
+
+cursors-worker/           Independent Durable Object cursor service
 ```
 
-## deployment notes
+## Agent-readable content
 
-- Hosting target: Cloudflare (Astro Cloudflare adapter)
-- `prebuild` writes a placeholder worker file used during build
-- Wrangler config lives in `wrangler.toml`
+The site exposes public Markdown and discovery resources:
 
----
+- `/llms.txt` and `/llms-full.txt`
+- `/index.md`, `/en.md`, and `/de.md`
+- `/.well-known/agent-skills/index.json`
+- `/skills/itsjan-profile/SKILL.md`
+- `/auth.md`
 
-If something looks off on mobile first, check:
-1. panel spans in `index.astro`
-2. shared tokens in `global.css`
-3. image fit/crop classes in the hero block
+Requests to `/`, `/en`, or `/de` with `Accept: text/markdown` receive the
+matching Markdown representation. `robots.txt` permits search and real-time
+agent use while opting out of model training.
+
+## Deployment
+
+The primary site uses the configuration in `wrangler.toml`. The cursor service
+has its own `cursors-worker/wrangler.toml` and is deployed separately:
+
+```sh
+cd cursors-worker
+bun install
+bun run deploy
+```
+
+Do not publish OAuth, MCP, or API-discovery metadata unless the matching
+service actually exists.

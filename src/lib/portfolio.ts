@@ -1,11 +1,8 @@
-import type { Locale } from "./i18n";
-
 export type Technology = {
   name: string;
   logo: string;
   href: string;
   darkModeLight?: boolean;
-  detail: Record<Locale, string>;
 };
 
 export type GithubDay = {
@@ -35,19 +32,11 @@ const EXPERIENCE_ONLY_TECHNOLOGIES: Technology[] = [
     logo: "https://cdn.simpleicons.org/symfony/000000",
     href: "https://symfony.com/",
     darkModeLight: true,
-    detail: {
-      en: "Backend framework used during my apprenticeship.",
-      de: "Backend-Framework aus meiner Ausbildung.",
-    },
   },
   {
     name: "Git",
     logo: "https://cdn.simpleicons.org/git/F05032",
     href: "https://git-scm.com/",
-    detail: {
-      en: "Version control used during my apprenticeship.",
-      de: "Versionsverwaltung aus meiner Ausbildung.",
-    },
   },
 ];
 
