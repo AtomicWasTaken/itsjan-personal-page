@@ -29,13 +29,13 @@ export type StickerPlacement = {
 const EXPERIENCE_ONLY_TECHNOLOGIES: Technology[] = [
   {
     name: "Symfony",
-    logo: "https://cdn.simpleicons.org/symfony/000000",
+    logo: "/logos/symfony.svg",
     href: "https://symfony.com/",
     darkModeLight: true,
   },
   {
     name: "Git",
-    logo: "https://cdn.simpleicons.org/git/F05032",
+    logo: "/logos/git.svg",
     href: "https://git-scm.com/",
   },
 ];
@@ -52,6 +52,8 @@ const FEATURED_MOBILE_TECHNOLOGIES = [
 ];
 
 const GITHUB_CONTRIBUTIONS_URL = "https://github.com/users/AtomicWasTaken/contributions";
+const GITHUB_CONTRIBUTIONS_CACHE_URL = "https://itsjan.dev/_cache/github-contributions";
+const GITHUB_CONTRIBUTIONS_CACHE_SECONDS = 15 * 60;
 const ACTIVITY_DAYS_FALLBACK = 365;
 const ACTIVITY_ROWS = 7;
 const STICKER_HORIZONTAL_BANDS = [[7, 24], [36, 59], [72, 94]] as const;
@@ -74,7 +76,13 @@ export function createTechnologyCollections(technologies: Technology[]) {
 }
 
 export async function fetchGithubContributions(): Promise<GithubDay[]> {
+  const cache = getEdgeCache();
+  const cacheKey = new Request(GITHUB_CONTRIBUTIONS_CACHE_URL);
+
   try {
+    const cached = await cache?.match(cacheKey);
+    if (cached) return await cached.json<GithubDay[]>();
+
     const response = await fetch(GITHUB_CONTRIBUTIONS_URL, {
       headers: {
         accept: "text/html",
@@ -84,10 +92,21 @@ export async function fetchGithubContributions(): Promise<GithubDay[]> {
     });
     if (!response.ok) return [];
 
-    return parseGithubContributions(await response.text());
+    const contributions = parseGithubContributions(await response.text());
+    if (contributions.length && cache) {
+      await cache.put(cacheKey, Response.json(contributions, {
+        headers: { "Cache-Control": `public, max-age=${GITHUB_CONTRIBUTIONS_CACHE_SECONDS}` },
+      }));
+    }
+
+    return contributions;
   } catch {
     return [];
   }
+}
+
+function getEdgeCache(): Cache | undefined {
+  return (globalThis.caches as CacheStorage & { default?: Cache } | undefined)?.default;
 }
 
 export function buildActivity(

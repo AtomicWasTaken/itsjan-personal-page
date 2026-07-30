@@ -24,6 +24,16 @@ bun run preview
 
 `bun run build` produces the Cloudflare Worker and static assets in `dist/`.
 
+## Performance
+
+- GitHub activity is cached in Cloudflare's edge cache for 15 minutes; GitHub
+  is not contacted for every page request.
+- The profile image uses responsive AVIF/WebP variants with the JPEG retained
+  as a fallback and for social metadata.
+- Technology logos are versioned local SVG assets under `public/logos/`, so
+  the page has no runtime dependency on third-party icon CDNs.
+- Haptics are loaded only on touch-capable devices.
+
 ## Project structure
 
 ```text
