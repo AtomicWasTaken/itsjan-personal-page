@@ -1,5 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { Image } from "astro:assets";
+import finnyFavicon from "../assets/finny-favicon.png";
+import profile160 from "../assets/jan-profile-160.avif";
+import profile320 from "../assets/jan-profile-320.avif";
 import { detectLocale, tr } from "../lib/i18n";
 import { ageYears } from "../lib/jan";
 import {
@@ -71,11 +75,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
       <button type="button" class="squircle avatar-modal-close" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}>
         <span aria-hidden="true">×</span>
       </button>
-      <picture class="block">
-        <source srcset="/jan-profile-320.avif" type="image/avif" />
-        <source srcset="/jan-profile-320.webp" type="image/webp" />
-        <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="320" height="320" class="avatar-modal-image" />
-      </picture>
+      <Image src={profile320} alt="Jan-Marlon Leibl" width={320} height={320} class="avatar-modal-image" />
     </div>
   </div>
 <main class="portfolio-main mx-auto min-h-screen w-full max-w-2xl space-y-12 px-6 pt-36 pb-12 transition-[filter] max-[520px]:px-5 md:space-y-14 md:pb-16">
@@ -91,11 +91,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
         aria-haspopup="dialog"
         aria-controls="avatar-modal"
       >
-        <picture class="block">
-          <source srcset="/jan-profile-160.avif" type="image/avif" />
-          <source srcset="/jan-profile-160.webp" type="image/webp" />
-          <img src="/jan-profile.jpg" alt="Jan-Marlon Leibl" width="160" height="160" class="profile-image" fetchpriority="high" />
-        </picture>
+        <Image src={profile160} alt="Jan-Marlon Leibl" width={160} height={160} class="profile-image" priority />
       </button>
       <button
         id="theme-toggle"
@@ -177,7 +173,7 @@ const stickerLayout = createStickerLayout(copy.tech.items.length);
       <article class="project-preview w-full overflow-visible">
         <div class="project-preview-surface">
           <div class="project-preview-image project-preview-image--finny" role="img" aria-label={copy.finny.previewAria}>
-            <span class="preview-brand"><img src="/finny-favicon.png" alt="" width="28" height="28" />finny</span>
+            <span class="preview-brand"><Image src={finnyFavicon} alt="" width={28} height={28} />finny</span>
             <span class="preview-receipt preview-receipt--one" aria-hidden="true"><b>{copy.finny.receiptTitle}</b><i>{copy.finny.receiptVendor}</i><i>{copy.finny.receiptDetail}</i></span>
             <span class="preview-receipt preview-receipt--two" aria-hidden="true"><b>{copy.finny.warrantyTitle}</b><i>{copy.finny.warrantyDetail}</i><small>{copy.finny.warrantyUntil}</small></span>
           </div>
