@@ -20,10 +20,27 @@
   --image-outline: rgba(0, 0, 0, .1);
   --button-bg: #20252a;
   --button-hover-bg: var(--shadow-grey);
+  --button-surface: linear-gradient(180deg, #3c4145 0%, #20252a 100%);
+  --button-hover-surface: linear-gradient(180deg, #464b4f 0%, #292e32 100%);
   --button-text: #fff;
   --button-shadow:
-    0 0 0 1px oklch(32% .07 240 / .08),
-    0 1px 2px oklch(32% .07 240 / .14);
+    inset 0 1px 0 rgba(255, 255, 255, .3),
+    inset 0 -1px 0 rgba(0, 0, 0, .38),
+    0 0 0 1px rgba(9, 12, 14, .9),
+    0 3px 0 #0e1113,
+    0 7px 12px rgba(17, 18, 20, .24);
+  --button-shadow-hover:
+    inset 0 1px 0 rgba(255, 255, 255, .36),
+    inset 0 -1px 0 rgba(0, 0, 0, .4),
+    0 0 0 1px rgba(9, 12, 14, .95),
+    0 4px 0 #0e1113,
+    0 9px 16px rgba(17, 18, 20, .28);
+  --button-shadow-pressed:
+    inset 0 1px 0 rgba(255, 255, 255, .22),
+    inset 0 -1px 0 rgba(0, 0, 0, .32),
+    0 0 0 1px rgba(9, 12, 14, .9),
+    0 1px 0 #0e1113,
+    0 3px 6px rgba(17, 18, 20, .2);
   --focus-ring: var(--accent-strong);
   /* Normalize every idle logo to the same neutral gray. */
   --tech-filter: brightness(0) saturate(100%);
@@ -91,10 +108,27 @@ html[data-theme="dark"] {
   --image-outline: rgba(255, 255, 255, .1);
   --button-bg: #e6e6e8;
   --button-hover-bg: #fff;
+  --button-surface: linear-gradient(180deg, #fff 0%, #d9d9dd 100%);
+  --button-hover-surface: linear-gradient(180deg, #fff 0%, #e5e5e8 100%);
   --button-text: #111113;
   --button-shadow:
-    0 0 0 1px rgba(255, 255, 255, .14),
-    0 1px 2px rgba(0, 0, 0, .35);
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -1px 0 rgba(0, 0, 0, .16),
+    0 0 0 1px rgba(80, 80, 86, .48),
+    0 3px 0 #aaaab0,
+    0 7px 12px rgba(0, 0, 0, .26);
+  --button-shadow-hover:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(0, 0, 0, .18),
+    0 0 0 1px rgba(80, 80, 86, .55),
+    0 4px 0 #a4a4aa,
+    0 9px 16px rgba(0, 0, 0, .3);
+  --button-shadow-pressed:
+    inset 0 1px 0 rgba(255, 255, 255, .85),
+    inset 0 -1px 0 rgba(0, 0, 0, .12),
+    0 0 0 1px rgba(80, 80, 86, .48),
+    0 1px 0 #aaaab0,
+    0 3px 6px rgba(0, 0, 0, .2);
   --focus-ring: var(--accent-mid);
   --tech-filter: grayscale(1) brightness(0) invert(1);
   --tech-opacity: .5;
@@ -123,10 +157,27 @@ html[data-theme="dark"] {
     --image-outline: rgba(255, 255, 255, .1);
     --button-bg: #e6e6e8;
     --button-hover-bg: #fff;
+    --button-surface: linear-gradient(180deg, #fff 0%, #d9d9dd 100%);
+    --button-hover-surface: linear-gradient(180deg, #fff 0%, #e5e5e8 100%);
     --button-text: #111113;
     --button-shadow:
-      0 0 0 1px rgba(255, 255, 255, .14),
-      0 1px 2px rgba(0, 0, 0, .35);
+      inset 0 1px 0 rgba(255, 255, 255, .95),
+      inset 0 -1px 0 rgba(0, 0, 0, .16),
+      0 0 0 1px rgba(80, 80, 86, .48),
+      0 3px 0 #aaaab0,
+      0 7px 12px rgba(0, 0, 0, .26);
+    --button-shadow-hover:
+      inset 0 1px 0 rgba(255, 255, 255, 1),
+      inset 0 -1px 0 rgba(0, 0, 0, .18),
+      0 0 0 1px rgba(80, 80, 86, .55),
+      0 4px 0 #a4a4aa,
+      0 9px 16px rgba(0, 0, 0, .3);
+    --button-shadow-pressed:
+      inset 0 1px 0 rgba(255, 255, 255, .85),
+      inset 0 -1px 0 rgba(0, 0, 0, .12),
+      0 0 0 1px rgba(80, 80, 86, .48),
+      0 1px 0 #aaaab0,
+      0 3px 6px rgba(0, 0, 0, .2);
     --focus-ring: var(--accent-mid);
     --tech-filter: grayscale(1) brightness(0) invert(1);
     --tech-opacity: .5;
@@ -768,7 +819,7 @@ html[data-theme="dark"] .experience-technology--dark-logo img {
   justify-content: center;
   flex-direction: column;
   gap: 8px;
-  border-radius: 12px;
+  border-radius: 14px;
   color: var(--text-tertiary);
   font-size: 11px;
   line-height: 14px;
@@ -1604,7 +1655,7 @@ html[data-theme="dark"] .tech-hover-arrow { color: #fff; }
   outline-offset: 3px;
 }
 .copy-email-button[data-copied="true"] {
-  background: var(--button-bg);
+  background: var(--button-surface);
   color: var(--button-text);
 }
 .copy-email-icon {
@@ -1681,15 +1732,15 @@ html[data-theme="dark"] .tech-hover-arrow { color: #fff; }
 .button-style {
   position: relative;
   display: inline-flex;
-  min-height: 40px;
+  min-height: 30px;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 2px 16px;
   border: 0;
-  border-radius: 10px;
-  background: var(--button-bg);
-  box-shadow: none;
+  border-radius: 12px;
+  background: var(--button-surface);
+  box-shadow: var(--button-shadow);
   color: var(--button-text);
   cursor: pointer;
   font: inherit;
@@ -1697,10 +1748,18 @@ html[data-theme="dark"] .tech-hover-arrow { color: #fff; }
   font-weight: 500;
   line-height: 20px;
   white-space: nowrap;
-  transition: background-color 150ms var(--ease-smooth-out), transform 150ms var(--ease-smooth-out);
+  transition: background 150ms var(--ease-smooth-out), box-shadow 150ms var(--ease-smooth-out), transform 150ms var(--ease-smooth-out);
 }
-.button-style:hover { background: var(--button-hover-bg); }
-.button-style:active { transform: scale(.95); }
+.button-style:hover {
+  background: var(--button-hover-surface);
+  box-shadow: var(--button-shadow-hover);
+  transform: translateY(-1px);
+}
+.button-style:active {
+  background: var(--button-surface);
+  box-shadow: var(--button-shadow-pressed);
+  transform: translateY(2px) scale(.98);
+}
 .button-style:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
@@ -1713,6 +1772,10 @@ html[data-theme="dark"] .tech-hover-arrow { color: #fff; }
   .avatar-modal-close {
     corner-shape: squircle;
     border-radius: 3rem;
+  }
+  .button-style.squircle {
+    corner-shape: squircle;
+    border-radius: 14px;
   }
 }
 
