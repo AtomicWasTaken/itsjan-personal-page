@@ -610,6 +610,7 @@ const stickerStyle = (index: number) => {
     };
 
     toggle.addEventListener("click", () => {
+      if (activeTransition) return;
       const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
       try { window.localStorage.setItem(storageKey, nextTheme); } catch {}
       transitionTheme(nextTheme);
