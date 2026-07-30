@@ -28,6 +28,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const response = await next();
-  response.headers.append("Vary", "Accept");
-  return response;
+  const headers = new Headers(response.headers);
+  headers.append("Vary", "Accept");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 });
