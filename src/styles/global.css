@@ -426,7 +426,7 @@ html[data-theme="dark"] .tech-sticker--dark-logo.is-following > :is(img, svg) {
     0 4px 12px oklch(32% .07 240 / .12);
   transform: translateY(-2px) scale(1.04);
 }
-.profile-avatar:active { transform: scale(.97); }
+.profile-avatar:active { transform: scale(.96); }
 .profile-avatar:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
@@ -439,6 +439,7 @@ html[data-theme="dark"] .tech-sticker--dark-logo.is-following > :is(img, svg) {
   outline-offset: -1px;
   object-fit: cover;
 }
+.profile-subtitle { font-variant-numeric: tabular-nums; }
 .t-modal {
   position: fixed;
   inset: 0;
@@ -678,8 +679,9 @@ main img {
 }
 .experience-bullets li { padding-left: 1px; }
 .experience-technology {
+  position: relative;
   display: inline-flex;
-  min-height: 30px;
+  min-height: 36px;
   align-items: center;
   gap: 5px;
   padding: 4px 9px;
@@ -689,6 +691,11 @@ main img {
   font-size: 12px;
   line-height: 16px;
   transition: border-color 150ms var(--ease-smooth-out), background-color 150ms var(--ease-smooth-out), color 150ms var(--ease-smooth-out), transform 150ms var(--ease-smooth-out);
+}
+.experience-technology::after {
+  position: absolute;
+  inset: -2px;
+  content: "";
 }
 .experience-technology :is(img, svg) {
   width: 16px;
@@ -702,10 +709,10 @@ main img {
   color: var(--text);
   transform: translateY(-1px);
 }
-.experience-technology:active { transform: scale(.97); }
+.experience-technology:active { transform: scale(.96); }
 .experience-technology:focus-visible {
-  outline: 2px solid var(--text);
-  outline-offset: 2px;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
 }
 html[data-theme="dark"] .experience-technology--dark-logo :is(img, svg) {
   filter: brightness(0) invert(1);
@@ -720,6 +727,18 @@ html[data-theme="dark"] .experience-technology--dark-logo :is(img, svg) {
   opacity: var(--tech-opacity);
   transition: filter 150ms var(--ease-smooth-out), opacity 150ms var(--ease-smooth-out);
 }
+.mobile-tech-link {
+  transition: background-color 150ms var(--ease-smooth-out), transform 150ms var(--ease-smooth-out);
+}
+.mobile-tech-link:is(:hover, :focus-visible) {
+  background: var(--card-shell);
+  transform: translateY(-1px);
+}
+.mobile-tech-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.mobile-tech-link:active { transform: scale(.96); }
 html[data-theme="dark"] .mobile-tech-link--dark-logo :is(img, svg) {
   filter: var(--tech-filter);
 }
@@ -793,7 +812,7 @@ html[data-theme="dark"] .mobile-tech-link--dark-logo:is(:hover, :focus-visible) 
 .mobile-tech-toggle:hover {
   background: var(--button-hover-bg);
 }
-.mobile-tech-toggle:active { transform: scale(.97); }
+.mobile-tech-toggle:active { transform: scale(.96); }
 .mobile-tech-toggle:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
@@ -1035,7 +1054,7 @@ html[data-theme="dark"] .ventry-file-row b {
 .project-preview-cta {
   position: relative;
   display: inline-flex;
-  min-height: 34px;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
   padding: 0 10px 0 12px;
@@ -1321,7 +1340,7 @@ html[data-theme="dark"] .ventry-file-row b {
 .copy-email-button:hover {
   background: var(--button-hover-bg);
 }
-.copy-email-button:active { transform: scale(.95); }
+.copy-email-button:active { transform: scale(.96); }
 .copy-email-button:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
@@ -1435,7 +1454,7 @@ html[data-theme="dark"] .ventry-file-row b {
    existing content and motion; this only standardizes the button surface. */
 .hero-project-link {
   display: inline-flex;
-  min-height: 34px;
+  min-height: 40px;
   align-items: center;
   padding: 0 4px;
   color: var(--text-secondary);
@@ -1454,11 +1473,17 @@ html[data-theme="dark"] .ventry-file-row b {
   outline-offset: 4px;
 }
 .hero-project-link:focus-visible { color: var(--text); text-decoration-color: currentColor; }
-.hero-project-link svg { width: 16px; height: 16px; margin-left: 2px; }
+.hero-project-link svg {
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;
+  transition: transform 150ms var(--ease-smooth-out);
+}
+.hero-project-link:hover svg { transform: translateX(2px); }
 .button-style {
   position: relative;
   display: inline-flex;
-  min-height: 30px;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
   gap: 8px;
@@ -1484,7 +1509,7 @@ html[data-theme="dark"] .ventry-file-row b {
 .button-style:active {
   background: var(--button-surface);
   box-shadow: var(--button-shadow-pressed);
-  transform: translateY(2px) scale(.98);
+  transform: translateY(2px) scale(.96);
 }
 .button-style:focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -1582,16 +1607,20 @@ html[data-theme="dark"] .ventry-file-row b {
   .theme-toggle,
   .theme-icon,
   .button-style,
+  .hero-project-link,
+  .hero-project-link svg,
   .experience-technology,
   .copy-email-button,
   .copy-email-icon,
   .copy-email-label,
   .mobile-tech-toggle-label,
+  .mobile-tech-link,
   .mobile-tech-link img {
     transition: none !important;
   }
   .theme-toggle:active,
-  .mobile-tech-toggle:active { transform: none; }
+  .mobile-tech-toggle:active,
+  .mobile-tech-link:active { transform: none; }
   .experience-technology:active,
   .copy-email-button:active { transform: none; }
   .social-link {
