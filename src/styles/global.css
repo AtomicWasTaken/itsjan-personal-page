@@ -85,6 +85,11 @@
   --text-swap-translate-y: 4px;
   --text-swap-blur: 2px;
   --text-swap-ease: ease-in-out;
+  --shimmer-dur: 2000ms;
+  --shimmer-base: var(--text-tertiary);
+  --shimmer-highlight: var(--text);
+  --shimmer-band: 400%;
+  --shimmer-ease: linear;
   --acc-expand: 250ms;
   --acc-collapse: 250ms;
   --acc-chevron: 250ms;
@@ -1394,6 +1399,38 @@ html[data-theme="dark"] .ventry-file-row b {
   transition: none;
 }
 
+/* Transitions.dev — Shimmer text */
+.t-shimmer {
+  position: relative;
+  display: inline-block;
+  color: var(--shimmer-base);
+}
+.t-shimmer::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 40%,
+    var(--shimmer-highlight) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-size: var(--shimmer-band) 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  content: attr(data-text);
+  -webkit-text-fill-color: transparent;
+  animation: t-shimmer var(--shimmer-dur) var(--shimmer-ease) infinite;
+}
+@keyframes t-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
 /* Shared compact action treatment. Component-specific classes keep their
    existing content and motion; this only standardizes the button surface. */
 .hero-project-link {
@@ -1513,6 +1550,7 @@ html[data-theme="dark"] .ventry-file-row b {
   .mobile-tech-section + .wave--mobile + section { margin-block-start: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .t-shimmer::before { animation: none !important; }
   .t-text-swap { transition: none !important; }
   .t-acc-panel,
   .t-acc-panel-inner,
