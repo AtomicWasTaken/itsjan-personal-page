@@ -120,7 +120,7 @@ const linkedinPath = locale === "en"
     </div>
     <h1 class="text-2xl font-medium tracking-tight">Jan-Marlon Leibl</h1>
     <p class="profile-subtitle mt-1 text-sm leading-5 text-[var(--text-tertiary)]" data-text-states={JSON.stringify(copy.subtitleStates(currentAge))}>
-      <span class="t-text-swap">{copy.subtitle(currentAge)}</span>
+      <span class="t-text-swap t-shimmer" data-text={copy.subtitle(currentAge)}>{copy.subtitle(currentAge)}</span>
     </p>
     <p class="mt-4 max-w-lg text-[17px] font-normal leading-7 text-[var(--text-secondary)]">
       {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{copy.intro.afterBremen}<span class="keyword">{copy.intro.apprenticeship}</span>{copy.intro.afterApprenticeship}<span class="keyword">{copy.intro.finny}</span>{copy.intro.afterFinny}
@@ -495,6 +495,7 @@ const linkedinPath = locale === "en"
       window.clearTimeout(swapTimer);
       swapTimer = window.setTimeout(() => {
         label.textContent = nextText;
+        label.dataset.text = nextText;
         label.classList.remove("is-exit");
         label.classList.add("is-enter-start");
         void label.offsetHeight;
