@@ -125,6 +125,10 @@ const linkedinPath = locale === "en"
     <p class="mt-4 max-w-lg text-[17px] font-normal leading-7 text-[var(--text-secondary)]">
       {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{copy.intro.afterBremen}<span class="keyword">{copy.intro.apprenticeship}</span>{copy.intro.afterApprenticeship}<span class="keyword">{copy.intro.finny}</span>{copy.intro.afterFinny}
     </p>
+    <div class="mt-5 flex flex-wrap gap-3">
+      <a class="button-style squircle hero-contact-link" href="mailto:hi@itsjan.dev" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{locale === "de" ? "Kontakt aufnehmen" : "Get in touch"}</a>
+      <a class="hero-project-link" href="#projects" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release"><span>{locale === "de" ? "Projekte ansehen" : "See projects"}</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+    </div>
   </section>
   <hr class="wave" aria-hidden="true" />
 
@@ -175,7 +179,7 @@ const linkedinPath = locale === "en"
   </section>
   <hr class="wave" aria-hidden="true" />
 
-  <section>
+  <section id="projects">
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.projects}</h2>
     <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
       <article class="project-preview w-full overflow-visible">
