@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import PostHog from '../components/posthog.astro';
 import { detectLocale, tr } from "../lib/i18n";
 import {
   CONTACT_EMAIL,
@@ -129,6 +130,7 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
       })();
     </script>
     <meta name="generator" content={Astro.generator} />
+    <PostHog />
   </head>
   <body>
     <slot />
