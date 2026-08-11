@@ -1427,6 +1427,7 @@ html[data-theme="dark"] .ventry-file-row b {
 .privacy-consent__button:focus-visible,
 .privacy-settings:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
 @media (max-width: 520px) {
+  .bottom-corner-blur { display: none; }
   .privacy-consent { width: calc(100% - 24px); right: 12px; left: 12px; }
   .privacy-consent__content { padding: 18px; }
   .privacy-consent__actions > * { flex: 1 1 180px; }
