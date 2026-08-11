@@ -790,6 +790,13 @@ const linkedinPath = locale === "en"
       }
     });
 
+    // "See projects" hero navigation link
+    document.querySelector('.hero-project-link')?.addEventListener('click', () => {
+      if (typeof window.posthog?.capture === 'function') {
+        window.posthog.capture('projects_section_navigated');
+      }
+    });
+
     // Project CTA buttons (Finny, Ventry)
     document.querySelectorAll('.project-preview-cta').forEach((el) => {
       el.addEventListener('click', () => {
