@@ -1436,9 +1436,9 @@ html[data-theme="dark"] .ventry-file-row b {
     right: max(12px, env(safe-area-inset-right));
     bottom: max(12px, env(safe-area-inset-bottom));
     min-height: 36px;
-    width: 36px;
-    height: 36px;
-    padding: 0;
+    width: auto;
+    height: auto;
+    padding: 8px 13px;
     gap: 0;
     border: 1px solid color-mix(in srgb, var(--text-secondary) 22%, transparent);
     border-radius: 10px;
@@ -1448,9 +1448,9 @@ html[data-theme="dark"] .ventry-file-row b {
     line-height: 1.2;
     text-decoration: none;
   }
-  .privacy-settings__label,
-  .privacy-settings__label--short { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .privacy-settings__icon { display: block; }
+  .privacy-settings__label { display: none; }
+  .privacy-settings__label--short { display: inline; }
+  .privacy-settings__icon { display: none; }
   .privacy-settings__arrow { display: none; }
   .privacy-settings:hover { color: var(--text); background: var(--surface); text-decoration: none; }
 }
