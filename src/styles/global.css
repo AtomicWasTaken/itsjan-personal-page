@@ -1404,6 +1404,9 @@ html[data-theme="dark"] .ventry-file-row b {
   --corner-mask: radial-gradient(ellipse 100% 100% at 100% 100%, #000 0%, #000 10%, transparent 38%);
 }
 .privacy-settings {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   position: fixed;
   z-index: 90;
   right: max(16px, env(safe-area-inset-right));
@@ -1418,12 +1421,24 @@ html[data-theme="dark"] .ventry-file-row b {
   text-underline-offset: 4px;
 }
 .privacy-settings:hover { color: var(--text); text-decoration-color: currentColor; }
+.privacy-settings__arrow { width: 16px; height: 16px; transition: transform 180ms cubic-bezier(.22,1,.36,1); }
+.privacy-settings:hover .privacy-settings__arrow { transform: translateX(3px); }
 .privacy-consent__button:focus-visible,
 .privacy-settings:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
 @media (max-width: 520px) {
   .privacy-consent { width: calc(100% - 24px); right: 12px; left: 12px; }
   .privacy-consent__content { padding: 18px; }
   .privacy-consent__actions > * { flex: 1 1 180px; }
+  .privacy-settings {
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    min-height: 32px;
+    padding: 4px 0;
+    gap: 4px;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  .privacy-settings__arrow { width: 14px; height: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .privacy-consent { transition: none; }
