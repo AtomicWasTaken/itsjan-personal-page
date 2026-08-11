@@ -589,9 +589,19 @@ const linkedinPath = locale === "en"
     });
   });
 
-  const haptics = window.matchMedia("(pointer: coarse)").matches
-    ? import("web-haptics").then(({ WebHaptics }) => WebHaptics.isSupported ? new WebHaptics() : null)
-    : Promise.resolve(null);
+  let hapticsPromise = null;
+  const getHaptics = () => {
+    if (!window.matchMedia("(pointer: coarse)").matches) return Promise.resolve(null);
+    if (!hapticsPromise) {
+      hapticsPromise = import("web-haptics")
+        .then(({ WebHaptics }) => WebHaptics.isSupported ? new WebHaptics() : null)
+        .catch(() => {
+          hapticsPromise = null;
+          return null;
+        });
+    }
+    return hapticsPromise;
+  };
   const assignHaptic = (selector, pattern) => {
     document.querySelectorAll(selector).forEach((element) => {
       element.dataset.haptic = pattern;
@@ -605,7 +615,7 @@ const linkedinPath = locale === "en"
     if (event.pointerType !== "touch" || !(event.target instanceof Element)) return;
     const target = event.target.closest("[data-haptic]");
     if (!target) return;
-    const device = await haptics;
+    const device = await getHaptics();
     if (device) void device.trigger(target.dataset.haptic || "light");
   }, { passive: true });
 
