@@ -391,7 +391,9 @@ const linkedinPath = locale === "en"
       label.textContent = nextOpen
         ? (toggle.dataset.labelLess || "Show less")
         : (toggle.dataset.labelMore || "View more");
-      if (nextOpen) window.posthog?.capture('tech_accordion_expanded');
+      if (nextOpen && typeof window.posthog?.capture === 'function') {
+        window.posthog.capture('tech_accordion_expanded');
+      }
     });
   })();
 </script>
@@ -458,7 +460,9 @@ const linkedinPath = locale === "en"
       if (activeTransition) return;
       const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
       try { window.localStorage.setItem(storageKey, nextTheme); } catch {}
-      window.posthog?.capture('theme_toggled', { theme: nextTheme });
+      if (typeof window.posthog?.capture === 'function') {
+        window.posthog.capture('theme_toggled', { theme: nextTheme });
+      }
       transitionTheme(nextTheme);
     });
 
@@ -550,7 +554,9 @@ const linkedinPath = locale === "en"
       if (!email) return;
       try {
         await navigator.clipboard.writeText(email);
-        window.posthog?.capture('email_copied');
+        if (typeof window.posthog?.capture === 'function') {
+          window.posthog.capture('email_copied');
+        }
         button.dataset.copied = "true";
         button.setAttribute("aria-label", button.dataset.labelCopied || "Email copied");
         swapText(button.dataset.labelCopied || "Email copied");
@@ -645,7 +651,9 @@ const linkedinPath = locale === "en"
       modal.classList.add("is-open");
       modal.setAttribute("aria-hidden", "false");
       document.body.classList.add("is-avatar-modal-open");
-      window.posthog?.capture('avatar_opened');
+      if (typeof window.posthog?.capture === 'function') {
+        window.posthog.capture('avatar_opened');
+      }
       closeButton.focus({ preventScroll: true });
     };
 
@@ -777,7 +785,9 @@ const linkedinPath = locale === "en"
   (() => {
     // "Get in touch" hero contact link
     document.querySelector('.hero-contact-link')?.addEventListener('click', () => {
-      window.posthog?.capture('contact_button_clicked');
+      if (typeof window.posthog?.capture === 'function') {
+        window.posthog.capture('contact_button_clicked');
+      }
     });
 
     // Project CTA buttons (Finny, Ventry)
@@ -787,7 +797,9 @@ const linkedinPath = locale === "en"
         let project_name = 'unknown';
         if (href.includes('fnny.app')) project_name = 'finny';
         else if (href.includes('ventry.host')) project_name = 'ventry';
-        window.posthog?.capture('project_cta_clicked', { project_name });
+        if (typeof window.posthog?.capture === 'function') {
+          window.posthog.capture('project_cta_clicked', { project_name });
+        }
       });
     });
 
@@ -800,7 +812,9 @@ const linkedinPath = locale === "en"
         else if (href.includes('x.com') || href.includes('twitter.com')) platform = 'x';
         else if (href.includes('linkedin.com')) platform = 'linkedin';
         else if (href.startsWith('mailto:')) platform = 'email';
-        window.posthog?.capture('social_link_clicked', { platform });
+        if (typeof window.posthog?.capture === 'function') {
+          window.posthog.capture('social_link_clicked', { platform });
+        }
       });
     });
   })();
