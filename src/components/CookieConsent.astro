@@ -1,0 +1,96 @@
+---
+import type { Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = locale === "de"
+  ? {
+      title: "Datenschutz-Einstellungen",
+      text: "Wir nutzen PostHog nur mit Ihrer Einwilligung, um die Nutzung dieser Website zu verstehen und technische Fehler zu erkennen.",
+      accept: "Analyse akzeptieren",
+      reject: "Nur notwendige Cookies",
+      settings: "Datenschutz-Einstellungen",
+      privacy: "Datenschutzerklärung",
+    }
+  : {
+      title: "Privacy settings",
+      text: "With your permission, we use PostHog to understand how this site is used and to diagnose technical errors.",
+      accept: "Accept analytics",
+      reject: "Use necessary only",
+      settings: "Privacy settings",
+      privacy: "Privacy policy",
+    };
+---
+
+<aside id="privacy-consent" class="privacy-consent" role="dialog" aria-modal="true" aria-labelledby="privacy-consent-title" hidden>
+  <div class="privacy-consent__content">
+    <p id="privacy-consent-title" class="privacy-consent__title">{copy.title}</p>
+    <p class="privacy-consent__text">{copy.text}</p>
+    <a
+      class="hero-project-link privacy-consent__link"
+      href="/privacy"
+      data-cuelume-hover="tick"
+      data-cuelume-press="press"
+      data-cuelume-release="release"
+    >
+      <span>{copy.privacy}</span>
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </a>
+    <hr class="wave privacy-consent__wave" aria-hidden="true" />
+    <div class="privacy-consent__actions">
+      <button id="privacy-reject" class="privacy-consent__button privacy-consent__button--secondary" type="button" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.reject}</button>
+      <button id="privacy-accept" class="button-style squircle privacy-consent__button privacy-consent__button--primary" type="button" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.accept}</button>
+    </div>
+  </div>
+</aside>
+<div class="bottom-corner-blur" aria-hidden="true">
+  <div class="bottom-corner-blur__wash"></div>
+  <div class="bottom-corner-blur__layer bottom-corner-blur__layer--1"></div>
+  <div class="bottom-corner-blur__layer bottom-corner-blur__layer--2"></div>
+  <div class="bottom-corner-blur__layer bottom-corner-blur__layer--3"></div>
+  <div class="bottom-corner-blur__layer bottom-corner-blur__layer--4"></div>
+</div>
+<button id="privacy-settings" class="privacy-settings" type="button" aria-controls="privacy-consent" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.settings}</button>
+
+<script>
+  (() => {
+    const key = "itsjan-analytics-consent";
+    const dialog = document.getElementById("privacy-consent");
+    const accept = document.getElementById("privacy-accept");
+    const reject = document.getElementById("privacy-reject");
+    const settings = document.getElementById("privacy-settings");
+    if (!dialog || !accept || !reject || !settings) return;
+    let hideTimer = 0;
+
+    const getChoice = () => {
+      try { return window.localStorage.getItem(key); } catch { return null; }
+    };
+    const show = () => {
+      window.clearTimeout(hideTimer);
+      dialog.hidden = false;
+      window.requestAnimationFrame(() => dialog.classList.add("is-visible"));
+    };
+    const hide = () => {
+      dialog.classList.remove("is-visible");
+      hideTimer = window.setTimeout(() => { dialog.hidden = true; }, 180);
+    };
+    const save = (choice: "granted" | "denied") => {
+      try { window.localStorage.setItem(key, choice); } catch {}
+      hide();
+      window.dispatchEvent(new CustomEvent("itsjan:analytics-consent", { detail: choice }));
+    };
+
+    if (!getChoice()) show();
+    accept.addEventListener("click", () => save("granted"));
+    reject.addEventListener("click", () => save("denied"));
+    settings.addEventListener("click", show);
+  })();
+</script>
+
+<script>
+  import { bind } from "cuelume";
+  bind(document);
+</script>

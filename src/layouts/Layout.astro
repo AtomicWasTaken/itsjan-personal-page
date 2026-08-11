@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import CookieConsent from "../components/CookieConsent.astro";
 import PostHog from '../components/posthog.astro';
 import { detectLocale, tr } from "../lib/i18n";
 import {
@@ -10,12 +11,18 @@ import {
   SOCIAL_LINKS,
 } from "../lib/site";
 
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const props = Astro.props as Props;
 const locale = detectLocale(Astro.request);
 const copy = tr(locale);
-const title = locale === "de" ? "Jan-Marlon Leibl · Entwickler aus Bremen" : "Jan-Marlon Leibl · Developer from Bremen";
-const description = locale === "de"
+const title = props.title ?? (locale === "de" ? "Jan-Marlon Leibl · Entwickler aus Bremen" : "Jan-Marlon Leibl · Developer from Bremen");
+const description = props.description ?? (locale === "de"
   ? "Jan-Marlon Leibl ist Softwareentwickler aus Bremen. Er baut Finny, eine App für Belege und Garantie-Erinnerungen."
-  : "Jan-Marlon Leibl is a software developer from Bremen. He is building Finny, an app for receipts and warranty reminders.";
+  : "Jan-Marlon Leibl is a software developer from Bremen. He is building Finny, an app for receipts and warranty reminders.");
 const requestUrl = new URL(Astro.request.url);
 const requestLocale = requestUrl.searchParams.get("lang") ?? requestUrl.pathname.split("/")[1];
 const localizedPath = requestLocale === "de" || requestLocale === "en" ? `/${requestLocale}` : "/";
@@ -134,5 +141,6 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
   </head>
   <body>
     <slot />
+    <CookieConsent locale={locale} />
   </body>
 </html>
