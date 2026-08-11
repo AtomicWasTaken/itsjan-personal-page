@@ -1422,6 +1422,7 @@ html[data-theme="dark"] .ventry-file-row b {
 }
 .privacy-settings:hover { color: var(--text); text-decoration-color: currentColor; }
 .privacy-settings__label--short { display: none; }
+.privacy-settings__icon { display: none; width: 18px; height: 18px; }
 .privacy-settings__arrow { width: 16px; height: 16px; transition: transform 180ms cubic-bezier(.22,1,.36,1); }
 .privacy-settings:hover .privacy-settings__arrow { transform: translateX(3px); }
 .privacy-consent__button:focus-visible,
@@ -1435,7 +1436,9 @@ html[data-theme="dark"] .ventry-file-row b {
     right: max(12px, env(safe-area-inset-right));
     bottom: max(12px, env(safe-area-inset-bottom));
     min-height: 36px;
-    padding: 8px 13px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
     gap: 0;
     border: 1px solid color-mix(in srgb, var(--text-secondary) 22%, transparent);
     border-radius: 10px;
@@ -1445,8 +1448,9 @@ html[data-theme="dark"] .ventry-file-row b {
     line-height: 1.2;
     text-decoration: none;
   }
-  .privacy-settings__label { display: none; }
-  .privacy-settings__label--short { display: inline; }
+  .privacy-settings__label,
+  .privacy-settings__label--short { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .privacy-settings__icon { display: block; }
   .privacy-settings__arrow { display: none; }
   .privacy-settings:hover { color: var(--text); background: var(--surface); text-decoration: none; }
 }
