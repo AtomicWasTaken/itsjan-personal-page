@@ -1,6 +1,12 @@
 name = "itsjan-personal-page"
 compatibility_date = "2026-03-10"
 
+[vars]
+# These values are intentionally public: they are sent to the visitor's browser
+# to initialize PostHog. Keeping them here ensures Git deployments retain them.
+PUBLIC_POSTHOG_PROJECT_TOKEN = "phc_AjhL5JJU9TGMCGnMkDKSs9kprYPsRhr6WfxQwJZA5KNf"
+PUBLIC_POSTHOG_HOST = "https://eu.i.posthog.com"
+
 [observability]
 enabled = false
 head_sampling_rate = 1
