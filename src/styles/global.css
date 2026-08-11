@@ -1339,7 +1339,7 @@ html[data-theme="dark"] .ventry-file-row b {
 }
 .privacy-consent__button,
 .privacy-settings {
-  min-height: 34px;
+  min-height: 40px;
   border-radius: 12px;
   font: inherit;
   font-size: .875rem;
@@ -1424,6 +1424,9 @@ html[data-theme="dark"] .ventry-file-row b {
   .privacy-consent { width: calc(100% - 24px); right: 12px; left: 12px; }
   .privacy-consent__content { padding: 18px; }
   .privacy-consent__actions > * { flex: 1 1 180px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .privacy-consent { transition: none; }
 }
 
 .privacy-shell { min-height: 100vh; }
