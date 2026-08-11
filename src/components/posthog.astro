@@ -1,9 +1,12 @@
 ---
+import { env } from 'cloudflare:workers';
+
 // PostHog analytics snippet for client-side tracking.
 // Uses is:inline to prevent Astro from processing the script (avoids TypeScript errors).
-// define:vars passes server-side env vars into the inline browser script.
-const apiKey = import.meta.env.PUBLIC_POSTHOG_PROJECT_TOKEN;
-const apiHost = import.meta.env.PUBLIC_POSTHOG_HOST;
+// Cloudflare dashboard variables are available at request time; import.meta.env
+// keeps the local .env development workflow working as well.
+const apiKey = env.PUBLIC_POSTHOG_PROJECT_TOKEN ?? import.meta.env.PUBLIC_POSTHOG_PROJECT_TOKEN;
+const apiHost = env.PUBLIC_POSTHOG_HOST ?? import.meta.env.PUBLIC_POSTHOG_HOST;
 
 if (import.meta.env.DEV && (!apiKey || !apiHost)) {
   console.warn(
