@@ -1421,6 +1421,7 @@ html[data-theme="dark"] .ventry-file-row b {
   text-underline-offset: 4px;
 }
 .privacy-settings:hover { color: var(--text); text-decoration-color: currentColor; }
+.privacy-settings__label--short { display: none; }
 .privacy-settings__arrow { width: 16px; height: 16px; transition: transform 180ms cubic-bezier(.22,1,.36,1); }
 .privacy-settings:hover .privacy-settings__arrow { transform: translateX(3px); }
 .privacy-consent__button:focus-visible,
@@ -1432,13 +1433,21 @@ html[data-theme="dark"] .ventry-file-row b {
   .privacy-settings {
     right: max(12px, env(safe-area-inset-right));
     bottom: max(12px, env(safe-area-inset-bottom));
-    min-height: 32px;
-    padding: 4px 0;
-    gap: 4px;
+    min-height: 36px;
+    padding: 8px 13px;
+    gap: 0;
+    border: 1px solid color-mix(in srgb, var(--text-secondary) 22%, transparent);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    box-shadow: 0 5px 18px rgba(17, 18, 20, .12);
     font-size: 12px;
     line-height: 1.2;
+    text-decoration: none;
   }
-  .privacy-settings__arrow { width: 14px; height: 14px; }
+  .privacy-settings__label { display: none; }
+  .privacy-settings__label--short { display: inline; }
+  .privacy-settings__arrow { display: none; }
+  .privacy-settings:hover { color: var(--text); background: var(--surface); text-decoration: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .privacy-consent { transition: none; }

@@ -13,6 +13,7 @@ const copy = locale === "de"
       accept: "Analyse akzeptieren",
       reject: "Nur notwendige Cookies",
       settings: "Datenschutz-Einstellungen",
+      settingsShort: "Datenschutz",
       privacy: "Datenschutzerklärung",
     }
   : {
@@ -21,6 +22,7 @@ const copy = locale === "de"
       accept: "Accept analytics",
       reject: "Use necessary only",
       settings: "Privacy settings",
+      settingsShort: "Privacy",
       privacy: "Privacy policy",
     };
 ---
@@ -54,7 +56,8 @@ const copy = locale === "de"
   <div class="bottom-corner-blur__layer bottom-corner-blur__layer--4"></div>
 </div>
 <button id="privacy-settings" class="privacy-settings" type="button" aria-controls="privacy-consent" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">
-  <span>{copy.settings}</span>
+  <span class="privacy-settings__label">{copy.settings}</span>
+  <span class="privacy-settings__label--short">{copy.settingsShort}</span>
   <svg class="privacy-settings__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
 </button>
 
