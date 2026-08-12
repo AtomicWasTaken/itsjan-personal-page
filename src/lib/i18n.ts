@@ -193,6 +193,7 @@ const en: Strings = {
       `${age}-year-old software developer from Bremen`,
       "Building Finny",
       "PHP · TypeScript · React",
+      "Homelabber",
     ],
     avatar: {
       expand: "Expand profile picture",
@@ -204,7 +205,7 @@ const en: Strings = {
       apprenticeship: "three-year software development apprenticeship",
       afterApprenticeship: ". I build things I want to use myself. At the moment, that is ",
       finny: "Finny",
-      afterFinny: ": an app that keeps receipts and purchase details together. It reminds me before a warranty runs out. I usually work with PHP, TypeScript, and React.",
+      afterFinny: ": an app that keeps receipts and purchase details together. It reminds me before a warranty runs out. I usually work with PHP, TypeScript, and React. I also run a Proxmox node and look after my home network.",
     },
     tech: {
       aria: "Technologies Jan works with",
@@ -250,6 +251,16 @@ const en: Strings = {
             "Built Ventry for sharing files through links that expire.",
           ],
           technologies: ["TypeScript", "Next.js"],
+        },
+        {
+          period: "Personal",
+          title: "Running my",
+          organization: "homelab",
+          location: "Bremen",
+          bullets: [
+            "Run a Proxmox node and manage my home network. I use Linux and Windows, upgrade hardware, and track down problems when something breaks.",
+          ],
+          technologies: ["Proxmox", "Linux", "Windows"],
         },
       ],
     },
@@ -319,6 +330,7 @@ const de: Strings = {
       `${age}-jähriger Softwareentwickler aus Bremen`,
       "Entwickelt gerade Finny",
       "PHP · TypeScript · React",
+      "Homelabber",
     ],
     avatar: {
       expand: "Profilbild vergrößern",
@@ -330,7 +342,7 @@ const de: Strings = {
       apprenticeship: "dreijährige Ausbildung",
       afterApprenticeship: " zum Softwareentwickler gemacht. Ich baue Dinge, die ich selbst benutzen will. Gerade ist das ",
       finny: "Finny",
-      afterFinny: ": eine App, die Belege und Kaufdetails zusammenhält und mich erinnert, bevor eine Garantie abläuft. Meistens arbeite ich mit PHP, TypeScript und React.",
+      afterFinny: ": eine App, die Belege und Kaufdetails zusammenhält und mich erinnert, bevor eine Garantie abläuft. Meistens arbeite ich mit PHP, TypeScript und React. Außerdem betreibe ich einen Proxmox-Node und kümmere mich um mein Heimnetzwerk.",
     },
     tech: {
       aria: "Technologien, mit denen Jan arbeitet",
@@ -376,6 +388,16 @@ const de: Strings = {
             "Ventry gebaut, um Dateien über ablaufende Links zu teilen.",
           ],
           technologies: ["TypeScript", "Next.js"],
+        },
+        {
+          period: "Privat",
+          title: "Betreibe mein",
+          organization: "Homelab",
+          location: "Bremen",
+          bullets: [
+            "Betreibe einen Proxmox-Node und mein Heimnetzwerk. Ich arbeite mit Linux und Windows, rüste Hardware auf und gehe Fehlern nach, wenn etwas nicht läuft.",
+          ],
+          technologies: ["Proxmox", "Linux", "Windows"],
         },
       ],
     },
