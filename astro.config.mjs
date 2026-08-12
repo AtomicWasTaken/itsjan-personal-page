@@ -8,9 +8,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://itsjan.dev',
   output: 'server',
-  adapter: cloudflare({
-    mode: 'directory',
-  }),
+  adapter: cloudflare(),
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],

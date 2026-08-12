@@ -82,7 +82,7 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={OPEN_GRAPH_IMAGE_URL} />
     <meta name="twitter:image:alt" content={copy.meta.imageAlt} />
-    <script type="application/ld+json" set:html={JSON.stringify({
+    <script is:inline type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@graph": [
         {

@@ -1,4 +1,6 @@
-import type { ImageMetadata, SvgComponent } from "astro";
+import type { ImageMetadata } from "astro";
+import type { SvgComponent } from "astro/types";
+import type { Locale } from "./i18n";
 import gitLogo from "../assets/logos/git.svg";
 import symfonyLogo from "../assets/logos/symfony.svg";
 
@@ -85,7 +87,7 @@ export async function fetchGithubContributions(): Promise<GithubDay[]> {
 
   try {
     const cached = await cache?.match(cacheKey);
-    if (cached) return await cached.json<GithubDay[]>();
+    if (cached) return await cached.json() as GithubDay[];
 
     const response = await fetch(GITHUB_CONTRIBUTIONS_URL, {
       headers: {
