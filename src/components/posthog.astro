@@ -26,6 +26,7 @@ if (import.meta.env.DEV && !apiHost) {
     initialized = true;
     posthog.init(apiKey, {
       api_host: apiHost,
+      ui_host: "https://eu.posthog.com",
       defaults: "2026-01-30",
       capture_exceptions: {
         capture_unhandled_errors: true,
