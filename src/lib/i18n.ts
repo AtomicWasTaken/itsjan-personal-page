@@ -119,6 +119,9 @@ interface Strings {
       githubAria: string;
       linkedinAria: string;
       emailAria: string;
+      shareAria: string;
+      shareTooltip: string;
+      linkCopied: string;
       copyEmail: string;
       emailCopied: string;
     };
@@ -199,7 +202,7 @@ const en: Strings = {
       beforeBremen: "I'm from ",
       afterBremen: ", where I finished a ",
       apprenticeship: "three-year software development apprenticeship",
-      afterApprenticeship: ". I tend to build things because I want them for myself. Right now that's ",
+      afterApprenticeship: ". I build things I want to use myself. At the moment, that is ",
       finny: "Finny",
       afterFinny: ": an app that keeps receipts and purchase details together. It reminds me before a warranty runs out. I usually work with PHP, TypeScript, and React.",
     },
@@ -220,7 +223,7 @@ const en: Strings = {
           organization: "Finny",
           location: "Bremen",
           bullets: [
-            "I’m building Finny to keep receipts and purchase details together, with reminders before warranties expire.",
+            "I’m building Finny to keep receipts and purchase details together and remind people before warranties expire.",
           ],
           technologies: ["TypeScript", "React", "Next.js"],
         },
@@ -234,7 +237,7 @@ const en: Strings = {
             title: "Vocational school · Schulzentrum SII Utbremen",
           },
           bullets: [
-            "Worked on client projects using PHP, TypeScript, and TYPO3.",
+            "Worked on client projects with PHP, TypeScript, and TYPO3.",
           ],
           technologies: ["PHP", "Symfony", "TypeScript", "TYPO3", "Git"],
         },
@@ -244,7 +247,7 @@ const en: Strings = {
           organization: "Ventry",
           location: "Bremen",
           bullets: [
-            "Built Ventry for temporary file sharing with links that expire.",
+            "Built Ventry for sharing files through links that expire.",
           ],
           technologies: ["TypeScript", "Next.js"],
         },
@@ -271,6 +274,9 @@ const en: Strings = {
       githubAria: "GitHub",
       linkedinAria: "LinkedIn",
       emailAria: "Email",
+      shareAria: "Share profile",
+      shareTooltip: "Share this profile",
+      linkCopied: "Link copied",
       copyEmail: "Copy email",
       emailCopied: "Email copied",
     },
@@ -295,7 +301,7 @@ const en: Strings = {
       shareLabel: "share link",
       shareStatus: "deletes later",
       shareAction: "ready",
-      description: { lead: "I built Ventry for temporary file sharing. It creates a ", keyword: "link", end: " that removes the file once the share expires." },
+      description: { lead: "I built Ventry for sharing files temporarily. It creates a ", keyword: "link", end: " that removes the file when it expires." },
       cta: { prefix: "", label: "Open Ventry ↗" },
     },
   },
@@ -322,7 +328,7 @@ const de: Strings = {
       beforeBremen: "Ich komme aus ",
       afterBremen: " und habe hier meine ",
       apprenticeship: "dreijährige Ausbildung",
-      afterApprenticeship: " zum Softwareentwickler gemacht. Ich baue meistens Sachen, weil ich sie selbst benutzen will. Gerade ist das ",
+      afterApprenticeship: " zum Softwareentwickler gemacht. Ich baue Dinge, die ich selbst benutzen will. Gerade ist das ",
       finny: "Finny",
       afterFinny: ": eine App, die Belege und Kaufdetails zusammenhält und mich erinnert, bevor eine Garantie abläuft. Meistens arbeite ich mit PHP, TypeScript und React.",
     },
@@ -343,7 +349,7 @@ const de: Strings = {
           organization: "Finny",
           location: "Bremen",
           bullets: [
-            "Ich baue Finny, damit Belege und Kaufdetails zusammenbleiben und ich vor Ablauf einer Garantie erinnert werde.",
+            "Ich baue Finny, damit Belege und Kaufdetails zusammenbleiben und man vor Ablauf einer Garantie erinnert wird.",
           ],
           technologies: ["TypeScript", "React", "Next.js"],
         },
@@ -367,7 +373,7 @@ const de: Strings = {
           organization: "Ventry",
           location: "Bremen",
           bullets: [
-            "Ventry zum temporären Teilen von Dateien mit ablaufenden Links gebaut.",
+            "Ventry gebaut, um Dateien über ablaufende Links zu teilen.",
           ],
           technologies: ["TypeScript", "Next.js"],
         },
@@ -394,6 +400,9 @@ const de: Strings = {
       githubAria: "GitHub",
       linkedinAria: "LinkedIn",
       emailAria: "E-Mail",
+      shareAria: "Profil teilen",
+      shareTooltip: "Dieses Profil teilen",
+      linkCopied: "Link kopiert",
       copyEmail: "E-Mail kopieren",
       emailCopied: "E-Mail kopiert",
     },
@@ -418,7 +427,7 @@ const de: Strings = {
       shareLabel: "Freigabelink",
       shareStatus: "löscht sich später",
       shareAction: "bereit",
-      description: { lead: "Ventry habe ich zum temporären Teilen von Dateien gebaut. Es erstellt einen ", keyword: "Link", end: ", der nach Ablauf der Freigabe die Datei entfernt." },
+      description: { lead: "Ventry habe ich gebaut, um Dateien temporär zu teilen. Es erstellt einen ", keyword: "Link", end: ", der die Datei nach Ablauf entfernt." },
       cta: { prefix: "", label: "Ventry öffnen ↗" },
     },
   },

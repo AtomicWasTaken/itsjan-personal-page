@@ -1267,8 +1267,11 @@ html[data-theme="dark"] .ventry-file-row b {
   display: inline-flex;
   width: 40px;
   height: 40px;
+  border: 0;
+  padding: 0;
   align-items: center;
   justify-content: center;
+  font: inherit;
   border-radius: 10px;
   background: transparent;
   color: var(--text-tertiary);
