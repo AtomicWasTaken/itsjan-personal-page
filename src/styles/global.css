@@ -517,6 +517,7 @@ html[data-theme="dark"] .tech-sticker--dark-logo.is-following > :is(img, svg) {
   outline: 1px solid var(--image-outline);
   outline-offset: -1px;
   object-fit: cover;
+  background: var(--surface);
 }
 .avatar-modal-close {
   position: absolute;
