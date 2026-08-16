@@ -290,6 +290,19 @@ main p { text-wrap: pretty; }
   --top-edge-blur: 16px;
   --top-edge-mask: linear-gradient(to bottom, #000 0%, #000 12%, transparent 32%);
 }
+.bottom-edge-blur {
+  top: auto;
+  bottom: 0;
+  transform: rotate(180deg);
+  transition: opacity 160ms var(--ease-smooth-out);
+}
+.bottom-edge-blur.is-at-page-end { opacity: 0; }
+.bottom-edge-sentinel {
+  display: block;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
 .tech-stickers {
   position: absolute;
   top: var(--top-edge-blur-height);
@@ -1376,46 +1389,6 @@ html[data-theme="dark"] .ventry-file-row b {
   text-underline-offset: 4px;
 }
 .privacy-consent__button--secondary:hover { color: var(--text); text-decoration-color: var(--text-tertiary); }
-.bottom-corner-blur {
-  position: fixed;
-  z-index: 80;
-  right: 0;
-  bottom: 0;
-  width: 240px;
-  height: 152px;
-  pointer-events: none;
-}
-.bottom-corner-blur__wash,
-.bottom-corner-blur__layer {
-  position: absolute;
-  inset: 0;
-}
-.bottom-corner-blur__wash {
-  background: linear-gradient(to top left, var(--page) 0%, transparent 76%);
-  opacity: .78;
-}
-.bottom-corner-blur__layer {
-  -webkit-backdrop-filter: blur(var(--corner-blur));
-  backdrop-filter: blur(var(--corner-blur));
-  -webkit-mask-image: var(--corner-mask);
-  mask-image: var(--corner-mask);
-}
-.bottom-corner-blur__layer--1 {
-  --corner-blur: 1px;
-  --corner-mask: radial-gradient(ellipse 100% 100% at 100% 100%, #000 0%, #000 68%, transparent 100%);
-}
-.bottom-corner-blur__layer--2 {
-  --corner-blur: 4px;
-  --corner-mask: radial-gradient(ellipse 100% 100% at 100% 100%, #000 0%, #000 46%, transparent 78%);
-}
-.bottom-corner-blur__layer--3 {
-  --corner-blur: 8px;
-  --corner-mask: radial-gradient(ellipse 100% 100% at 100% 100%, #000 0%, #000 28%, transparent 58%);
-}
-.bottom-corner-blur__layer--4 {
-  --corner-blur: 16px;
-  --corner-mask: radial-gradient(ellipse 100% 100% at 100% 100%, #000 0%, #000 10%, transparent 38%);
-}
 .privacy-settings {
   display: inline-flex;
   align-items: center;
@@ -1443,7 +1416,6 @@ html[data-theme="dark"] .ventry-file-row b {
 .privacy-consent__button:focus-visible,
 .privacy-settings:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
 @media (max-width: 520px) {
-  .bottom-corner-blur { display: none; }
   .privacy-consent { width: calc(100% - 24px); right: 12px; left: 12px; }
   .privacy-consent__content { padding: 18px; }
   .privacy-consent__actions > * { flex: 1 1 180px; }

@@ -142,5 +142,17 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
   <body>
     <slot />
     <CookieConsent locale={locale} />
+    <script is:inline>
+      (() => {
+        const blur = document.querySelector(".bottom-edge-blur");
+        const sentinel = document.querySelector(".bottom-edge-sentinel");
+        if (!blur || !sentinel) return;
+
+        const observer = new IntersectionObserver(([entry]) => {
+          blur.classList.toggle("is-at-page-end", entry?.isIntersecting ?? false);
+        });
+        observer.observe(sentinel);
+      })();
+    </script>
   </body>
 </html>
