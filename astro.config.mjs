@@ -4,6 +4,11 @@ import cloudflare from "@astrojs/cloudflare";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 
+const optimizeDepsExclude = [
+  "@astrojs/cloudflare/entrypoints/server",
+  "web-haptics",
+];
+
 // https://docs.astro.build/en/guides/deploy/cloudflare/
 export default defineConfig({
   site: "https://itsjan.dev",
@@ -13,7 +18,12 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
-      exclude: ["@astrojs/cloudflare/entrypoints/server"],
+      exclude: optimizeDepsExclude,
+    },
+    ssr: {
+      optimizeDeps: {
+        exclude: optimizeDepsExclude,
+      },
     },
   },
 });
