@@ -1,0 +1,89 @@
+---
+import type { Locale } from "../lib/locale";
+import {
+  CONTACT_EMAIL,
+  FINNY_URL,
+  PERSON_NAME,
+  SOURCE_REPOSITORY_URL,
+} from "../lib/site";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy =
+  locale === "de"
+    ? {
+        title: "Okay, du hast die DevTools geöffnet.",
+        hint: "Wenn du schon hier bist, probier",
+        role: "Softwareentwickler",
+        location: "Bremen, Deutschland",
+        labels: {
+          name: "Name",
+          role: "Rolle",
+          location: "Standort",
+          building: "Aktuelles Projekt",
+          source: "Quellcode",
+          contact: "Kontakt",
+        },
+      }
+    : {
+        title: "Well, you opened DevTools.",
+        hint: "Since you're here, run",
+        role: "Software developer",
+        location: "Bremen, Germany",
+        labels: {
+          name: "Name",
+          role: "Role",
+          location: "Location",
+          building: "Current project",
+          source: "Source",
+          contact: "Contact",
+        },
+      };
+---
+
+<script
+  is:inline
+  define:vars={{
+    contactEmail: CONTACT_EMAIL,
+    copy,
+    finnyUrl: FINNY_URL,
+    personName: PERSON_NAME,
+    sourceUrl: SOURCE_REPOSITORY_URL,
+  }}
+>
+  /* eslint-disable no-console -- This component intentionally writes to DevTools. */
+  (() => {
+    const command = "itsjan";
+    if (Object.prototype.hasOwnProperty.call(globalThis, command)) return;
+
+    const profile = Object.freeze({
+      [copy.labels.name]: personName,
+      [copy.labels.role]: copy.role,
+      [copy.labels.location]: copy.location,
+      [copy.labels.building]: `Finny (${finnyUrl})`,
+      [copy.labels.source]: sourceUrl,
+      [copy.labels.contact]: `mailto:${contactEmail}`,
+    });
+
+    Object.defineProperty(globalThis, command, {
+      configurable: true,
+      value: () => {
+        console.table(profile);
+        return profile;
+      },
+    });
+
+    console.log(
+      `%c ${copy.title} `,
+      "border-radius:6px;background:#171717;color:#fafafa;padding:5px 8px;font:600 13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace",
+    );
+    console.log(
+      `${copy.hint} %c${command}()%c.`,
+      "color:#2563eb;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace",
+      "color:inherit;font-weight:400",
+    );
+  })();
+</script>

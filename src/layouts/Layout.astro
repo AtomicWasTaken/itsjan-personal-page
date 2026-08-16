@@ -2,6 +2,7 @@
 import "../styles/fonts.css";
 import "../styles/global.css";
 import CookieConsent from "../components/CookieConsent.astro";
+import ConsoleEasterEgg from "../components/ConsoleEasterEgg.astro";
 import InteractionRuntime from "../components/InteractionRuntime.astro";
 import PostHog from "../components/posthog.astro";
 import { detectLocale, tr } from "../lib/i18n";
@@ -211,6 +212,7 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
   <body>
     <slot />
     <CookieConsent locale={locale} />
+    <ConsoleEasterEgg locale={locale} />
     <InteractionRuntime />
   </body>
 </html>
