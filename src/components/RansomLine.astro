@@ -1,0 +1,79 @@
+---
+import manifestJson from "../lib/ransom-manifest.json";
+
+type Variant = { file: string; w: number; h: number };
+type Manifest = Record<string, Variant[]>;
+
+interface Props {
+  text: string;
+  seed: number;
+  staggerStart?: number;
+}
+
+const { text, seed, staggerStart = 0 } = Astro.props;
+const manifest = manifestJson as Manifest;
+
+function mulberry32(initialSeed: number) {
+  let state = initialSeed >>> 0;
+  return () => {
+    state |= 0;
+    state = (state + 0x6d2b79f5) | 0;
+    let value = Math.imul(state ^ (state >>> 15), 1 | state);
+    value = (value + Math.imul(value ^ (value >>> 7), 61 | value)) ^ value;
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const random = mulberry32(seed);
+const variantQueues = new Map<string, Variant[]>();
+
+function takeVariant(character: string) {
+  let queue = variantQueues.get(character);
+  if (!queue?.length) {
+    queue = [...manifest[character]];
+    for (let index = queue.length - 1; index > 0; index--) {
+      const target = Math.floor(random() * (index + 1));
+      [queue[index], queue[target]] = [queue[target], queue[index]];
+    }
+    variantQueues.set(character, queue);
+  }
+  return queue.shift()!;
+}
+
+let glyphIndex = staggerStart;
+const glyphs = Array.from(text.toUpperCase()).map((character) => {
+  if (character === " ") return { kind: "space" as const, character };
+  const variants = manifest[character];
+  if (!variants) return { kind: "space" as const, character };
+  const variant = takeVariant(character);
+  return {
+    kind: "glyph" as const,
+    character,
+    variant,
+    rotation: (random() * 16 - 8).toFixed(2),
+    offset: (random() * 12 - 6).toFixed(2),
+    scale: (0.92 + random() * 0.16).toFixed(3),
+    index: glyphIndex++,
+  };
+});
+---
+
+<span class="ransom-line" aria-hidden="true">
+  {glyphs.map((glyph) => glyph.kind === "space" ? (
+    <span class="ransom-space"></span>
+  ) : (
+    <span
+      class="ransom-glyph"
+      style={`--ransom-rotation:${glyph.rotation}deg;--ransom-entry-rotation:${(Number(glyph.rotation) * 1.7).toFixed(2)}deg;--ransom-offset:${glyph.offset}px;--ransom-scale:${glyph.scale};--ransom-entry-scale:${(Number(glyph.scale) * 1.18).toFixed(3)};--ransom-index:${glyph.index}`}
+    >
+      <img
+        src={`/ransom/${glyph.variant.file}`}
+        width={glyph.variant.w}
+        height={glyph.variant.h}
+        alt=""
+        draggable="false"
+        decoding="async"
+      />
+    </span>
+  ))}
+</span>

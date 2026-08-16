@@ -24,7 +24,7 @@ const description = props.description ?? (locale === "de"
   ? "Jan-Marlon Leibl ist Softwareentwickler aus Bremen. Er baut Finny, eine App für Belege und Garantie-Erinnerungen."
   : "Jan-Marlon Leibl is a software developer from Bremen. He is building Finny, an app for receipts and warranty reminders.");
 const requestUrl = new URL(Astro.request.url);
-const requestLocale = requestUrl.searchParams.get("lang") ?? requestUrl.pathname.split("/")[1];
+const requestLocale = requestUrl.pathname.split("/")[1];
 const localizedPath = requestLocale === "de" || requestLocale === "en" ? `/${requestLocale}` : "/";
 const url = `${SITE_ORIGIN}${localizedPath}`;
 const markdownUrl = `${SITE_ORIGIN}${localizedPath === "/" ? "/index.md" : `${localizedPath}.md`}`;

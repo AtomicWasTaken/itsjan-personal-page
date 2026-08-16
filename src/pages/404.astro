@@ -1,0 +1,50 @@
+---
+import Layout from "../layouts/Layout.astro";
+import RansomLine from "../components/RansomLine.astro";
+import { detectLocale } from "../lib/i18n";
+
+const locale = detectLocale(Astro.request);
+const de = locale === "de";
+const headline = de ? "DIE SEITE IST WEG" : "PAGE NOT FOUND";
+const lines = de ? ["DIE SEITE", "IST WEG"] : ["PAGE NOT", "FOUND"];
+const title = de ? "Seite nicht gefunden · Jan-Marlon Leibl" : "Page not found · Jan-Marlon Leibl";
+const description = de
+  ? "Diese Seite konnte nicht gefunden werden."
+  : "This page could not be found.";
+const homeHref = de ? "/de" : "/en";
+const pageSeed = Math.floor(Math.random() * 0x100000000);
+
+Astro.response.headers.set("Cache-Control", "no-store");
+---
+
+<Layout title={title} description={description}>
+  <div class="not-found-shell">
+    <main class="not-found-main">
+      <h1 class="ransom-heading">
+        <span class="sr-only">{headline}</span>
+        <span class="ransom-composition">
+          {lines.map((line, index) => (
+            <RansomLine text={line} seed={(pageSeed + index * 101) >>> 0} staggerStart={index * 9} />
+          ))}
+        </span>
+      </h1>
+
+      <p class="not-found-copy">
+        {de
+          ? "Diese Seite ist verschwunden. Vielleicht bist du falsch abgebogen."
+          : "This page has disappeared. Maybe you took a wrong turn."}
+      </p>
+
+      <div class="not-found-actions">
+        <a class="button-style squircle not-found-home" href={homeHref} data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">
+          <span>{de ? "Zur Startseite" : "Back home"}</span>
+        </a>
+      </div>
+    </main>
+  </div>
+</Layout>
+
+<script>
+  import { bind } from "cuelume";
+  bind(document);
+</script>

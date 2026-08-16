@@ -1,0 +1,5 @@
+Resource Boy — Ransom Note Letters
+https://resourceboy.com/graphics/ransom-note-letters/
+
+The selected cutout letter sprites used on the 404 page were downloaded from the
+free Resource Boy pack and converted from PNG to trimmed, downscaled WebP files.

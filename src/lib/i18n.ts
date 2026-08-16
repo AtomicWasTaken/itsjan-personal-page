@@ -35,9 +35,6 @@ export function detectLocale(request: Request): Locale {
   const pathLocale = requestUrl.pathname.split("/")[1];
   if (pathLocale === "de" || pathLocale === "en") return pathLocale;
 
-  const queryLocale = requestUrl.searchParams.get("lang");
-  if (queryLocale === "de" || queryLocale === "en") return queryLocale;
-
   const header = request.headers.get("accept-language");
   if (!header) return "en";
   const langs = header
