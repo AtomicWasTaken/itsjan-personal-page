@@ -5,6 +5,11 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # Astro Check does not support TypeScript 7 yet. Keep receiving 6.x updates.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
     groups:
       development-dependencies:
         dependency-type: development
