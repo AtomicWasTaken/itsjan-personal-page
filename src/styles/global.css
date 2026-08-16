@@ -1528,6 +1528,11 @@ html[data-theme="dark"] .ventry-file-row b {
   color: var(--tt-fg);
   font-weight: 700;
 }
+.social-tooltip {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+}
 .social-tooltip span {
   color: color-mix(in srgb, var(--tt-fg) 66%, transparent);
   font-weight: 400;

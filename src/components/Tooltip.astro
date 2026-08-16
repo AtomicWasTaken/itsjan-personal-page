@@ -21,8 +21,8 @@ const {
 <span class:list={["t-tt-wrap", wrapperClass]}>
   <slot name="trigger" />
   <span id={id} class:list={["t-tt", className]} role="tooltip">
-    {title && <strong>{title}</strong>}
-    {detail && <span>{detail}</span>}
-    {text && <span>{text}</span>}
+    {title && <strong class="t-tt__title">{title}</strong>}
+    {detail && <span class="t-tt__detail">{detail}</span>}
+    {text && <span class="t-tt__text">{text}</span>}
   </span>
 </span>
