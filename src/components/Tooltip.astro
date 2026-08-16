@@ -1,0 +1,28 @@
+---
+interface Props {
+  id: string;
+  title?: string;
+  detail?: string;
+  text?: string;
+  class?: string;
+  wrapperClass?: string;
+}
+
+const {
+  id,
+  title,
+  detail,
+  text,
+  class: className,
+  wrapperClass,
+} = Astro.props;
+---
+
+<span class:list={["t-tt-wrap", wrapperClass]}>
+  <slot name="trigger" />
+  <span id={id} class:list={["t-tt", className]} role="tooltip">
+    {title && <strong>{title}</strong>}
+    {detail && <span>{detail}</span>}
+    {text && <span>{text}</span>}
+  </span>
+</span>

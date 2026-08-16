@@ -1,0 +1,83 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Tooltip from "./Tooltip.astro";
+
+type ButtonVariant = "plain" | "primary" | "text" | "icon";
+
+interface Props extends Omit<HTMLAttributes<"button">, "class" | "type"> {
+  class?: string;
+  type?: "button" | "submit" | "reset";
+  variant?: ButtonVariant;
+  feedback?: boolean;
+  wrapperClass?: string;
+  tooltipId?: string;
+  tooltipTitle?: string;
+  tooltipDetail?: string;
+  tooltipText?: string;
+  tooltipClass?: string;
+  cuelumeHover?: string | false;
+  cuelumePress?: string | false;
+  cuelumeRelease?: string | false;
+  cuelumeToggle?: string;
+}
+
+const {
+  class: className,
+  type = "button",
+  variant = "plain",
+  feedback = true,
+  wrapperClass,
+  tooltipId,
+  tooltipTitle,
+  tooltipDetail,
+  tooltipText,
+  tooltipClass,
+  cuelumeHover = "tick",
+  cuelumePress = "press",
+  cuelumeRelease = "release",
+  cuelumeToggle,
+  ...attributes
+} = Astro.props;
+const hasTooltip = Boolean(tooltipId && (tooltipTitle || tooltipDetail || tooltipText));
+const variantClass = variant === "primary"
+  ? "button-style squircle"
+  : variant === "text"
+    ? "text-action"
+    : variant === "icon"
+      ? "squircle"
+      : "";
+const buttonClass = [variantClass, className, hasTooltip && "t-tt-trigger"].filter(Boolean).join(" ");
+---
+
+{hasTooltip ? (
+  <Tooltip
+    id={tooltipId!}
+    title={tooltipTitle}
+    detail={tooltipDetail}
+    text={tooltipText}
+    class={tooltipClass}
+    wrapperClass={wrapperClass}
+  >
+    <button
+      slot="trigger"
+      {...attributes}
+      type={type}
+      class={buttonClass || undefined}
+      aria-describedby={tooltipId}
+      data-cuelume-hover={feedback && cuelumeHover ? cuelumeHover : undefined}
+      data-cuelume-press={feedback && cuelumePress ? cuelumePress : undefined}
+      data-cuelume-release={feedback && cuelumeRelease ? cuelumeRelease : undefined}
+      data-cuelume-toggle={cuelumeToggle}
+    ><slot /></button>
+  </Tooltip>
+) : (
+  <button
+    {...attributes}
+    type={type}
+    class={buttonClass || undefined}
+    data-cuelume-hover={feedback && cuelumeHover ? cuelumeHover : undefined}
+    data-cuelume-press={feedback && cuelumePress ? cuelumePress : undefined}
+    data-cuelume-release={feedback && cuelumeRelease ? cuelumeRelease : undefined}
+    data-cuelume-toggle={cuelumeToggle}
+  ><slot /></button>
+)}

@@ -1407,14 +1407,7 @@ html[data-theme="dark"] .ventry-file-row b {
 .privacy-consent__button--secondary {
   border: 0;
   background: transparent;
-  color: var(--text-secondary);
-  text-decoration: underline;
-  text-decoration-style: solid;
-  text-decoration-thickness: 2px;
-  text-decoration-color: transparent;
-  text-underline-offset: 4px;
 }
-.privacy-consent__button--secondary:hover { color: var(--text); text-decoration-color: var(--text-tertiary); }
 .privacy-settings {
   display: inline-flex;
   align-items: center;
@@ -1427,25 +1420,17 @@ html[data-theme="dark"] .ventry-file-row b {
   padding: 2px 4px;
   background: transparent;
   box-shadow: none;
-  color: var(--text-secondary);
-  text-decoration: underline;
-  text-decoration-style: solid;
-  text-decoration-thickness: 2px;
-  text-decoration-color: transparent;
-  text-underline-offset: 4px;
 }
-.privacy-settings:hover { color: var(--text); text-decoration-color: var(--text-tertiary); }
 .privacy-settings__label--short { display: none; }
 .privacy-settings__icon { display: none; width: 18px; height: 18px; }
-.privacy-settings__arrow { width: 16px; height: 16px; transition: transform 180ms cubic-bezier(.22,1,.36,1); }
-.privacy-settings:hover .privacy-settings__arrow { transform: translateX(3px); }
+.privacy-settings__arrow { width: 16px; height: 16px; }
 .privacy-consent__button:focus-visible,
 .privacy-settings:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
 @media (max-width: 520px) {
   .privacy-consent { width: calc(100% - 24px); right: 12px; left: 12px; }
   .privacy-consent__content { padding: 18px; }
   .privacy-consent__actions > * { flex: 1 1 180px; }
-  .privacy-settings {
+  .privacy-settings.text-action {
     right: max(12px, env(safe-area-inset-right));
     bottom: max(12px, env(safe-area-inset-bottom));
     min-height: 36px;
@@ -1465,7 +1450,7 @@ html[data-theme="dark"] .ventry-file-row b {
   .privacy-settings__label--short { display: inline; }
   .privacy-settings__icon { display: none; }
   .privacy-settings__arrow { display: none; }
-  .privacy-settings:hover { color: var(--text); background: var(--surface); text-decoration: none; }
+  .privacy-settings.text-action:hover { color: var(--text); background: var(--surface); text-decoration: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .privacy-consent { transition: none; }
@@ -1489,6 +1474,8 @@ html[data-theme="dark"] .ventry-file-row b {
 .privacy-main p { margin: 0; text-wrap: pretty; }
 .privacy-main p + p { margin-top: 14px; }
 .privacy-main a { color: var(--text); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.privacy-main .text-action { color: var(--text-secondary); }
+.privacy-main .text-action:is(:hover, :focus-visible) { color: var(--text); }
 .privacy-action-link {
   position: relative;
   display: inline-flex;
@@ -1496,14 +1483,8 @@ html[data-theme="dark"] .ventry-file-row b {
   align-items: center;
   gap: 4px;
   padding-left: 22px;
-  color: var(--text-secondary) !important;
   font-size: 13px;
   font-weight: 500;
-  text-decoration-line: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
-  text-decoration-color: transparent !important;
-  transition: color 150ms var(--ease-smooth-out), text-decoration-color 150ms var(--ease-smooth-out);
 }
 .privacy-action-link::before {
   position: absolute;
@@ -1517,7 +1498,6 @@ html[data-theme="dark"] .ventry-file-row b {
   content: "";
   transform: translateY(-100%);
 }
-.privacy-action-link:hover { color: var(--text) !important; text-decoration-color: currentColor !important; }
 .privacy-action-link svg { width: 16px; height: 16px; }
 .privacy-main section > .privacy-action-link { margin-top: 8px; }
 .privacy-link-list { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 10px; }
@@ -1538,10 +1518,8 @@ html[data-theme="dark"] .ventry-file-row b {
 .privacy-back {
   margin-left: -4px;
   padding-left: 0;
-  color: var(--text-secondary) !important;
 }
-.privacy-back svg { margin-left: 0 !important; margin-right: 4px; transform: rotate(180deg); }
-.privacy-back:hover { color: var(--text) !important; text-decoration-color: currentColor !important; }
+.privacy-back svg { margin-left: 0 !important; margin-right: 4px; }
 .privacy-updated { margin-top: 14px !important; color: var(--text-tertiary); font-size: .875rem; }
 @media (max-width: 520px) {
   .privacy-main { padding: 124px 20px; }
@@ -1686,8 +1664,45 @@ html[data-theme="dark"] .ventry-file-row b {
   100% { background-position: 0 0; }
 }
 
-/* Shared compact action treatment. Component-specific classes keep their
-   existing content and motion; this only standardizes the button surface. */
+/* Shared text-action behavior for links and buttons. Context classes only
+   control placement and typography; hover, press, focus and arrow motion live here. */
+.text-action {
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition:
+    background-color 150ms var(--ease-smooth-out),
+    box-shadow 150ms var(--ease-smooth-out),
+    color 150ms var(--ease-smooth-out),
+    text-decoration-color 150ms var(--ease-smooth-out),
+    transform 150ms var(--ease-smooth-out);
+}
+.text-action:is(:hover, :focus-visible) {
+  color: var(--text);
+  text-decoration-color: currentColor;
+}
+.text-action:active { transform: scale(.98); }
+.text-action:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+.text-action svg[data-direction] {
+  transition: transform 180ms cubic-bezier(.22,1,.36,1);
+}
+.text-action:is(:hover, :focus-visible) svg[data-direction="right"],
+.text-action:is(:hover, :focus-visible) svg[data-direction="external"] {
+  transform: translateX(3px);
+}
+.text-action:is(:hover, :focus-visible) svg[data-direction="left"] {
+  transform: translateX(-3px);
+}
+
 .hero-project-link {
   display: inline-flex;
   min-height: 34px;
@@ -1696,19 +1711,11 @@ html[data-theme="dark"] .ventry-file-row b {
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
-  transition: color 150ms var(--ease-smooth-out), text-decoration-color 150ms var(--ease-smooth-out);
 }
-.hero-project-link:hover { color: var(--text); text-decoration-color: currentColor; }
-.hero-contact-link:focus-visible,
-.hero-project-link:focus-visible {
+.hero-contact-link:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 4px;
 }
-.hero-project-link:focus-visible { color: var(--text); text-decoration-color: currentColor; }
 .hero-project-link svg { width: 16px; height: 16px; margin-left: 2px; }
 .button-style {
   position: relative;

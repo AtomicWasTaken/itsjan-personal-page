@@ -1,5 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import EdgeBlur from "../components/EdgeBlur.astro";
+import InteractiveButton from "../components/InteractiveButton.astro";
+import InteractiveLink from "../components/InteractiveLink.astro";
+import WaveDivider from "../components/WaveDivider.astro";
+import ArrowIcon from "../components/icons/ArrowIcon.astro";
+import GitHubIcon from "../components/icons/GitHubIcon.astro";
 import { Image } from "astro:assets";
 import finnyFavicon from "../assets/finny-favicon.png";
 import profile160 from "../assets/jan-profile-160.avif";
@@ -34,26 +40,14 @@ const currentYear = new Date().getFullYear();
 
 <Layout>
 <div class="portfolio-shell">
-  <div class="top-edge-blur" aria-hidden="true">
-    <div class="top-edge-blur__wash"></div>
-    <div class="top-edge-blur__layer top-edge-blur__layer--1"></div>
-    <div class="top-edge-blur__layer top-edge-blur__layer--2"></div>
-    <div class="top-edge-blur__layer top-edge-blur__layer--3"></div>
-    <div class="top-edge-blur__layer top-edge-blur__layer--4"></div>
-  </div>
-  <div class="top-edge-blur bottom-edge-blur" aria-hidden="true">
-    <div class="top-edge-blur__wash"></div>
-    <div class="top-edge-blur__layer top-edge-blur__layer--1"></div>
-    <div class="top-edge-blur__layer top-edge-blur__layer--2"></div>
-    <div class="top-edge-blur__layer top-edge-blur__layer--3"></div>
-    <div class="top-edge-blur__layer top-edge-blur__layer--4"></div>
-  </div>
+  <EdgeBlur />
+  <EdgeBlur edge="bottom" />
   <aside class="tech-stickers" aria-label={copy.tech.aria}>
     <div class="tech-sticker-side tech-sticker-side--left">
       {copy.tech.items.map((technology, index) => {
         const placement = stickerLayout[index];
         return placement.side === "left" && (
-          <a
+          <InteractiveLink
             href={technology.href}
             target="_blank"
             rel="noreferrer"
@@ -62,7 +56,7 @@ const currentYear = new Date().getFullYear();
             aria-label={technology.name}
           >
             <img src={technology.logo.src} alt="" width="28" height="28" decoding="async" draggable="false" />
-          </a>
+          </InteractiveLink>
         );
       })}
     </div>
@@ -70,7 +64,7 @@ const currentYear = new Date().getFullYear();
       {copy.tech.items.map((technology, index) => {
         const placement = stickerLayout[index];
         return placement.side === "right" && (
-          <a
+          <InteractiveLink
             href={technology.href}
             target="_blank"
             rel="noreferrer"
@@ -79,40 +73,40 @@ const currentYear = new Date().getFullYear();
             aria-label={technology.name}
           >
             <img src={technology.logo.src} alt="" width="28" height="28" decoding="async" draggable="false" />
-          </a>
+          </InteractiveLink>
         );
       })}
     </div>
   </aside>
   <div id="avatar-modal" class="t-modal avatar-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label={copy.avatar.expand} inert>
-    <button type="button" class="avatar-modal-backdrop" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}></button>
+    <InteractiveButton class="avatar-modal-backdrop" data-avatar-close feedback={false} aria-label={copy.avatar.collapse}></InteractiveButton>
     <div class="avatar-modal-content">
-      <button type="button" class="squircle avatar-modal-close" data-avatar-close data-cuelume-toggle="release" aria-label={copy.avatar.collapse}>
+      <InteractiveButton variant="icon" class="avatar-modal-close" data-avatar-close cuelumeToggle="release" cuelumeRelease={false} aria-label={copy.avatar.collapse}>
         <span aria-hidden="true">×</span>
-      </button>
+      </InteractiveButton>
       <Image src={profile320} alt="Jan-Marlon Leibl" width={320} height={320} class="avatar-modal-image" />
     </div>
   </div>
 <main class="portfolio-main mx-auto min-h-screen w-full max-w-2xl space-y-12 px-6 py-36 transition-[filter] max-[520px]:px-5 md:space-y-14">
   <section>
     <div class="profile-row mb-5 flex items-start justify-between">
-      <button
+      <InteractiveButton
         id="profile-avatar"
         class="profile-avatar"
-        type="button"
-        data-cuelume-hover="whisper"
-        data-cuelume-press="press"
+        cuelumeHover="whisper"
+        cuelumeRelease={false}
         aria-label={copy.avatar.expand}
         aria-haspopup="dialog"
         aria-controls="avatar-modal"
       >
         <Image src={profile160} alt="Jan-Marlon Leibl" width={160} height={160} class="profile-image" priority />
-      </button>
-      <button
+      </InteractiveButton>
+      <InteractiveButton
         id="theme-toggle"
-        class="squircle theme-toggle"
-        type="button"
-        data-cuelume-toggle="toggle"
+        variant="icon"
+        class="theme-toggle"
+        cuelumeToggle="toggle"
+        cuelumeRelease={false}
         aria-label={copy.theme.label}
         aria-pressed="false"
         data-label-dark={copy.theme.toDark}
@@ -124,7 +118,7 @@ const currentYear = new Date().getFullYear();
         <span class="theme-icon theme-icon--moon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"></path></svg>
         </span>
-      </button>
+      </InteractiveButton>
     </div>
     <h1 class="text-2xl font-medium tracking-tight">Jan-Marlon Leibl</h1>
     <p class="profile-subtitle mt-1 text-sm leading-5 text-[var(--text-tertiary)]" data-text-states={JSON.stringify(copy.subtitleStates(currentAge))}>
@@ -134,11 +128,11 @@ const currentYear = new Date().getFullYear();
       {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{copy.intro.afterBremen}<span class="keyword">{copy.intro.apprenticeship}</span>{copy.intro.afterApprenticeship}<span class="keyword">{copy.intro.finny}</span>{copy.intro.afterFinny}
     </p>
     <div class="mt-5 flex flex-wrap gap-3">
-      <a class="button-style squircle hero-contact-link" href="mailto:hi@itsjan.dev" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{locale === "de" ? "Kontakt aufnehmen" : "Get in touch"}</a>
-      <a class="hero-project-link" href="#projects" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release"><span>{locale === "de" ? "Projekte ansehen" : "See projects"}</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+      <InteractiveLink variant="primary" class="hero-contact-link" href="mailto:hi@itsjan.dev">{locale === "de" ? "Kontakt aufnehmen" : "Get in touch"}</InteractiveLink>
+      <InteractiveLink variant="text" class="hero-project-link" href="#projects"><span>{locale === "de" ? "Projekte ansehen" : "See projects"}</span><ArrowIcon /></InteractiveLink>
     </div>
   </section>
-  <hr class="wave" aria-hidden="true" />
+  <WaveDivider />
 
   <section>
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.experience.heading}</h2>
@@ -166,18 +160,16 @@ const currentYear = new Date().getFullYear();
             {technologies.find(item.technologies).map((technology) => {
               const Logo = technology.logo;
               return <li>
-                <a
-                  class={technology.darkModeLight ? "squircle experience-technology experience-technology--dark-logo" : "squircle experience-technology"}
+                <InteractiveLink
+                  variant="icon"
+                  class={technology.darkModeLight ? "experience-technology experience-technology--dark-logo" : "experience-technology"}
                   href={technology.href}
                   target="_blank"
                   rel="noreferrer"
-                  data-cuelume-hover="tick"
-                  data-cuelume-press="press"
-                  data-cuelume-release="release"
                 >
                   <Logo width="16" height="16" aria-hidden="true" focusable="false" />
                   <span>{technology.name}</span>
-                </a>
+                </InteractiveLink>
               </li>;
             })}
           </ul>
@@ -185,7 +177,7 @@ const currentYear = new Date().getFullYear();
       ))}
     </ol>
   </section>
-  <hr class="wave" aria-hidden="true" />
+  <WaveDivider />
 
   <section id="projects">
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.projects}</h2>
@@ -201,7 +193,7 @@ const currentYear = new Date().getFullYear();
             <p class="text-[15px] font-normal leading-6 text-[var(--text-secondary)]">
               {copy.finny.description.lead}<span class="keyword">{copy.finny.description.first}</span>{copy.finny.description.middle}<span class="keyword">{copy.finny.description.second}</span>{copy.finny.description.join}<span class="keyword">{copy.finny.description.third}</span>{copy.finny.description.end}
             </p>
-            <div class="project-preview-action"><a href="https://fnny.app" target="_blank" rel="noreferrer" class="button-style squircle project-preview-cta" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.finny.cta.label}</a></div>
+            <div class="project-preview-action"><InteractiveLink variant="primary" href="https://fnny.app" target="_blank" rel="noreferrer" class="project-preview-cta">{copy.finny.cta.label}</InteractiveLink></div>
           </div>
         </div>
       </article>
@@ -231,14 +223,14 @@ const currentYear = new Date().getFullYear();
             <p class="text-[15px] font-normal leading-6 text-[var(--text-secondary)]">
               {copy.ventry.description.lead}<span class="keyword">{copy.ventry.description.keyword}</span>{copy.ventry.description.end}
             </p>
-            <div class="project-preview-action"><a href="https://ventry.host" target="_blank" rel="noreferrer" class="button-style squircle project-preview-cta" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">{copy.ventry.cta.label}</a></div>
+            <div class="project-preview-action"><InteractiveLink variant="primary" href="https://ventry.host" target="_blank" rel="noreferrer" class="project-preview-cta">{copy.ventry.cta.label}</InteractiveLink></div>
           </div>
         </div>
       </article>
 
     </div>
   </section>
-  <hr class="wave" aria-hidden="true" />
+  <WaveDivider />
 
   <section class="mobile-tech-section">
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.tech.mobileHeading}</h2>
@@ -247,19 +239,16 @@ const currentYear = new Date().getFullYear();
         {technologies.featured.map((technology) => {
           const Logo = technology.logo;
           return <li>
-            <a
+            <InteractiveLink
               class={`mobile-tech-link flex min-h-[76px] flex-col items-center justify-center gap-2 rounded-[14px] text-[11px] leading-[14px] text-[var(--text-tertiary)]${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
               href={technology.href}
               target="_blank"
               rel="noreferrer"
               aria-label={copy.tech.visitLabel(technology.name)}
-              data-cuelume-hover="tick"
-              data-cuelume-press="press"
-              data-cuelume-release="release"
             >
               <Logo width="28" height="28" aria-hidden="true" focusable="false" />
               <span>{technology.name}</span>
-            </a>
+            </InteractiveLink>
           </li>;
         })}
       </ul>
@@ -269,42 +258,36 @@ const currentYear = new Date().getFullYear();
             {technologies.additional.map((technology) => {
               const Logo = technology.logo;
               return <li>
-                <a
+                <InteractiveLink
                   class={`mobile-tech-link flex min-h-[76px] flex-col items-center justify-center gap-2 rounded-[14px] text-[11px] leading-[14px] text-[var(--text-tertiary)]${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
                   href={technology.href}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={copy.tech.visitLabel(technology.name)}
-                  data-cuelume-hover="tick"
-                  data-cuelume-press="press"
-                  data-cuelume-release="release"
                 >
                   <Logo width="28" height="28" aria-hidden="true" focusable="false" />
                   <span>{technology.name}</span>
-                </a>
+                </InteractiveLink>
               </li>;
             })}
           </ul>
         </div>
       </div>
-      <button
+      <InteractiveButton
         id="mobile-tech-toggle"
-        class="button-style squircle t-acc-head mobile-tech-toggle"
-        type="button"
+        variant="primary"
+        class="t-acc-head mobile-tech-toggle"
         aria-controls="mobile-tech-additional"
         aria-expanded="false"
         data-label-more={copy.tech.mobileViewMore}
         data-label-less={copy.tech.mobileViewLess}
-        data-cuelume-hover="tick"
-        data-cuelume-press="press"
-        data-cuelume-release="release"
       >
         <span class="mobile-tech-toggle-label">{copy.tech.mobileViewMore}</span>
         <span class="t-acc-chevron" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><path d="M4 6.5L8 10.5L12 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
-      </button>
+      </InteractiveButton>
     </div>
   </section>
-  <hr class="wave wave--mobile" aria-hidden="true" />
+  <WaveDivider class="wave--mobile" />
 
   <section>
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.activity.heading}</h2>
@@ -350,29 +333,26 @@ const currentYear = new Date().getFullYear();
       <div class="activity-legend mt-2 flex items-center justify-end gap-1 text-[10px] text-[var(--text-tertiary)] [font-family:Geist_Mono,ui-monospace,monospace]" aria-hidden="true"><span>{copy.activity.less}</span><i class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]" data-level="0"></i><i class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]" data-level="1"></i><i class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]" data-level="2"></i><i class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]" data-level="3"></i><i class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]" data-level="4"></i><span>{copy.activity.more}</span></div>
     </div>
   </section>
-  <hr class="wave" aria-hidden="true" />
+  <WaveDivider />
 
   <section>
     <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.connect.heading}</h2>
     <div class="connect-row mt-6 flex items-center justify-between gap-5 max-[520px]:flex-col max-[520px]:items-start max-[520px]:gap-3">
       <div class="social-links -ml-2.5 flex items-center text-[var(--text-tertiary)]">
-        <span class="t-tt-wrap social-tooltip-wrap"><a href="https://x.com/janodersooo" target="_blank" rel="noreferrer" aria-label={copy.connect.xAria} aria-describedby="social-tooltip-x" class="social-link t-tt-trigger"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></a><span id="social-tooltip-x" class="t-tt social-tooltip" role="tooltip"><strong>x.com</strong><span>/janodersooo</span></span></span>
-        <span class="t-tt-wrap social-tooltip-wrap"><a href="https://github.com/AtomicWasTaken" target="_blank" rel="noreferrer" aria-label={copy.connect.githubAria} aria-describedby="social-tooltip-github" class="social-link t-tt-trigger"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a><span id="social-tooltip-github" class="t-tt social-tooltip" role="tooltip"><strong>github.com</strong><span>/AtomicWasTaken</span></span></span>
-        <span class="t-tt-wrap social-tooltip-wrap"><a href={linkedinUrl} target="_blank" rel="noreferrer" aria-label={copy.connect.linkedinAria} aria-describedby="social-tooltip-linkedin" class="social-link t-tt-trigger"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 1 1 2 4.5a1.5 1.5 0 0 1 3 0ZM2.5 8.5h3V21h-3V8.5ZM9 8.5h2.9v1.7h.1c.4-.8 1.5-2.1 3.6-2.1 3.9 0 4.6 2.6 4.6 6V21h-3v-6.1c0-1.5 0-3.5-2.1-3.5s-2.4 1.7-2.4 3.4V21H9V8.5Z"></path></svg></a><span id="social-tooltip-linkedin" class="t-tt social-tooltip" role="tooltip"><strong>linkedin.com</strong><span>{linkedinPath}</span></span></span>
-        <span class="t-tt-wrap social-tooltip-wrap"><a href="mailto:hi@itsjan.dev" aria-label={copy.connect.emailAria} aria-describedby="social-tooltip-email" class="social-link t-tt-trigger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="3"></rect><path d="m3 6 9 6 9-6"></path></svg></a><span id="social-tooltip-email" class="t-tt social-tooltip" role="tooltip"><span>hi@</span><strong>itsjan.dev</strong></span></span>
-        <span class="t-tt-wrap social-tooltip-wrap"><button id="share-profile" type="button" aria-label={copy.connect.shareAria} aria-describedby="social-tooltip-share" data-label-copied={copy.connect.linkCopied} class="social-link social-share t-tt-trigger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 10.5 6.8-4"></path><path d="m8.6 13.5 6.8 4"></path></svg></button><span id="social-tooltip-share" class="t-tt social-tooltip" role="tooltip">{copy.connect.shareTooltip}</span></span>
+        <InteractiveLink variant="icon" href="https://x.com/janodersooo" target="_blank" rel="noreferrer" aria-label={copy.connect.xAria} class="social-link" wrapperClass="social-tooltip-wrap" tooltipId="social-tooltip-x" tooltipTitle="x.com" tooltipDetail="/janodersooo" tooltipClass="social-tooltip"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></InteractiveLink>
+        <InteractiveLink variant="icon" href="https://github.com/AtomicWasTaken" target="_blank" rel="noreferrer" aria-label={copy.connect.githubAria} class="social-link" wrapperClass="social-tooltip-wrap" tooltipId="social-tooltip-github" tooltipTitle="github.com" tooltipDetail="/AtomicWasTaken" tooltipClass="social-tooltip"><GitHubIcon /></InteractiveLink>
+        <InteractiveLink variant="icon" href={linkedinUrl} target="_blank" rel="noreferrer" aria-label={copy.connect.linkedinAria} class="social-link" wrapperClass="social-tooltip-wrap" tooltipId="social-tooltip-linkedin" tooltipTitle="linkedin.com" tooltipDetail={linkedinPath} tooltipClass="social-tooltip"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 1 1 2 4.5a1.5 1.5 0 0 1 3 0ZM2.5 8.5h3V21h-3V8.5ZM9 8.5h2.9v1.7h.1c.4-.8 1.5-2.1 3.6-2.1 3.9 0 4.6 2.6 4.6 6V21h-3v-6.1c0-1.5 0-3.5-2.1-3.5s-2.4 1.7-2.4 3.4V21H9V8.5Z"></path></svg></InteractiveLink>
+        <InteractiveLink variant="icon" href="mailto:hi@itsjan.dev" aria-label={copy.connect.emailAria} class="social-link" wrapperClass="social-tooltip-wrap" tooltipId="social-tooltip-email" tooltipTitle="hi@itsjan.dev" tooltipClass="social-tooltip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="3"></rect><path d="m3 6 9 6 9-6"></path></svg></InteractiveLink>
+        <InteractiveButton variant="icon" id="share-profile" aria-label={copy.connect.shareAria} data-label-copied={copy.connect.linkCopied} class="social-link social-share" wrapperClass="social-tooltip-wrap" tooltipId="social-tooltip-share" tooltipText={copy.connect.shareTooltip} tooltipClass="social-tooltip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 10.5 6.8-4"></path><path d="m8.6 13.5 6.8 4"></path></svg></InteractiveButton>
       </div>
-      <button
+      <InteractiveButton
         id="copy-email"
-        class="button-style squircle copy-email-button"
-        type="button"
+        variant="primary"
+        class="copy-email-button"
         data-email="hi@itsjan.dev"
         data-label-copy={copy.connect.copyEmail}
         data-label-copied={copy.connect.emailCopied}
         aria-label={copy.connect.copyEmail}
-        data-cuelume-hover="tick"
-        data-cuelume-press="press"
-        data-cuelume-release="release"
       >
         <span class="copy-email-icon copy-email-icon--copy" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg></span>
         <span class="copy-email-icon copy-email-icon--check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"></path></svg></span>
@@ -381,18 +361,15 @@ const currentYear = new Date().getFullYear();
           <span class="copy-email-label-measure" aria-hidden="true">{copy.connect.copyEmail}</span>
           <span class="copy-email-label-measure" aria-hidden="true">{copy.connect.emailCopied}</span>
         </span>
-      </button>
+      </InteractiveButton>
     </div>
   </section>
 
   <footer id="site-footer" class="site-footer">
-    <span class="t-tt-wrap site-footer-source">
-      <a class="t-tt-trigger" href="https://github.com/AtomicWasTaken/itsjan-personal-page" target="_blank" rel="noreferrer" aria-describedby="site-footer-github-tooltip" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-        <span class="site-footer-source__label">{locale === "de" ? "Quellcode ansehen" : "View source code"}</span>
-      </a>
-      <span id="site-footer-github-tooltip" class="t-tt social-tooltip" role="tooltip"><strong>github.com</strong><span>/AtomicWasTaken/itsjan-personal-page</span></span>
-    </span>
+    <InteractiveLink variant="text" href="https://github.com/AtomicWasTaken/itsjan-personal-page" target="_blank" rel="noreferrer" wrapperClass="site-footer-source" tooltipId="site-footer-github-tooltip" tooltipTitle="github.com" tooltipDetail="/AtomicWasTaken/itsjan-personal-page" tooltipClass="social-tooltip">
+      <GitHubIcon />
+      <span class="site-footer-source__label">{locale === "de" ? "Quellcode ansehen" : "View source code"}</span>
+    </InteractiveLink>
     <p>© Copyright {currentYear} · {locale === "de" ? "Alle Rechte vorbehalten" : "All rights reserved"}, Jan-Marlon Leibl</p>
   </footer>
 </main>
@@ -639,21 +616,6 @@ const currentYear = new Date().getFullYear();
 
 <script>
   // @ts-nocheck
-  import { bind, play } from "cuelume";
-
-  document.querySelectorAll(".social-link").forEach((link) => {
-    link.dataset.cuelumeHover = "tick";
-    link.dataset.cuelumePress = "press";
-    link.dataset.cuelumeRelease = "release";
-  });
-  document.querySelectorAll(".tech-sticker").forEach((sticker) => {
-    sticker.dataset.cuelumePress = "press";
-    sticker.dataset.cuelumeRelease = "release";
-    sticker.addEventListener("pointerenter", (event) => {
-      if (event.target === sticker) play("whisper");
-    });
-  });
-
   const haptics = window.matchMedia("(pointer: coarse)").matches
     ? import("web-haptics").then(({ WebHaptics }) => WebHaptics.isSupported ? new WebHaptics() : null)
     : Promise.resolve(null);
@@ -673,8 +635,6 @@ const currentYear = new Date().getFullYear();
     const device = await haptics;
     if (device) void device.trigger(target.dataset.haptic || "light");
   }, { passive: true });
-
-  bind();
 </script>
 
 <script>

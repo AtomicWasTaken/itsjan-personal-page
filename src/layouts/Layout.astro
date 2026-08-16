@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import CookieConsent from "../components/CookieConsent.astro";
+import InteractionRuntime from "../components/InteractionRuntime.astro";
 import PostHog from '../components/posthog.astro';
 import { detectLocale, tr } from "../lib/i18n";
 import {
@@ -142,5 +143,6 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
   <body>
     <slot />
     <CookieConsent locale={locale} />
+    <InteractionRuntime />
   </body>
 </html>

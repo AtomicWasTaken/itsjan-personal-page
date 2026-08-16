@@ -1,0 +1,11 @@
+<script>
+  import { bind } from "cuelume";
+
+  document.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
+    link.dataset.cuelumeHover ||= "tick";
+    link.dataset.cuelumePress ||= "press";
+    link.dataset.cuelumeRelease ||= "release";
+  });
+
+  bind(document);
+</script>

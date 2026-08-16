@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import InteractiveLink from "../components/InteractiveLink.astro";
 import RansomLine from "../components/RansomLine.astro";
 import { detectLocale } from "../lib/i18n";
 
@@ -36,15 +37,10 @@ Astro.response.headers.set("Cache-Control", "no-store");
       </p>
 
       <div class="not-found-actions">
-        <a class="button-style squircle not-found-home" href={homeHref} data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">
+        <InteractiveLink variant="primary" class="not-found-home" href={homeHref}>
           <span>{de ? "Zur Startseite" : "Back home"}</span>
-        </a>
+        </InteractiveLink>
       </div>
     </main>
   </div>
 </Layout>
-
-<script>
-  import { bind } from "cuelume";
-  bind(document);
-</script>

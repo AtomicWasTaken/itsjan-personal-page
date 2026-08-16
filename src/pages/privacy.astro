@@ -1,5 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import EdgeBlur from "../components/EdgeBlur.astro";
+import InteractiveLink from "../components/InteractiveLink.astro";
+import ArrowIcon from "../components/icons/ArrowIcon.astro";
 import { detectLocale } from "../lib/i18n";
 
 const locale = detectLocale(Astro.request);
@@ -12,25 +15,13 @@ const description = de
 
 <Layout title={title} description={description}>
   <div class="privacy-shell">
-    <div class="top-edge-blur" aria-hidden="true">
-      <div class="top-edge-blur__wash"></div>
-      <div class="top-edge-blur__layer top-edge-blur__layer--1"></div>
-      <div class="top-edge-blur__layer top-edge-blur__layer--2"></div>
-      <div class="top-edge-blur__layer top-edge-blur__layer--3"></div>
-      <div class="top-edge-blur__layer top-edge-blur__layer--4"></div>
-    </div>
-    <div class="top-edge-blur bottom-edge-blur" aria-hidden="true">
-      <div class="top-edge-blur__wash"></div>
-      <div class="top-edge-blur__layer top-edge-blur__layer--1"></div>
-      <div class="top-edge-blur__layer top-edge-blur__layer--2"></div>
-      <div class="top-edge-blur__layer top-edge-blur__layer--3"></div>
-      <div class="top-edge-blur__layer top-edge-blur__layer--4"></div>
-    </div>
+    <EdgeBlur />
+    <EdgeBlur edge="bottom" />
     <main class="privacy-main">
-    <a class="hero-project-link privacy-back" href="/" data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">
-      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    <InteractiveLink variant="text" class="hero-project-link privacy-back" href="/">
+      <ArrowIcon direction="left" />
       <span>{de ? "Zurück zur Website" : "Back to the website"}</span>
-    </a>
+    </InteractiveLink>
     {de ? (
       <>
         <h1>Datenschutzerklärung</h1>
@@ -38,20 +29,20 @@ const description = de
         <section>
           <h2>Verantwortlicher</h2>
           <p>Jan-Marlon Leibl, Bremen, Deutschland</p>
-          <a class="privacy-action-link" href="mailto:hi@itsjan.dev">hi@itsjan.dev <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+          <InteractiveLink variant="text" class="privacy-action-link" href="mailto:hi@itsjan.dev">hi@itsjan.dev <ArrowIcon /></InteractiveLink>
         </section>
         <section>
           <h2>Hosting</h2>
           <p>Diese Website wird über Cloudflare bereitgestellt. Beim Aufruf verarbeitet Cloudflare technisch erforderliche Verbindungsdaten, insbesondere IP-Adresse, Zeitpunkt und angeforderte Inhalte, um die Website sicher auszuliefern.</p>
-          <a class="privacy-action-link" href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">Cloudflare Privacy Policy <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+          <InteractiveLink variant="text" class="privacy-action-link" href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">Cloudflare Privacy Policy <ArrowIcon direction="external" /></InteractiveLink>
         </section>
         <section>
           <h2>Reichweitenmessung mit PostHog</h2>
           <p>Wenn Sie ausdrücklich zustimmen, verwenden wir PostHog (PostHog, Inc.) mit EU-Datenstandort. Damit sehen wir, welche Seiten und Funktionen genutzt werden, und können technische Fehler finden. Dabei können aufgerufene Seiten, Interaktionen, Browser- und Geräteinformationen sowie eine pseudonyme Kennung verarbeitet werden.</p>
           <p>Rechtsgrundlage ist Ihre Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO sowie § 25 Abs. 1 TDDDG. Die Einwilligung ist freiwillig und kann jederzeit über „Datenschutz-Einstellungen“ widerrufen werden. Ohne Einwilligung wird PostHog nicht initialisiert und es werden keine Analyse-Cookies gesetzt.</p>
           <div class="privacy-link-list">
-            <a class="privacy-action-link" href="https://posthog.com/privacy" target="_blank" rel="noreferrer">PostHog Datenschutzhinweise <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
-            <a class="privacy-action-link" href="https://posthog.com/dpa" target="_blank" rel="noreferrer">PostHog Auftragsverarbeitungsvereinbarung <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+            <InteractiveLink variant="text" class="privacy-action-link" href="https://posthog.com/privacy" target="_blank" rel="noreferrer">PostHog Datenschutzhinweise <ArrowIcon direction="external" /></InteractiveLink>
+            <InteractiveLink variant="text" class="privacy-action-link" href="https://posthog.com/dpa" target="_blank" rel="noreferrer">PostHog Auftragsverarbeitungsvereinbarung <ArrowIcon direction="external" /></InteractiveLink>
           </div>
         </section>
         <section>
@@ -70,20 +61,20 @@ const description = de
         <section>
           <h2>Controller</h2>
           <p>Jan-Marlon Leibl, Bremen, Germany</p>
-          <a class="privacy-action-link" href="mailto:hi@itsjan.dev">hi@itsjan.dev <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+          <InteractiveLink variant="text" class="privacy-action-link" href="mailto:hi@itsjan.dev">hi@itsjan.dev <ArrowIcon /></InteractiveLink>
         </section>
         <section>
           <h2>Hosting</h2>
           <p>This website is delivered through Cloudflare. Cloudflare processes technically necessary connection data, including IP address, time of request, and requested content, to deliver the site securely.</p>
-          <a class="privacy-action-link" href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">Cloudflare Privacy Policy <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+          <InteractiveLink variant="text" class="privacy-action-link" href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">Cloudflare Privacy Policy <ArrowIcon direction="external" /></InteractiveLink>
         </section>
         <section>
           <h2>Analytics with PostHog</h2>
           <p>If you explicitly agree, we use PostHog (PostHog, Inc.) with EU data hosting. This lets us see which pages and features are used and helps us find technical errors. The data can include visited pages, interactions, browser and device information, and a pseudonymous identifier.</p>
           <p>The legal basis is your consent. It is voluntary and can be withdrawn at any time through “Privacy settings”. Without consent, PostHog is not initialized and no analytics cookies are set.</p>
           <div class="privacy-link-list">
-            <a class="privacy-action-link" href="https://posthog.com/privacy" target="_blank" rel="noreferrer">PostHog Privacy notice <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
-            <a class="privacy-action-link" href="https://posthog.com/dpa" target="_blank" rel="noreferrer">PostHog Data Processing Agreement <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M7.5 4.5 11 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+            <InteractiveLink variant="text" class="privacy-action-link" href="https://posthog.com/privacy" target="_blank" rel="noreferrer">PostHog Privacy notice <ArrowIcon direction="external" /></InteractiveLink>
+            <InteractiveLink variant="text" class="privacy-action-link" href="https://posthog.com/dpa" target="_blank" rel="noreferrer">PostHog Data Processing Agreement <ArrowIcon direction="external" /></InteractiveLink>
           </div>
         </section>
         <section>
@@ -99,21 +90,3 @@ const description = de
     </main>
   </div>
 </Layout>
-
-<script>
-  // @ts-nocheck
-  import { bind } from "cuelume";
-
-  document.querySelectorAll(".privacy-action-link").forEach((link) => {
-    link.dataset.cuelumeHover = "tick";
-    link.dataset.cuelumePress = "press";
-    link.dataset.cuelumeRelease = "release";
-  });
-
-  const externalIcon = '<path d="M5 11 11 5M6 5h5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />';
-  document.querySelectorAll('.privacy-action-link[target="_blank"] svg').forEach((icon) => {
-    icon.innerHTML = externalIcon;
-  });
-
-  bind(document);
-</script>
