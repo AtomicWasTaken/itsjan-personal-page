@@ -2417,6 +2417,7 @@ html[data-theme="dark"] .social-card-linkedin-action {
 @supports (corner-shape: squircle) {
   .project-preview,
   .project-preview-surface,
+  .project-preview-image,
   .social-preview__viewport,
   .social-preview__panel,
   .avatar-modal-content,
