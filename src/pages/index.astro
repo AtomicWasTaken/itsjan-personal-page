@@ -158,16 +158,12 @@ const currentYear = new Date().getFullYear();
             {technologies.find(item.technologies).map((technology) => {
               const Logo = technology.logo;
               return <li>
-                <InteractiveLink
-                  variant="icon"
+                <span
                   class={technology.darkModeLight ? "experience-technology experience-technology--dark-logo" : "experience-technology"}
-                  href={technology.href}
-                  target="_blank"
-                  rel="noreferrer"
                 >
                   <Logo width="16" height="16" aria-hidden="true" focusable="false" />
                   <span>{technology.name}</span>
-                </InteractiveLink>
+                </span>
               </li>;
             })}
           </ul>
@@ -617,7 +613,7 @@ const currentYear = new Date().getFullYear();
     });
   };
   assignHaptic("#profile-avatar, [data-avatar-close]", "nudge");
-  assignHaptic("#theme-toggle, #copy-email, #mobile-tech-toggle, .mobile-tech-link, .experience-technology, .activity-day.t-tt-trigger, .tech-sticker", "selection");
+  assignHaptic("#theme-toggle, #copy-email, #mobile-tech-toggle, .mobile-tech-link, .activity-day.t-tt-trigger, .tech-sticker", "selection");
   assignHaptic(".project-preview-cta", "success");
   assignHaptic(".social-link", "light");
   document.addEventListener("pointerdown", async (event) => {

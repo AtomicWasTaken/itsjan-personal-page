@@ -2,6 +2,8 @@
 import { Image } from "astro:assets";
 import type { ActivityDay } from "../lib/portfolio";
 import profile160 from "../assets/jan-profile-160.avif";
+import linkedinBanner from "../assets/social/linkedin-banner.jpg";
+import xBanner from "../assets/social/x-banner.jpg";
 import GitHubIcon from "./icons/GitHubIcon.astro";
 import InteractiveButton from "./InteractiveButton.astro";
 import InteractiveLink from "./InteractiveLink.astro";
@@ -40,10 +42,20 @@ const contributionLabel = isGerman
               <Image src={profile160} alt="" width={80} height={80} class="social-card-avatar social-card-avatar--round" />
             </div>
             <div class="social-card-profile-copy">
-              <strong>AtomicWasTaken</strong>
-              <span>{contributionLabel}</span>
+              <strong>Jan-Marlon Leibl</strong>
+              <span>@AtomicWasTaken</span>
             </div>
+            <InteractiveLink class="social-card-github-action" href="https://github.com/AtomicWasTaken" target="_blank" rel="noreferrer">{isGerman ? "Profil ansehen" : "View profile"}</InteractiveLink>
           </div>
+          <p class="social-card-github-bio">Coding Enthusiast Living in Germany</p>
+          <div class="social-card-github-meta">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+              Germany
+            </span>
+            <InteractiveLink class="social-card-github-site" href="https://itsjan.dev" target="_blank" rel="noreferrer">itsjan.dev</InteractiveLink>
+          </div>
+          <span class="social-card-github-contribution-label">{contributionLabel}</span>
           <div class="social-card-contributions" aria-hidden="true">
             {githubActivity.map((day) => <i data-level={day.level}></i>)}
           </div>
@@ -51,12 +63,12 @@ const contributionLabel = isGerman
       </article>
 
       <article class="social-preview__panel social-preview__panel--linkedin" data-social-panel="linkedin">
-        <img
+        <Image
           class="social-card-linkedin-banner"
-          src="https://media.licdn.com/dms/image/v2/D4E16AQEE6hTgQ1VGbA/profile-displaybackgroundimage-shrink_200_800/B4EZ8p65nDIsAQ-/0/1783114734308?e=1788393600&v=beta&t=Zjce5HMoYHMISxub7s1Vsxic6b6YmfDGIlo5nKbdvBo"
+          src={linkedinBanner}
           alt=""
           width="800"
-          height="200"
+          height="199"
         />
         <div class="social-card-floating-avatar">
           <Image src={profile160} alt="" width={112} height={112} class="social-card-avatar social-card-avatar--round" />
@@ -74,7 +86,7 @@ const contributionLabel = isGerman
       </article>
 
       <article class="social-preview__panel social-preview__panel--x" data-social-panel="x">
-        <img class="social-card-x-banner" src="https://pbs.twimg.com/profile_banners/2036216470640975872/1783106556/1500x500" alt="" width="1500" height="500" />
+        <Image class="social-card-x-banner" src={xBanner} alt="" width="1500" height="500" />
         <div class="social-card-floating-avatar social-card-floating-avatar--x">
           <Image src={profile160} alt="" width={112} height={112} class="social-card-avatar social-card-avatar--round" />
         </div>
