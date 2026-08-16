@@ -1437,9 +1437,13 @@ html[data-theme="dark"] .ventry-file-row b {
 .social-card-contributions i[data-level="4"] { background: var(--activity-4); }
 .social-card-linkedin-banner {
   display: block;
+  box-sizing: border-box;
   width: 288px;
   height: 64px;
   max-width: none;
+  border: 0;
+  border-bottom: 1px solid var(--social-card-border);
+  outline: 0;
   object-fit: cover;
 }
 .social-card-floating-avatar {
@@ -1499,9 +1503,13 @@ html[data-theme="dark"] .ventry-file-row b {
 .social-card-linkedin-action:hover { filter: brightness(1.2); }
 .social-card-x-banner {
   display: block;
+  box-sizing: border-box;
   width: 288px;
   height: 96px;
   max-width: none;
+  border: 0;
+  border-bottom: 1px solid var(--social-card-border);
+  outline: 0;
   object-fit: cover;
 }
 .social-card-x-body {
