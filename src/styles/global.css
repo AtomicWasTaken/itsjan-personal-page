@@ -1479,16 +1479,23 @@ html[data-theme="dark"] .ventry-file-row b {
 }
 .social-card-linkedin-action,
 .social-card-x-action {
+  display: inline-flex;
   flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
   padding: 4px 12px;
   border-radius: 999px;
+  cursor: pointer;
   font-size: 14px;
   line-height: 20px;
+  text-decoration: none;
 }
 .social-card-linkedin-action {
   background: #0a66c2;
   color: #fff;
+  transition: filter 150ms ease-out;
 }
+.social-card-linkedin-action:hover { filter: brightness(1.2); }
 .social-card-x-banner {
   display: block;
   width: 288px;
@@ -1521,6 +1528,13 @@ html[data-theme="dark"] .ventry-file-row b {
   height: fit-content;
   background: var(--social-card-fg);
   color: var(--social-card-surface);
+  transition: opacity 150ms ease-out;
+}
+.social-card-x-action:hover { opacity: .9; }
+.social-card-linkedin-action:focus-visible,
+.social-card-x-action:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -3px;
 }
 .social-preview__hover-bridge {
   position: absolute;
