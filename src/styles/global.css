@@ -672,11 +672,13 @@ main img {
   text-underline-offset: 4px;
 }
 
-.experience-organization img {
+.experience-organization-logo {
   width: 20px;
   height: 20px;
-  outline: 0;
-  object-fit: contain;
+  flex: 0 0 auto;
+  background: currentColor;
+  -webkit-mask: var(--experience-organization-logo) center / contain no-repeat;
+  mask: var(--experience-organization-logo) center / contain no-repeat;
 }
 .experience-role-branch {
   position: absolute;
