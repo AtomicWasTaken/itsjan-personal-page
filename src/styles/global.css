@@ -1290,6 +1290,10 @@ html[data-theme="dark"] .ventry-file-row b {
   transition-timing-function: var(--tt-in-ease);
   transition-delay: var(--tt-delay);
 }
+.activity-tooltip,
+.social-tooltip {
+  border-radius: 12px;
+}
 .tech-sticker:hover,
 .tech-sticker:focus-visible {
   z-index: 40;
@@ -2412,14 +2416,18 @@ html[data-theme="dark"] .social-card-linkedin-action {
 }
 @supports (corner-shape: squircle) {
   .project-preview,
+  .project-preview-surface,
   .social-preview__viewport,
+  .social-preview__panel,
   .avatar-modal-content,
-  .activity-tooltip {
+  .avatar-modal-image,
+  .activity-tooltip,
+  .social-tooltip {
     corner-shape: squircle;
   }
   .project-preview,
   .social-preview__viewport {
-    border-radius: 2rem;
+    border-radius: 22px;
   }
   .squircle,
   .social-link,
