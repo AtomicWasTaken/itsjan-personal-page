@@ -1306,6 +1306,40 @@ html[data-theme="dark"] .ventry-file-row b {
   width: 19px;
   height: 19px;
 }
+.site-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+}
+.site-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 150ms var(--ease-smooth-out);
+}
+.site-footer a svg { width: 15px; height: 15px; }
+.site-footer-source .t-tt { max-width: min(360px, calc(100vw - 24px)); }
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  color: var(--text);
+}
+.site-footer a:hover .site-footer-source__label,
+.site-footer a:focus-visible .site-footer-source__label {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.site-footer a:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+.site-footer p { margin: 0; }
 
 .privacy-consent {
   position: fixed;
