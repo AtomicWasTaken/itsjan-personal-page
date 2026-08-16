@@ -7,6 +7,7 @@ import InteractiveLink from "../components/InteractiveLink.astro";
 import SocialLinks from "../components/SocialLinks.astro";
 import WaveDivider from "../components/WaveDivider.astro";
 import ArrowIcon from "../components/icons/ArrowIcon.astro";
+import BotIcon from "../components/icons/BotIcon.astro";
 import GitHubIcon from "../components/icons/GitHubIcon.astro";
 import { Image } from "astro:assets";
 import finnyFavicon from "../assets/finny-favicon.png";
@@ -47,6 +48,8 @@ const linkedinUrl =
     ? "https://www.linkedin.com/in/janmarlonleibl/?locale=en-US"
     : "https://www.linkedin.com/in/janmarlonleibl/";
 const currentYear = new Date().getFullYear();
+const llmsUrl = new URL("/llms.txt", Astro.url).href;
+const llmsTooltipTitle = new URL(llmsUrl).host;
 ---
 
 <Layout>
@@ -798,22 +801,36 @@ const currentYear = new Date().getFullYear();
       </section>
 
       <footer id="site-footer" class="site-footer">
-        <InteractiveLink
-          variant="text"
-          href={SOURCE_REPOSITORY_URL}
-          target="_blank"
-          rel="noreferrer"
-          wrapperClass="site-footer-source"
-          tooltipId="site-footer-github-tooltip"
-          tooltipTitle="github.com"
-          tooltipDetail="/AtomicWasTaken/itsjan-personal-page"
-          tooltipClass="social-tooltip"
-        >
-          <GitHubIcon />
-          <span class="site-footer-source__label"
-            >{locale === "de" ? "Code auf GitHub" : "Source on GitHub"}</span
+        <div class="site-footer-links">
+          <InteractiveLink
+            variant="text"
+            href={SOURCE_REPOSITORY_URL}
+            target="_blank"
+            rel="noreferrer"
+            wrapperClass="site-footer-resource"
+            tooltipId="site-footer-github-tooltip"
+            tooltipTitle="github.com"
+            tooltipDetail="/AtomicWasTaken/itsjan-personal-page"
+            tooltipClass="social-tooltip"
           >
-        </InteractiveLink>
+            <GitHubIcon />
+            <span class="site-footer-link__label"
+              >{locale === "de" ? "Code auf GitHub" : "Source on GitHub"}</span
+            >
+          </InteractiveLink>
+          <InteractiveLink
+            variant="text"
+            href={llmsUrl}
+            wrapperClass="site-footer-resource"
+            tooltipId="site-footer-llms-tooltip"
+            tooltipTitle={llmsTooltipTitle}
+            tooltipDetail="/llms.txt"
+            tooltipClass="social-tooltip"
+          >
+            <BotIcon />
+            <span class="site-footer-link__label">llms.txt</span>
+          </InteractiveLink>
+        </div>
         <p>© {currentYear} {PERSON_NAME}</p>
       </footer>
     </main>

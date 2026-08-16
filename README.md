@@ -63,6 +63,7 @@ scripts/                 Repository integrity checks
 src/
   assets/                Optimized local images, logos, banners, and fonts
   components/            Reusable Astro UI and client runtimes
+  content/resources/     Markdown, LLM context, policy, and profile skill sources
   data/                  Static technology catalog
   layouts/               Document head, metadata, and shared page shell
   lib/                   Locale, GitHub, profile, and presentation helpers
@@ -70,10 +71,7 @@ src/
   styles/                Font declarations and global design system
   middleware.ts          Markdown negotiation and response security headers
 public/
-  .well-known/           Agent Skill discovery metadata
-  skills/                Public Agent Skill content
-  *.md                   Machine-readable page representations
-  llms*.txt              Curated agent entry points
+  _headers               UTF-8 headers for static text resources
 ```
 
 ## Architecture notes
@@ -87,8 +85,22 @@ public/
   does not depend on Google Fonts or an icon CDN at runtime.
 - PostHog loads only after explicit consent. Without configuration or consent,
   analytics remains disabled.
-- Requests to `/`, `/en`, or `/de` with `Accept: text/markdown` receive the
-  corresponding Markdown document.
+- Requests to `/`, `/en`, `/de`, or `/privacy` with `Accept: text/markdown`
+  receive the corresponding localized Markdown document.
+- Direct `.md` and `.txt` resources declare UTF-8 explicitly so German content
+  is decoded consistently by browsers, crawlers, and agents.
+
+## Machine-readable resources
+
+- [`/llms.txt`](https://itsjan.dev/llms.txt) indexes the public resources.
+- [`/llms-full.txt`](https://itsjan.dev/llms-full.txt) contains expanded profile
+  and project context.
+- [`/en.md`](https://itsjan.dev/en.md) and
+  [`/de.md`](https://itsjan.dev/de.md) provide localized portfolio content.
+- [`/privacy.en.md`](https://itsjan.dev/privacy.en.md) and
+  [`/privacy.de.md`](https://itsjan.dev/privacy.de.md) mirror the privacy page.
+- [The public profile skill](https://itsjan.dev/skills/itsjan-profile/SKILL.md)
+  is discoverable through `/.well-known/agent-skills/index.json`.
 
 ## Deployment
 

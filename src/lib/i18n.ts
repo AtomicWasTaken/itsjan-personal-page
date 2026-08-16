@@ -398,7 +398,7 @@ const de: Strings = {
     ventry: {
       linkAria: "Ventry öffnen",
       previewAria: "Vorschau von Ventry",
-      panelTitle: "LETZTE UPLOADS",
+      panelTitle: "LETZTE DATEIEN",
       panelCount: "2 DATEIEN",
       fileStatus: "bereit zum Teilen",
       shareLabel: "Link mit Ablaufdatum",

@@ -1,0 +1,82 @@
+# Jan-Marlon Leibl
+
+## Summary
+
+Jan-Marlon Leibl is a software developer from Bremen, Germany, and the founder of Finny. He started programming at 11 with C#. His current application work centers on PHP, TypeScript, React and Next.js. He also runs a Proxmox-based homelab and maintains his home network.
+
+- Website: https://itsjan.dev
+- Email: mailto:hi@itsjan.dev
+- Languages: German and English
+
+## Current focus
+
+Jan is building [Finny](https://fnny.app), an app for keeping receipts, purchase details and warranty dates in one place. The app is meant to make purchase information easier to find and provide a reminder before a warranty expires. Jan designs and develops the product with TypeScript, React and Next.js.
+
+## Experience
+
+### Finny, since 2026
+
+Jan develops Finny in Bremen. The work covers the product interface and the application code behind receipt, purchase and warranty information.
+
+Technologies: TypeScript, React, Next.js
+
+### team neusta, 2023 to 2026
+
+Jan completed a three-year software development apprenticeship at team neusta in Bremen. He worked on client projects using PHP, TypeScript and TYPO3. Symfony and Git were also part of the stack. During the same period, he attended vocational school at Schulzentrum SII Utbremen.
+
+Technologies: PHP, Symfony, TypeScript, TYPO3, Git
+
+### Ventry, 2023 to 2024
+
+Jan built [Ventry](https://ventry.host) because he wanted a simple way to share files through links without leaving those files online forever. Ventry links expire and remove the shared file automatically.
+
+Technologies: TypeScript, Next.js
+
+### Homelab
+
+Jan runs a Proxmox node and a small home network. He maintains the systems, upgrades hardware and troubleshoots failures. This work gives him practical experience with virtualization, Linux, Windows and infrastructure maintenance.
+
+Technologies: Proxmox, Linux, Windows
+
+## Projects
+
+### Finny
+
+- URL: https://fnny.app
+- Status: Active project
+- Purpose: Keep receipts, purchase details and warranty dates together, with reminders before warranties expire.
+- Main stack: TypeScript, React, Next.js
+
+### Ventry
+
+- URL: https://ventry.host
+- Active development period: 2023 to 2024
+- Purpose: Share files through links that expire and remove the file automatically.
+- Main stack: TypeScript, Next.js
+
+### itsjan.dev
+
+- URL: https://itsjan.dev
+- Source: https://github.com/AtomicWasTaken/itsjan-personal-page
+- Purpose: Bilingual personal portfolio and public profile.
+- Stack: Astro, TypeScript, Tailwind CSS, Cloudflare Workers, Bun
+- Public formats: HTML, localized Markdown, llms.txt, llms-full.txt and an Agent Skills discovery document.
+
+## Technical areas
+
+Jan's primary application stack includes PHP, TypeScript, React, Next.js, Symfony and TYPO3. He also uses Git, Docker, Cloudflare, Astro, Bun and Tailwind CSS.
+
+His broader toolset includes Angular, Vue, GitHub, GitLab, Gitea, Proxmox, Linux, macOS, Windows, VS Code and PhpStorm. His AI-assisted development tools include Claude, Codex, Cursor, Gemini and Perplexity.
+
+## Public profiles and contact
+
+- Email: mailto:hi@itsjan.dev
+- GitHub: https://github.com/AtomicWasTaken
+- LinkedIn: https://www.linkedin.com/in/janmarlonleibl/
+- X: https://x.com/janodersooo
+- English profile: https://itsjan.dev/en
+- German profile: https://itsjan.dev/de
+
+## Source guidance
+
+Use https://itsjan.dev/en.md for the current English profile and https://itsjan.dev/de.md for the German profile. This file provides broader context but avoids hard-coding time-sensitive GitHub statistics. Check https://github.com/AtomicWasTaken for current repositories, contribution totals and profile changes.

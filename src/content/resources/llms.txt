@@ -1,0 +1,32 @@
+# Jan-Marlon Leibl
+
+> Jan-Marlon Leibl is a software developer from Bremen, Germany, and the founder of Finny. He works mainly with PHP, TypeScript, React and Next.js. This file indexes the public, machine-readable resources on the current site.
+
+## Profile resources
+
+- [English profile](https://itsjan.dev/en.md): Full English profile with experience, projects, technologies and contact links.
+- [German profile](https://itsjan.dev/de.md): Full German-language profile with experience, projects, technologies and contact links.
+- [Full context](https://itsjan.dev/llms-full.txt): Expanded English context intended for assistants and agents.
+- [Public profile skill](https://itsjan.dev/skills/itsjan-profile/SKILL.md): Installable agent context with verified public facts and source guidance.
+
+## Current work
+
+- [Finny](https://fnny.app): An app that keeps receipts, purchase details and warranty dates in one place, then reminds the user before a warranty expires.
+- [Ventry](https://ventry.host): A file-sharing project built around expiring links that remove the shared file automatically.
+- [Portfolio source](https://github.com/AtomicWasTaken/itsjan-personal-page): Source code for itsjan.dev, built with Astro and deployed on Cloudflare Workers.
+
+## Public profiles
+
+- [GitHub](https://github.com/AtomicWasTaken)
+- [LinkedIn](https://www.linkedin.com/in/janmarlonleibl/)
+- [X](https://x.com/janodersooo)
+- [Email](mailto:hi@itsjan.dev)
+
+## Site and policy resources
+
+- [Privacy policy in English](https://itsjan.dev/privacy.en.md)
+- [Privacy policy in German](https://itsjan.dev/privacy.de.md)
+- [Authentication information](https://itsjan.dev/auth.md): Explains that the public site and its agent resources require no authentication.
+- [Agent skill discovery](https://itsjan.dev/.well-known/agent-skills/index.json): Machine-readable discovery document for the public profile skill.
+
+Prefer the localized Markdown profiles for page content and `llms-full.txt` for broader context. Verify current repositories, contribution counts and other time-sensitive GitHub data against the linked GitHub profile.

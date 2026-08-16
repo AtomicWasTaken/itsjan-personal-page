@@ -1845,15 +1845,22 @@ html[data-theme="dark"] .social-card-linkedin-action {
   width: 15px;
   height: 15px;
 }
-.site-footer-source .t-tt {
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 18px;
+}
+.site-footer-resource .t-tt {
   max-width: min(360px, calc(100vw - 24px));
 }
 .site-footer a:hover,
 .site-footer a:focus-visible {
   color: var(--text);
 }
-.site-footer a:hover .site-footer-source__label,
-.site-footer a:focus-visible .site-footer-source__label {
+.site-footer a:hover .site-footer-link__label,
+.site-footer a:focus-visible .site-footer-link__label {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;

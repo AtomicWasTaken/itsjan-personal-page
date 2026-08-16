@@ -40,9 +40,14 @@ const pathname = requestUrl.pathname.replace(/\/$/, "") || "/";
 const isPortfolioPage =
   pathname === "/" || pathname === "/de" || pathname === "/en";
 const url = new URL(pathname, SITE_ORIGIN).href;
-const markdownUrl = isPortfolioPage
-  ? `${SITE_ORIGIN}${pathname === "/" ? "/index.md" : `${pathname}.md`}`
-  : undefined;
+const markdownPath = isPortfolioPage
+  ? pathname === "/"
+    ? `/${locale}.md`
+    : `${pathname}.md`
+  : pathname === "/privacy"
+    ? `/privacy.${locale}.md`
+    : undefined;
+const markdownUrl = markdownPath ? `${SITE_ORIGIN}${markdownPath}` : undefined;
 
 Astro.response.headers.set("Vary", "Accept-Language");
 if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
