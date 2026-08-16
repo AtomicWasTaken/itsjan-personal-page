@@ -294,14 +294,6 @@ main p { text-wrap: pretty; }
   top: auto;
   bottom: 0;
   transform: rotate(180deg);
-  transition: opacity 160ms var(--ease-smooth-out);
-}
-.bottom-edge-blur.is-at-page-end { opacity: 0; }
-.bottom-edge-sentinel {
-  display: block;
-  width: 1px;
-  height: 1px;
-  pointer-events: none;
 }
 .tech-stickers {
   position: absolute;
@@ -1450,7 +1442,7 @@ html[data-theme="dark"] .ventry-file-row b {
   width: 100%;
   max-width: 42rem;
   margin: 0 auto;
-  padding: 144px 24px 48px;
+  padding: 144px 24px;
   color: var(--text-secondary);
   font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 15px;
@@ -1518,7 +1510,7 @@ html[data-theme="dark"] .ventry-file-row b {
 .privacy-back:hover { color: var(--text) !important; text-decoration-color: currentColor !important; }
 .privacy-updated { margin-top: 14px !important; color: var(--text-tertiary); font-size: .875rem; }
 @media (max-width: 520px) {
-  .privacy-main { padding: 124px 20px 48px; }
+  .privacy-main { padding: 124px 20px; }
 }
 .social-tooltip strong {
   color: var(--tt-fg);
