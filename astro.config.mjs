@@ -1,19 +1,19 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
-import cloudflare from '@astrojs/cloudflare';
-import tailwindcss from '@tailwindcss/vite';
-import sitemap from '@astrojs/sitemap';
+import { defineConfig } from "astro/config";
+import cloudflare from "@astrojs/cloudflare";
+import tailwindcss from "@tailwindcss/vite";
+import sitemap from "@astrojs/sitemap";
 
 // https://docs.astro.build/en/guides/deploy/cloudflare/
 export default defineConfig({
-  site: 'https://itsjan.dev',
-  output: 'server',
+  site: "https://itsjan.dev",
+  output: "server",
   adapter: cloudflare(),
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
-      exclude: ['@astrojs/cloudflare/entrypoints/server'],
+      exclude: ["@astrojs/cloudflare/entrypoints/server"],
     },
   },
 });

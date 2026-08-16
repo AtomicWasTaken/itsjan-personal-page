@@ -3,9 +3,28 @@
 
 export const BIRTHDATE_ISO = "2007-05-30T00:00:00+02:00";
 
-const YEAR_MS = 365.25 * 24 * 60 * 60 * 1000;
+const [birthYear, birthMonth, birthDay] = BIRTHDATE_ISO.slice(0, 10)
+  .split("-")
+  .map(Number);
+const localDateFormatter = new Intl.DateTimeFormat("en-CA", {
+  day: "numeric",
+  month: "numeric",
+  timeZone: "Europe/Berlin",
+  year: "numeric",
+});
 
-export const ageNow = (): number =>
-  (Date.now() - new Date(BIRTHDATE_ISO).getTime()) / YEAR_MS;
+export const ageYears = (now = new Date()): number => {
+  const parts = Object.fromEntries(
+    localDateFormatter
+      .formatToParts(now)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, Number(part.value)]),
+  );
+  let age = parts.year - birthYear;
+  const beforeBirthday =
+    parts.month < birthMonth ||
+    (parts.month === birthMonth && parts.day < birthDay);
 
-export const ageYears = (): number => Math.floor(ageNow());
+  if (beforeBirthday) age -= 1;
+  return age;
+};

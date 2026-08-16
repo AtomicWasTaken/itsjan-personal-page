@@ -14,9 +14,10 @@ yarn-error.log*
 pnpm-debug.log*
 
 # environment variables
-.env
-.env.production
-.dev.vars
+.env*
+!.env.example
+.dev.vars*
+!.dev.vars.example
 
 # cloudflare wrangler cache
 .wrangler/
@@ -34,6 +35,11 @@ pnpm-lock.yaml
 
 # macOS-specific files
 .DS_Store
+
+# local quality-tool output
+coverage/
+.eslintcache
+.impeccable/
 
 # jetbrains setting folder
 .idea/

@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import EdgeBlur from "../components/EdgeBlur.astro";
+import HomeRuntime from "../components/HomeRuntime.astro";
 import InteractiveButton from "../components/InteractiveButton.astro";
 import InteractiveLink from "../components/InteractiveLink.astro";
 import SocialLinks from "../components/SocialLinks.astro";
@@ -18,9 +19,19 @@ import { ageYears } from "../lib/jan";
 import {
   activityRevealOrder,
   buildActivity,
+  fetchGithubContributions,
+} from "../lib/github";
+import {
+  CONTACT_EMAIL,
+  CONTACT_MAILTO,
+  FINNY_URL,
+  PERSON_NAME,
+  SOURCE_REPOSITORY_URL,
+  VENTRY_URL,
+} from "../lib/site";
+import {
   createStickerLayout,
   createTechnologyCollections,
-  fetchGithubContributions,
   toStickerStyle,
 } from "../lib/portfolio";
 
@@ -31,838 +42,782 @@ const githubDays = await fetchGithubContributions();
 const technologies = createTechnologyCollections(copy.tech.items);
 const activity = buildActivity(githubDays, locale, copy.activity);
 const stickerLayout = createStickerLayout(copy.tech.items.length);
-const linkedinUrl = locale === "en"
-  ? "https://www.linkedin.com/in/janmarlonleibl/?locale=en-US"
-  : "https://www.linkedin.com/in/janmarlonleibl/";
+const linkedinUrl =
+  locale === "en"
+    ? "https://www.linkedin.com/in/janmarlonleibl/?locale=en-US"
+    : "https://www.linkedin.com/in/janmarlonleibl/";
 const currentYear = new Date().getFullYear();
 ---
 
 <Layout>
-<div class="portfolio-shell">
-  <EdgeBlur />
-  <EdgeBlur edge="bottom" />
-  <aside class="tech-stickers" aria-label={copy.tech.aria}>
-    <div class="tech-sticker-side tech-sticker-side--left">
-      {copy.tech.items.map((technology, index) => {
-        const placement = stickerLayout[index];
-        return placement.side === "left" && (
-          <InteractiveLink
-            href={technology.href}
-            target="_blank"
-            rel="noreferrer"
-            class={`tech-sticker tech-sticker--left tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
-            style={toStickerStyle(placement)}
-            aria-label={technology.name}
-          >
-            <img src={technology.logo.src} alt="" width="28" height="28" decoding="async" draggable="false" />
-          </InteractiveLink>
-        );
-      })}
-    </div>
-    <div class="tech-sticker-side tech-sticker-side--right">
-      {copy.tech.items.map((technology, index) => {
-        const placement = stickerLayout[index];
-        return placement.side === "right" && (
-          <InteractiveLink
-            href={technology.href}
-            target="_blank"
-            rel="noreferrer"
-            class={`tech-sticker tech-sticker--right tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
-            style={toStickerStyle(placement)}
-            aria-label={technology.name}
-          >
-            <img src={technology.logo.src} alt="" width="28" height="28" decoding="async" draggable="false" />
-          </InteractiveLink>
-        );
-      })}
-    </div>
-  </aside>
-  <div id="avatar-modal" class="t-modal avatar-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label={copy.avatar.expand} inert>
-    <InteractiveButton class="avatar-modal-backdrop" data-avatar-close feedback={false} aria-label={copy.avatar.collapse}></InteractiveButton>
-    <div class="avatar-modal-content">
-      <InteractiveButton variant="icon" class="avatar-modal-close" data-avatar-close cuelumeToggle="release" cuelumeRelease={false} aria-label={copy.avatar.collapse}>
-        <span aria-hidden="true">×</span>
-      </InteractiveButton>
-      <Image src={profile320} alt="Jan-Marlon Leibl" width={320} height={320} class="avatar-modal-image" />
-    </div>
-  </div>
-<main class="portfolio-main mx-auto min-h-screen w-full max-w-2xl space-y-12 px-6 py-36 transition-[filter] max-[520px]:px-5 md:space-y-14">
-  <section>
-    <div class="profile-row mb-5 flex items-start justify-between">
-      <InteractiveButton
-        id="profile-avatar"
-        class="profile-avatar"
-        cuelumeHover="whisper"
-        cuelumeRelease={false}
-        aria-label={copy.avatar.expand}
-        aria-haspopup="dialog"
-        aria-controls="avatar-modal"
-      >
-        <Image src={profile160} alt="Jan-Marlon Leibl" width={160} height={160} class="profile-image" priority />
-      </InteractiveButton>
-      <InteractiveButton
-        id="theme-toggle"
-        variant="icon"
-        class="theme-toggle"
-        cuelumeToggle="toggle"
-        cuelumeRelease={false}
-        aria-label={copy.theme.label}
-        aria-pressed="false"
-        data-label-dark={copy.theme.toDark}
-        data-label-light={copy.theme.toLight}
-      >
-        <span class="theme-icon theme-icon--sun" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2.5v2M12 19.5v2M4.5 12h-2M21.5 12h-2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"></path></svg>
-        </span>
-        <span class="theme-icon theme-icon--moon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"></path></svg>
-        </span>
-      </InteractiveButton>
-    </div>
-    <h1 class="text-2xl font-medium tracking-tight">Jan-Marlon Leibl</h1>
-    <p class="profile-subtitle mt-1 text-sm leading-5 text-[var(--text-tertiary)]" data-text-states={JSON.stringify(copy.subtitleStates(currentAge))}>
-      <span class="t-text-swap t-shimmer" data-text={copy.subtitle(currentAge)}>{copy.subtitle(currentAge)}</span>
-    </p>
-    <p class="mt-4 max-w-lg text-[17px] font-normal leading-7 text-[var(--text-secondary)]">
-      {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{copy.intro.afterBremen}<span class="keyword">{copy.intro.apprenticeship}</span>{copy.intro.afterApprenticeship}<span class="keyword">{copy.intro.finny}</span>{copy.intro.afterFinny}
-    </p>
-    <div class="mt-5 flex flex-wrap gap-3">
-      <InteractiveLink variant="primary" class="hero-contact-link" href="mailto:hi@itsjan.dev">{locale === "de" ? "E-Mail schreiben" : "Email me"}</InteractiveLink>
-      <InteractiveLink variant="text" class="hero-project-link" href="#projects"><span>{locale === "de" ? "Zu den Projekten" : "Jump to projects"}</span><ArrowIcon /></InteractiveLink>
-    </div>
-  </section>
-  <WaveDivider />
-
-  <section>
-    <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.experience.heading}</h2>
-    <ol class="experience-list mt-6 mb-0 flex list-none flex-col gap-9 p-0 max-[520px]:gap-[34px]">
-      {copy.experience.items.map((item) => (
-        <li class="experience-item min-w-0">
-          <p class="experience-period mb-[3px] text-[13px] leading-5 text-[var(--text-tertiary)]">{item.period}<span aria-hidden="true">, </span>{item.location}</p>
-          <h3 class="m-0 flex min-w-0 flex-wrap items-center gap-1 text-base leading-[22px] font-semibold text-[var(--text)]">
-            {item.title}
-            <span class:list={[
-              "experience-organization inline-flex items-center gap-0.5",
-              ["Finny", "Ventry", "team neusta"].includes(item.organization) && "experience-organization--with-logo",
-            ]}>
-              {item.organization === "Finny" && (
-                <Image src={finnyFavicon} alt="" width="20" height="20" class="experience-organization-mark" />
-              )}
-              {item.organization.toLowerCase() === "team neusta" && (
-                <span
-                  class="experience-organization-mark experience-organization-logo"
-                  style={`--experience-organization-logo: url(${teamNeustaLogo.src})`}
-                  aria-hidden="true"
-                ></span>
-              )}
-              {item.organization === "Ventry" && (
-                <span
-                  class="experience-organization-mark experience-organization-logo"
-                  style={`--experience-organization-logo: url(${ventryLogo.src})`}
-                  aria-hidden="true"
-                ></span>
-              )}
-              {item.organization}
-            </span>
-          </h3>
-          {item.secondary && (
-            <div class="experience-secondary relative mt-[5px] pl-9 text-[var(--text-tertiary)]">
-              <div class="experience-role-branch border-border absolute left-2 h-7 w-4.5 rounded-bl-lg border-b-2 border-l-2" aria-hidden="true"></div>
-              <p class="m-0 block text-[11px] leading-[15px]">{item.secondary.period}</p>
-              <strong class="m-0 block text-[13px] leading-[18px] font-medium text-[var(--text-secondary)]">{item.secondary.title}</strong>
-            </div>
-          )}
-          <ul class="experience-bullets mt-[18px] mb-0 flex list-circle flex-col gap-[7px] pl-[18px] text-[15px] leading-[22px] text-[var(--text-secondary)] max-[520px]:text-sm max-[520px]:leading-[21px]">
-            {item.bullets.map((bullet) => <li>{bullet}</li>)}
-          </ul>
-          <ul class="experience-technologies mt-4 mb-0 flex list-none flex-wrap gap-2 p-0" aria-label={copy.tech.aria}>
-            {technologies.find(item.technologies).map((technology) => {
-              const Logo = technology.logo;
-              return <li>
-                <span
-                  class={technology.darkModeLight ? "experience-technology experience-technology--dark-logo" : "experience-technology"}
-                >
-                  <Logo width="16" height="16" aria-hidden="true" focusable="false" />
-                  <span>{technology.name}</span>
-                </span>
-              </li>;
-            })}
-          </ul>
-        </li>
-      ))}
-    </ol>
-  </section>
-  <WaveDivider />
-
-  <section id="projects">
-    <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.projects}</h2>
-    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <article class="project-preview w-full overflow-visible">
-        <div class="project-preview-surface">
-          <div class="project-preview-image project-preview-image--finny" role="img" aria-label={copy.finny.previewAria}>
-            <span class="preview-brand"><Image src={finnyFavicon} alt="" width={28} height={28} />Finny</span>
-            <span class="preview-receipt preview-receipt--one" aria-hidden="true"><b>{copy.finny.receiptTitle}</b><i>{copy.finny.receiptVendor}</i><i>{copy.finny.receiptDetail}</i></span>
-            <span class="preview-receipt preview-receipt--two" aria-hidden="true"><b>{copy.finny.warrantyTitle}</b><i>{copy.finny.warrantyDetail}</i><small>{copy.finny.warrantyUntil}</small></span>
-          </div>
-          <div class="project-preview-copy p-4">
-            <p class="text-[15px] font-normal leading-6 text-[var(--text-secondary)]">
-              {copy.finny.description.lead}<span class="keyword">{copy.finny.description.first}</span>{copy.finny.description.middle}<span class="keyword">{copy.finny.description.second}</span>{copy.finny.description.join}<span class="keyword">{copy.finny.description.third}</span>{copy.finny.description.end}
-            </p>
-            <div class="project-preview-action"><InteractiveLink variant="primary" href="https://fnny.app" target="_blank" rel="noreferrer" class="project-preview-cta">{copy.finny.cta.label}</InteractiveLink></div>
-          </div>
-        </div>
-      </article>
-
-      <article class="project-preview w-full overflow-visible">
-        <div class="project-preview-surface">
-          <div class="project-preview-image project-preview-image--ventry" role="img" aria-label={copy.ventry.previewAria}>
-            <span class="preview-brand preview-brand--ventry">
-              <Image class="ventry-mark" src={ventryLogo} alt="" width={28} height={28} loading="lazy" />
-              ventry.host
-            </span>
-            <span class="ventry-file-panel" aria-hidden="true">
-              <span class="ventry-file-panel-head"><b>{copy.ventry.panelTitle}</b><i>{copy.ventry.panelCount}</i></span>
-              <span class="ventry-file-row">
-                <span class="ventry-file-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4.5h8l4 4v11H6v-15Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /><path d="M14 4.5v4h4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg></span>
-                <span><b>portrait.jpg</b><small>{copy.ventry.fileStatus}</small></span>
-                <i>2.4 MB</i>
-              </span>
-              <span class="ventry-file-row ventry-file-row--muted">
-                <span class="ventry-file-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M8 12h8m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
-                <span><b>{copy.ventry.shareLabel}</b><small>{copy.ventry.shareStatus}</small></span>
-                <i>{copy.ventry.shareAction}</i>
-              </span>
-            </span>
-          </div>
-          <div class="project-preview-copy p-4">
-            <p class="text-[15px] font-normal leading-6 text-[var(--text-secondary)]">
-              {copy.ventry.description.lead}<span class="keyword">{copy.ventry.description.keyword}</span>{copy.ventry.description.end}
-            </p>
-            <div class="project-preview-action"><InteractiveLink variant="primary" href="https://ventry.host" target="_blank" rel="noreferrer" class="project-preview-cta">{copy.ventry.cta.label}</InteractiveLink></div>
-          </div>
-        </div>
-      </article>
-
-    </div>
-  </section>
-  <WaveDivider />
-
-  <section class="mobile-tech-section">
-    <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.tech.mobileHeading}</h2>
-    <div id="mobile-tech-accordion" class="t-acc mobile-tech-accordion" data-open="false">
-      <ul id="mobile-tech-list" class="mobile-tech-grid mt-6 mb-0 grid list-none grid-cols-4 gap-2 p-0" aria-label={copy.tech.aria}>
-        {technologies.featured.map((technology) => {
-          const Logo = technology.logo;
-          return <li>
-            <InteractiveLink
-              class={`mobile-tech-link flex min-h-[76px] flex-col items-center justify-center gap-2 rounded-[14px] text-[11px] leading-[14px] text-[var(--text-tertiary)]${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
-              href={technology.href}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={copy.tech.visitLabel(technology.name)}
-            >
-              <Logo width="28" height="28" aria-hidden="true" focusable="false" />
-              <span>{technology.name}</span>
-            </InteractiveLink>
-          </li>;
-        })}
-      </ul>
-      <div id="mobile-tech-additional" class="t-acc-panel">
-        <div class="t-acc-panel-inner">
-          <ul class="mobile-tech-grid mb-0 grid list-none grid-cols-4 gap-2 p-0" aria-label={copy.tech.aria}>
-            {technologies.additional.map((technology) => {
-              const Logo = technology.logo;
-              return <li>
+  <div class="portfolio-shell">
+    <EdgeBlur />
+    <EdgeBlur edge="bottom" />
+    <aside class="tech-stickers" aria-label={copy.tech.aria}>
+      <div class="tech-sticker-side tech-sticker-side--left">
+        {
+          copy.tech.items.map((technology, index) => {
+            const placement = stickerLayout[index];
+            return (
+              placement.side === "left" && (
                 <InteractiveLink
-                  class={`mobile-tech-link flex min-h-[76px] flex-col items-center justify-center gap-2 rounded-[14px] text-[11px] leading-[14px] text-[var(--text-tertiary)]${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
                   href={technology.href}
                   target="_blank"
                   rel="noreferrer"
-                  aria-label={copy.tech.visitLabel(technology.name)}
+                  class={`tech-sticker tech-sticker--left tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
+                  style={toStickerStyle(placement)}
+                  aria-label={technology.name}
                 >
-                  <Logo width="28" height="28" aria-hidden="true" focusable="false" />
-                  <span>{technology.name}</span>
+                  <img
+                    src={technology.logo.src}
+                    alt=""
+                    width="28"
+                    height="28"
+                    decoding="async"
+                    draggable="false"
+                  />
                 </InteractiveLink>
-              </li>;
-            })}
+              )
+            );
+          })
+        }
+      </div>
+      <div class="tech-sticker-side tech-sticker-side--right">
+        {
+          copy.tech.items.map((technology, index) => {
+            const placement = stickerLayout[index];
+            return (
+              placement.side === "right" && (
+                <InteractiveLink
+                  href={technology.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  class={`tech-sticker tech-sticker--right tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
+                  style={toStickerStyle(placement)}
+                  aria-label={technology.name}
+                >
+                  <img
+                    src={technology.logo.src}
+                    alt=""
+                    width="28"
+                    height="28"
+                    decoding="async"
+                    draggable="false"
+                  />
+                </InteractiveLink>
+              )
+            );
+          })
+        }
+      </div>
+    </aside>
+    <div
+      id="avatar-modal"
+      class="t-modal avatar-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-hidden="true"
+      aria-label={copy.avatar.expand}
+      inert
+    >
+      <InteractiveButton
+        class="avatar-modal-backdrop"
+        data-avatar-close
+        feedback={false}
+        tabindex="-1"
+        aria-label={copy.avatar.collapse}
+      />
+      <div class="avatar-modal-content">
+        <InteractiveButton
+          variant="icon"
+          class="avatar-modal-close"
+          data-avatar-close
+          cuelumeToggle="release"
+          cuelumeRelease={false}
+          aria-label={copy.avatar.collapse}
+        >
+          <span aria-hidden="true">×</span>
+        </InteractiveButton>
+        <Image
+          src={profile320}
+          alt={PERSON_NAME}
+          width={320}
+          height={320}
+          class="avatar-modal-image"
+        />
+      </div>
+    </div>
+    <main
+      class="portfolio-main mx-auto min-h-screen w-full max-w-2xl space-y-12 px-6 py-36 transition-[filter] max-[520px]:px-5 md:space-y-14"
+    >
+      <section>
+        <div class="profile-row mb-5 flex items-start justify-between">
+          <InteractiveButton
+            id="profile-avatar"
+            class="profile-avatar"
+            cuelumeHover="whisper"
+            cuelumeRelease={false}
+            aria-label={copy.avatar.expand}
+            aria-haspopup="dialog"
+            aria-controls="avatar-modal"
+          >
+            <Image
+              src={profile160}
+              alt={PERSON_NAME}
+              width={160}
+              height={160}
+              class="profile-image"
+              priority
+            />
+          </InteractiveButton>
+          <InteractiveButton
+            id="theme-toggle"
+            variant="icon"
+            class="theme-toggle"
+            cuelumeToggle="toggle"
+            cuelumeRelease={false}
+            aria-label={copy.theme.label}
+            aria-pressed="false"
+            data-label-dark={copy.theme.toDark}
+            data-label-light={copy.theme.toLight}
+          >
+            <span class="theme-icon theme-icon--sun" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"
+                ><circle cx="12" cy="12" r="3.5"></circle><path
+                  d="M12 2.5v2M12 19.5v2M4.5 12h-2M21.5 12h-2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"
+                ></path></svg
+              >
+            </span>
+            <span class="theme-icon theme-icon--moon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"
+                ><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"
+                ></path></svg
+              >
+            </span>
+          </InteractiveButton>
+        </div>
+        <h1 class="text-2xl font-medium tracking-tight">{PERSON_NAME}</h1>
+        <p
+          class="profile-subtitle mt-1 text-sm leading-5 text-[var(--text-tertiary)]"
+          data-text-states={JSON.stringify(copy.subtitleStates(currentAge))}
+        >
+          <span
+            class="t-text-swap t-shimmer"
+            data-text={copy.subtitle(currentAge)}
+            >{copy.subtitle(currentAge)}</span
+          >
+        </p>
+        <p
+          class="mt-4 max-w-lg text-[17px] leading-7 font-normal text-[var(--text-secondary)]"
+        >
+          {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{
+            copy.intro.afterBremen
+          }<span class="keyword">{copy.intro.apprenticeship}</span>{
+            copy.intro.afterApprenticeship
+          }<span class="keyword">{copy.intro.finny}</span>{
+            copy.intro.afterFinny
+          }
+        </p>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <InteractiveLink
+            variant="primary"
+            class="hero-contact-link"
+            href={CONTACT_MAILTO}
+            data-analytics-event="contact_button_clicked"
+            >{
+              locale === "de" ? "E-Mail schreiben" : "Email me"
+            }</InteractiveLink
+          >
+          <InteractiveLink
+            variant="text"
+            class="hero-project-link"
+            href="#projects"
+            data-analytics-event="projects_section_navigated"
+            ><span
+              >{locale === "de" ? "Zu den Projekten" : "Jump to projects"}</span
+            ><ArrowIcon /></InteractiveLink
+          >
+        </div>
+      </section>
+      <WaveDivider />
+
+      <section>
+        <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
+          {copy.experience.heading}
+        </h2>
+        <ol
+          class="experience-list mt-6 mb-0 flex list-none flex-col gap-9 p-0 max-[520px]:gap-[34px]"
+        >
+          {
+            copy.experience.items.map((item) => (
+              <li class="experience-item min-w-0">
+                <p class="experience-period mb-[3px] text-[13px] leading-5 text-[var(--text-tertiary)]">
+                  {item.period}
+                  <span aria-hidden="true">, </span>
+                  {item.location}
+                </p>
+                <h3 class="m-0 flex min-w-0 flex-wrap items-center gap-1 text-base leading-[22px] font-semibold text-[var(--text)]">
+                  {item.title}
+                  <span
+                    class:list={[
+                      "experience-organization inline-flex items-center gap-0.5",
+                      ["Finny", "Ventry", "team neusta"].includes(
+                        item.organization,
+                      ) && "experience-organization--with-logo",
+                    ]}
+                  >
+                    {item.organization === "Finny" && (
+                      <Image
+                        src={finnyFavicon}
+                        alt=""
+                        width="20"
+                        height="20"
+                        class="experience-organization-mark"
+                      />
+                    )}
+                    {item.organization.toLowerCase() === "team neusta" && (
+                      <span
+                        class="experience-organization-mark experience-organization-logo"
+                        style={`--experience-organization-logo: url(${teamNeustaLogo.src})`}
+                        aria-hidden="true"
+                      />
+                    )}
+                    {item.organization === "Ventry" && (
+                      <span
+                        class="experience-organization-mark experience-organization-logo"
+                        style={`--experience-organization-logo: url(${ventryLogo.src})`}
+                        aria-hidden="true"
+                      />
+                    )}
+                    {item.organization}
+                  </span>
+                </h3>
+                {item.secondary && (
+                  <div class="experience-secondary relative mt-[5px] pl-9 text-[var(--text-tertiary)]">
+                    <div
+                      class="experience-role-branch border-border absolute left-2 h-7 w-4.5 rounded-bl-lg border-b-2 border-l-2"
+                      aria-hidden="true"
+                    />
+                    <p class="m-0 block text-[11px] leading-[15px]">
+                      {item.secondary.period}
+                    </p>
+                    <strong class="m-0 block text-[13px] leading-[18px] font-medium text-[var(--text-secondary)]">
+                      {item.secondary.title}
+                    </strong>
+                  </div>
+                )}
+                <ul class="experience-bullets list-circle mt-[18px] mb-0 flex flex-col gap-[7px] pl-[18px] text-[15px] leading-[22px] text-[var(--text-secondary)] max-[520px]:text-sm max-[520px]:leading-[21px]">
+                  {item.bullets.map((bullet) => (
+                    <li>{bullet}</li>
+                  ))}
+                </ul>
+                <ul
+                  class="experience-technologies mt-4 mb-0 flex list-none flex-wrap gap-2 p-0"
+                  aria-label={copy.tech.aria}
+                >
+                  {technologies.find(item.technologies).map((technology) => {
+                    const Logo = technology.logo;
+                    return (
+                      <li>
+                        <span
+                          class={
+                            technology.darkModeLight
+                              ? "experience-technology experience-technology--dark-logo"
+                              : "experience-technology"
+                          }
+                        >
+                          <Logo
+                            width="16"
+                            height="16"
+                            aria-hidden="true"
+                            focusable="false"
+                          />
+                          <span>{technology.name}</span>
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+      <WaveDivider />
+
+      <section id="projects">
+        <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
+          {copy.projects}
+        </h2>
+        <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <article class="project-preview w-full overflow-visible">
+            <div class="project-preview-surface">
+              <div
+                class="project-preview-image project-preview-image--finny"
+                role="img"
+                aria-label={copy.finny.previewAria}
+              >
+                <span class="preview-brand"
+                  ><Image
+                    src={finnyFavicon}
+                    alt=""
+                    width={28}
+                    height={28}
+                  />Finny</span
+                >
+                <span
+                  class="preview-receipt preview-receipt--one"
+                  aria-hidden="true"
+                  ><b>{copy.finny.receiptTitle}</b><i
+                    >{copy.finny.receiptVendor}</i
+                  ><i>{copy.finny.receiptDetail}</i></span
+                >
+                <span
+                  class="preview-receipt preview-receipt--two"
+                  aria-hidden="true"
+                  ><b>{copy.finny.warrantyTitle}</b><i
+                    >{copy.finny.warrantyDetail}</i
+                  ><small>{copy.finny.warrantyUntil}</small></span
+                >
+              </div>
+              <div class="project-preview-copy p-4">
+                <p
+                  class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"
+                >
+                  {copy.finny.description.lead}<span class="keyword"
+                    >{copy.finny.description.first}</span
+                  >{copy.finny.description.middle}<span class="keyword"
+                    >{copy.finny.description.second}</span
+                  >{copy.finny.description.join}<span class="keyword"
+                    >{copy.finny.description.third}</span
+                  >{copy.finny.description.end}
+                </p>
+                <div class="project-preview-action">
+                  <InteractiveLink
+                    variant="primary"
+                    href={FINNY_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    class="project-preview-cta"
+                    data-analytics-event="project_cta_clicked"
+                    data-analytics-project="finny"
+                    >{copy.finny.cta.label}</InteractiveLink
+                  >
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-preview w-full overflow-visible">
+            <div class="project-preview-surface">
+              <div
+                class="project-preview-image project-preview-image--ventry"
+                role="img"
+                aria-label={copy.ventry.previewAria}
+              >
+                <span class="preview-brand preview-brand--ventry">
+                  <Image
+                    class="ventry-mark"
+                    src={ventryLogo}
+                    alt=""
+                    width={28}
+                    height={28}
+                    loading="lazy"
+                  />
+                  ventry.host
+                </span>
+                <span class="ventry-file-panel" aria-hidden="true">
+                  <span class="ventry-file-panel-head"
+                    ><b>{copy.ventry.panelTitle}</b><i
+                      >{copy.ventry.panelCount}</i
+                    ></span
+                  >
+                  <span class="ventry-file-row">
+                    <span class="ventry-file-icon"
+                      ><svg viewBox="0 0 24 24" fill="none"
+                        ><path
+                          d="M6 4.5h8l4 4v11H6v-15Z"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linejoin="round"></path><path
+                          d="M14 4.5v4h4"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linejoin="round"></path></svg
+                      ></span
+                    >
+                    <span
+                      ><b>portrait.jpg</b><small>{copy.ventry.fileStatus}</small
+                      ></span
+                    >
+                    <i>2.4 MB</i>
+                  </span>
+                  <span class="ventry-file-row ventry-file-row--muted">
+                    <span class="ventry-file-icon"
+                      ><svg viewBox="0 0 24 24" fill="none"
+                        ><path
+                          d="M8 12h8m-4-4 4 4-4 4"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"></path></svg
+                      ></span
+                    >
+                    <span
+                      ><b>{copy.ventry.shareLabel}</b><small
+                        >{copy.ventry.shareStatus}</small
+                      ></span
+                    >
+                    <i>{copy.ventry.shareAction}</i>
+                  </span>
+                </span>
+              </div>
+              <div class="project-preview-copy p-4">
+                <p
+                  class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"
+                >
+                  {copy.ventry.description.lead}<span class="keyword"
+                    >{copy.ventry.description.keyword}</span
+                  >{copy.ventry.description.end}
+                </p>
+                <div class="project-preview-action">
+                  <InteractiveLink
+                    variant="primary"
+                    href={VENTRY_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    class="project-preview-cta"
+                    data-analytics-event="project_cta_clicked"
+                    data-analytics-project="ventry"
+                    >{copy.ventry.cta.label}</InteractiveLink
+                  >
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+      <WaveDivider />
+
+      <section class="mobile-tech-section">
+        <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
+          {copy.tech.mobileHeading}
+        </h2>
+        <div
+          id="mobile-tech-accordion"
+          class="t-acc mobile-tech-accordion"
+          data-open="false"
+        >
+          <ul
+            id="mobile-tech-list"
+            class="mobile-tech-grid mt-6 mb-0 grid list-none grid-cols-4 gap-2 p-0"
+            aria-label={copy.tech.aria}
+          >
+            {
+              technologies.featured.map((technology) => {
+                const Logo = technology.logo;
+                return (
+                  <li>
+                    <InteractiveLink
+                      class={`mobile-tech-link flex min-h-[76px] flex-col items-center justify-center gap-2 rounded-[14px] text-[11px] leading-[14px] text-[var(--text-tertiary)]${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
+                      href={technology.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={copy.tech.visitLabel(technology.name)}
+                    >
+                      <Logo
+                        width="28"
+                        height="28"
+                        aria-hidden="true"
+                        focusable="false"
+                      />
+                      <span>{technology.name}</span>
+                    </InteractiveLink>
+                  </li>
+                );
+              })
+            }
           </ul>
+          <div id="mobile-tech-additional" class="t-acc-panel">
+            <div class="t-acc-panel-inner">
+              <ul
+                class="mobile-tech-grid mb-0 grid list-none grid-cols-4 gap-2 p-0"
+                aria-label={copy.tech.aria}
+              >
+                {
+                  technologies.additional.map((technology) => {
+                    const Logo = technology.logo;
+                    return (
+                      <li>
+                        <InteractiveLink
+                          class={`mobile-tech-link flex min-h-[76px] flex-col items-center justify-center gap-2 rounded-[14px] text-[11px] leading-[14px] text-[var(--text-tertiary)]${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
+                          href={technology.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={copy.tech.visitLabel(technology.name)}
+                        >
+                          <Logo
+                            width="28"
+                            height="28"
+                            aria-hidden="true"
+                            focusable="false"
+                          />
+                          <span>{technology.name}</span>
+                        </InteractiveLink>
+                      </li>
+                    );
+                  })
+                }
+              </ul>
+            </div>
+          </div>
+          <InteractiveButton
+            id="mobile-tech-toggle"
+            variant="primary"
+            class="t-acc-head mobile-tech-toggle"
+            aria-controls="mobile-tech-additional"
+            aria-expanded="false"
+            data-label-more={copy.tech.mobileViewMore}
+            data-label-less={copy.tech.mobileViewLess}
+          >
+            <span class="mobile-tech-toggle-label"
+              >{copy.tech.mobileViewMore}</span
+            >
+            <span class="t-acc-chevron" aria-hidden="true"
+              ><svg viewBox="0 0 16 16" fill="none"
+                ><path
+                  d="M4 6.5L8 10.5L12 6.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></path></svg
+              ></span
+            >
+          </InteractiveButton>
         </div>
-      </div>
-      <InteractiveButton
-        id="mobile-tech-toggle"
-        variant="primary"
-        class="t-acc-head mobile-tech-toggle"
-        aria-controls="mobile-tech-additional"
-        aria-expanded="false"
-        data-label-more={copy.tech.mobileViewMore}
-        data-label-less={copy.tech.mobileViewLess}
-      >
-        <span class="mobile-tech-toggle-label">{copy.tech.mobileViewMore}</span>
-        <span class="t-acc-chevron" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><path d="M4 6.5L8 10.5L12 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
-      </InteractiveButton>
-    </div>
-  </section>
-  <WaveDivider class="wave--mobile" />
+      </section>
+      <WaveDivider class="wave--mobile" />
 
-  <section>
-    <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.activity.heading}</h2>
-    <div class="mt-6">
-      <div class="activity-scroll activity-scroll-desktop" role="group" aria-label={copy.activity.desktopAria}>
-        <div class="t-skel activity-reveal" data-state="loading">
-          <div class="t-skel-skeleton is-pulsing activity-grid" aria-hidden="true">
-            {activity.map((_, index) => <span class="activity-day" data-level="0" style={`--activity-order:${activityRevealOrder(index)}`}></span>)}
+      <section>
+        <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
+          {copy.activity.heading}
+        </h2>
+        <div class="mt-6">
+          <div
+            class="activity-scroll activity-scroll-desktop"
+            role="group"
+            aria-label={copy.activity.desktopAria}
+          >
+            <div class="t-skel activity-reveal" data-state="loading">
+              <div
+                class="t-skel-skeleton is-pulsing activity-grid"
+                aria-hidden="true"
+              >
+                {
+                  activity.map((_, index) => (
+                    <span
+                      class="activity-day"
+                      data-level="0"
+                      style={`--activity-order:${activityRevealOrder(index)}`}
+                    />
+                  ))
+                }
+              </div>
+              <div class="t-skel-content activity-grid">
+                {
+                  activity.map((day, index) =>
+                    day.count > 0 ? (
+                      <span class="t-tt-wrap activity-tooltip-wrap">
+                        <span
+                          class="activity-day t-tt-trigger"
+                          data-cuelume-hover="tick"
+                          data-level={day.level}
+                          data-project={day.project}
+                          role="img"
+                          aria-label={day.label}
+                          aria-describedby={`activity-tooltip-desktop-${index}`}
+                          tabindex="0"
+                          style={`--activity-order:${activityRevealOrder(index)}`}
+                        />
+                        <span
+                          id={`activity-tooltip-desktop-${index}`}
+                          class="t-tt activity-tooltip"
+                          role="tooltip"
+                        >
+                          {day.label}
+                        </span>
+                      </span>
+                    ) : (
+                      <span
+                        class="activity-day"
+                        data-level={day.level}
+                        data-project={day.project}
+                        role="img"
+                        aria-label={day.label}
+                        style={`--activity-order:${activityRevealOrder(index)}`}
+                      />
+                    ),
+                  )
+                }
+              </div>
+            </div>
           </div>
-          <div class="t-skel-content activity-grid">
-            {activity.map((day, index) => (
-              day.count > 0 ? (
-                <span class="t-tt-wrap activity-tooltip-wrap">
-                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} aria-describedby={`activity-tooltip-desktop-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index)}`}></span>
-                  <span id={`activity-tooltip-desktop-${index}`} class="t-tt activity-tooltip" role="tooltip">{day.label}</span>
-                </span>
-              ) : (
-                <span class="activity-day" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} style={`--activity-order:${activityRevealOrder(index)}`}></span>
-              )
-            ))}
+          <div
+            class="activity-scroll activity-scroll-mobile"
+            role="group"
+            aria-label={copy.activity.mobileAria}
+          >
+            <div
+              class="t-skel activity-reveal activity-reveal-mobile"
+              data-state="loading"
+            >
+              <div
+                class="t-skel-skeleton is-pulsing activity-grid activity-grid-mobile"
+                aria-hidden="true"
+              >
+                {
+                  activity.map((_, index) => (
+                    <span
+                      class="activity-day"
+                      data-level="0"
+                      style={`--activity-order:${activityRevealOrder(index)}`}
+                    />
+                  ))
+                }
+              </div>
+              <div class="t-skel-content activity-grid activity-grid-mobile">
+                {
+                  activity.map((day, index) =>
+                    day.count > 0 ? (
+                      <span class="t-tt-wrap activity-tooltip-wrap">
+                        <span
+                          class="activity-day t-tt-trigger"
+                          data-cuelume-hover="tick"
+                          data-level={day.level}
+                          data-project={day.project}
+                          role="img"
+                          aria-label={day.label}
+                          aria-describedby={`activity-tooltip-mobile-${index}`}
+                          tabindex="0"
+                          style={`--activity-order:${activityRevealOrder(index)}`}
+                        />
+                        <span
+                          id={`activity-tooltip-mobile-${index}`}
+                          class="t-tt activity-tooltip"
+                          role="tooltip"
+                        >
+                          {day.label}
+                        </span>
+                      </span>
+                    ) : (
+                      <span
+                        class="activity-day"
+                        data-level={day.level}
+                        data-project={day.project}
+                        role="img"
+                        aria-label={day.label}
+                        style={`--activity-order:${activityRevealOrder(index)}`}
+                      />
+                    ),
+                  )
+                }
+              </div>
+            </div>
+          </div>
+          <div
+            class="activity-legend mt-2 flex items-center justify-end gap-1 [font-family:Geist_Mono,ui-monospace,monospace] text-[10px] text-[var(--text-tertiary)]"
+            aria-hidden="true"
+          >
+            <span>{copy.activity.less}</span><i
+              class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]"
+              data-level="0"></i><i
+              class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]"
+              data-level="1"></i><i
+              class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]"
+              data-level="2"></i><i
+              class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]"
+              data-level="3"></i><i
+              class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]"
+              data-level="4"></i><span>{copy.activity.more}</span>
           </div>
         </div>
-      </div>
-      <div class="activity-scroll activity-scroll-mobile" role="group" aria-label={copy.activity.mobileAria}>
-        <div class="t-skel activity-reveal activity-reveal-mobile" data-state="loading">
-          <div class="t-skel-skeleton is-pulsing activity-grid activity-grid-mobile" aria-hidden="true">
-            {activity.map((_, index) => <span class="activity-day" data-level="0" style={`--activity-order:${activityRevealOrder(index)}`}></span>)}
-          </div>
-          <div class="t-skel-content activity-grid activity-grid-mobile">
-            {activity.map((day, index) => (
-              day.count > 0 ? (
-                <span class="t-tt-wrap activity-tooltip-wrap">
-                  <span class="activity-day t-tt-trigger" data-cuelume-hover="tick" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} aria-describedby={`activity-tooltip-mobile-${index}`} tabindex="0" style={`--activity-order:${activityRevealOrder(index)}`}></span>
-                  <span id={`activity-tooltip-mobile-${index}`} class="t-tt activity-tooltip" role="tooltip">{day.label}</span>
-                </span>
-              ) : (
-                <span class="activity-day" data-level={day.level} data-project={day.project} role="img" aria-label={day.label} style={`--activity-order:${activityRevealOrder(index)}`}></span>
-              )
-            ))}
-          </div>
+      </section>
+      <WaveDivider />
+
+      <section>
+        <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
+          {copy.connect.heading}
+        </h2>
+        <div
+          class="connect-row mt-6 flex items-center justify-between gap-5 max-[520px]:flex-col max-[520px]:items-start max-[520px]:gap-3"
+        >
+          <SocialLinks
+            locale={locale}
+            linkedinUrl={linkedinUrl}
+            activity={activity}
+            labels={copy.connect}
+          />
+          <InteractiveButton
+            id="copy-email"
+            variant="primary"
+            class="copy-email-button"
+            data-email={CONTACT_EMAIL}
+            data-label-copy={copy.connect.copyEmail}
+            data-label-copied={copy.connect.emailCopied}
+            aria-label={copy.connect.copyEmail}
+          >
+            <span
+              class="copy-email-icon copy-email-icon--copy"
+              aria-hidden="true"
+              ><svg viewBox="0 0 24 24" fill="none"
+                ><rect x="8" y="8" width="11" height="11" rx="2"></rect><path
+                  d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"
+                ></path></svg
+              ></span
+            >
+            <span
+              class="copy-email-icon copy-email-icon--check"
+              aria-hidden="true"
+              ><svg viewBox="0 0 24 24" fill="none"
+                ><path d="m5 12 4 4L19 6"></path></svg
+              ></span
+            >
+            <span class="copy-email-label-slot">
+              <span class="copy-email-label t-text-swap" aria-live="polite"
+                >{copy.connect.copyEmail}</span
+              >
+              <span class="copy-email-label-measure" aria-hidden="true"
+                >{copy.connect.copyEmail}</span
+              >
+              <span class="copy-email-label-measure" aria-hidden="true"
+                >{copy.connect.emailCopied}</span
+              >
+            </span>
+          </InteractiveButton>
         </div>
-      </div>
-      <div class="activity-legend mt-2 flex items-center justify-end gap-1 text-[10px] text-[var(--text-tertiary)] [font-family:Geist_Mono,ui-monospace,monospace]" aria-hidden="true"><span>{copy.activity.less}</span><i class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]" data-level="0"></i><i class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]" data-level="1"></i><i class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]" data-level="2"></i><i class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]" data-level="3"></i><i class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]" data-level="4"></i><span>{copy.activity.more}</span></div>
-    </div>
-  </section>
-  <WaveDivider />
+      </section>
 
-  <section>
-    <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">{copy.connect.heading}</h2>
-    <div class="connect-row mt-6 flex items-center justify-between gap-5 max-[520px]:flex-col max-[520px]:items-start max-[520px]:gap-3">
-      <SocialLinks locale={locale} linkedinUrl={linkedinUrl} activity={activity} labels={copy.connect} />
-      <InteractiveButton
-        id="copy-email"
-        variant="primary"
-        class="copy-email-button"
-        data-email="hi@itsjan.dev"
-        data-label-copy={copy.connect.copyEmail}
-        data-label-copied={copy.connect.emailCopied}
-        aria-label={copy.connect.copyEmail}
-      >
-        <span class="copy-email-icon copy-email-icon--copy" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg></span>
-        <span class="copy-email-icon copy-email-icon--check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"></path></svg></span>
-        <span class="copy-email-label-slot">
-          <span class="copy-email-label t-text-swap" aria-live="polite">{copy.connect.copyEmail}</span>
-          <span class="copy-email-label-measure" aria-hidden="true">{copy.connect.copyEmail}</span>
-          <span class="copy-email-label-measure" aria-hidden="true">{copy.connect.emailCopied}</span>
-        </span>
-      </InteractiveButton>
-    </div>
-  </section>
+      <footer id="site-footer" class="site-footer">
+        <InteractiveLink
+          variant="text"
+          href={SOURCE_REPOSITORY_URL}
+          target="_blank"
+          rel="noreferrer"
+          wrapperClass="site-footer-source"
+          tooltipId="site-footer-github-tooltip"
+          tooltipTitle="github.com"
+          tooltipDetail="/AtomicWasTaken/itsjan-personal-page"
+          tooltipClass="social-tooltip"
+        >
+          <GitHubIcon />
+          <span class="site-footer-source__label"
+            >{locale === "de" ? "Code auf GitHub" : "Source on GitHub"}</span
+          >
+        </InteractiveLink>
+        <p>© {currentYear} {PERSON_NAME}</p>
+      </footer>
+    </main>
+  </div>
 
-  <footer id="site-footer" class="site-footer">
-    <InteractiveLink variant="text" href="https://github.com/AtomicWasTaken/itsjan-personal-page" target="_blank" rel="noreferrer" wrapperClass="site-footer-source" tooltipId="site-footer-github-tooltip" tooltipTitle="github.com" tooltipDetail="/AtomicWasTaken/itsjan-personal-page" tooltipClass="social-tooltip">
-      <GitHubIcon />
-      <span class="site-footer-source__label">{locale === "de" ? "Code auf GitHub" : "Source on GitHub"}</span>
-    </InteractiveLink>
-    <p>© {currentYear} Jan-Marlon Leibl</p>
-  </footer>
-</main>
-<script>
-  // @ts-nocheck
-  (() => {
-    const accordion = document.getElementById("mobile-tech-accordion");
-    const toggle = document.getElementById("mobile-tech-toggle");
-    const label = toggle?.querySelector(".mobile-tech-toggle-label");
-    if (!accordion || !toggle || !label) return;
-
-    toggle.addEventListener("click", () => {
-      const open = accordion.getAttribute("data-open") === "true";
-      const nextOpen = !open;
-      accordion.setAttribute("data-open", String(nextOpen));
-      toggle.setAttribute("aria-expanded", String(nextOpen));
-      label.textContent = nextOpen
-        ? (toggle.dataset.labelLess || "Show fewer")
-        : (toggle.dataset.labelMore || "Show more");
-      if (nextOpen && typeof window.posthog?.capture === 'function') {
-        window.posthog.capture('tech_accordion_expanded');
-      }
-    });
-  })();
-</script>
-</div>
-
-<script>
-  // @ts-nocheck
-  (() => {
-    const root = document.documentElement;
-    const toggle = document.getElementById("theme-toggle");
-    if (!toggle) return;
-
-    const storageKey = "itsjan-theme";
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
-    const themeColor = document.getElementById("theme-color");
-    let activeTransition = null;
-
-    const applyTheme = (theme) => {
-      root.dataset.theme = theme;
-      root.style.colorScheme = theme;
-      toggle.setAttribute("aria-pressed", String(theme === "dark"));
-      toggle.setAttribute("aria-label", theme === "dark" ? toggle.dataset.labelLight : toggle.dataset.labelDark);
-      themeColor?.setAttribute("content", theme === "dark" ? "#0b0b0c" : "#ffffff");
-    };
-
-    const transitionTheme = (theme) => {
-      if (activeTransition) return;
-      const bounds = toggle.getBoundingClientRect();
-      const x = bounds.left + bounds.width / 2;
-      const y = bounds.top + bounds.height / 2;
-      const radius = Math.hypot(
-        Math.max(x, window.innerWidth - x),
-        Math.max(y, window.innerHeight - y),
-      );
-      root.style.setProperty("--theme-ripple-x", `${x}px`);
-      root.style.setProperty("--theme-ripple-y", `${y}px`);
-      root.style.setProperty("--theme-ripple-radius", `${radius}px`);
-      root.classList.add("is-theme-changing");
-
-      const clearTransition = () => {
-        root.classList.remove("is-theme-changing");
-        root.style.removeProperty("--theme-ripple-x");
-        root.style.removeProperty("--theme-ripple-y");
-        root.style.removeProperty("--theme-ripple-radius");
-        activeTransition = null;
-      };
-
-      if (typeof document.startViewTransition !== "function") {
-        applyTheme(theme);
-        window.requestAnimationFrame(() => window.requestAnimationFrame(clearTransition));
-        return;
-      }
-
-      try {
-        const transition = document.startViewTransition(() => applyTheme(theme));
-        activeTransition = transition;
-        transition.finished.then(clearTransition, clearTransition);
-      } catch {
-        applyTheme(theme);
-        clearTransition();
-      }
-    };
-
-    toggle.addEventListener("click", () => {
-      if (activeTransition) return;
-      const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
-      try { window.localStorage.setItem(storageKey, nextTheme); } catch {}
-      if (typeof window.posthog?.capture === 'function') {
-        window.posthog.capture('theme_toggled', { theme: nextTheme });
-      }
-      transitionTheme(nextTheme);
-    });
-
-    systemTheme.addEventListener?.("change", (event) => {
-      let stored = null;
-      try { stored = window.localStorage.getItem(storageKey); } catch {}
-      if (!stored) applyTheme(event.matches ? "dark" : "light");
-    });
-
-    applyTheme(root.dataset.theme === "dark" ? "dark" : "light");
-  })();
-</script>
-
-<script>
-  // @ts-nocheck
-  (() => {
-    const subtitle = document.querySelector(".profile-subtitle");
-    const label = subtitle?.querySelector(".t-text-swap");
-    if (!subtitle || !label || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let states = [];
-    try { states = JSON.parse(subtitle.dataset.textStates || "[]"); } catch {}
-    if (states.length < 2) return;
-
-    let index = 0;
-    let swapTimer = 0;
-    let isSwapping = false;
-    const readMs = (name, fallback) => {
-      const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-      const value = parseFloat(raw);
-      return Number.isFinite(value) ? value : fallback;
-    };
-    const swapText = (nextText) => {
-      if (isSwapping) return;
-      isSwapping = true;
-      label.classList.add("is-exit");
-      window.clearTimeout(swapTimer);
-      swapTimer = window.setTimeout(() => {
-        label.textContent = nextText;
-        label.dataset.text = nextText;
-        label.classList.remove("is-exit");
-        label.classList.add("is-enter-start");
-        void label.offsetHeight;
-        label.classList.remove("is-enter-start");
-        isSwapping = false;
-      }, readMs("--text-swap-dur", 150));
-    };
-
-    window.setInterval(() => {
-      if (document.hidden) return;
-      index = (index + 1) % states.length;
-      swapText(states[index]);
-    }, 3600);
-  })();
-</script>
-
-<script>
-  // @ts-nocheck
-  (() => {
-    const button = document.getElementById("copy-email");
-    if (!button) return;
-
-    const label = button.querySelector(".copy-email-label");
-    const email = button.dataset.email;
-    let resetTimer = 0;
-    let swapTimer = 0;
-    let isSwapping = false;
-
-    const readMs = (name, fallback) => {
-      const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-      const value = parseFloat(raw);
-      return Number.isFinite(value) ? value : fallback;
-    };
-
-    const swapText = (nextText) => {
-      if (!label || isSwapping || label.textContent === nextText) return;
-      isSwapping = true;
-      label.classList.add("is-exit");
-      window.clearTimeout(swapTimer);
-      swapTimer = window.setTimeout(() => {
-        label.textContent = nextText;
-        label.classList.remove("is-exit");
-        label.classList.add("is-enter-start");
-        void label.offsetHeight;
-        label.classList.remove("is-enter-start");
-        isSwapping = false;
-      }, readMs("--text-swap-dur", 150));
-    };
-
-    button.addEventListener("click", async () => {
-      if (!email) return;
-      try {
-        await navigator.clipboard.writeText(email);
-        if (typeof window.posthog?.capture === 'function') {
-          window.posthog.capture('email_copied');
-        }
-        button.dataset.copied = "true";
-        button.setAttribute("aria-label", button.dataset.labelCopied || "Copied");
-        swapText(button.dataset.labelCopied || "Copied");
-        window.clearTimeout(resetTimer);
-        resetTimer = window.setTimeout(() => {
-          delete button.dataset.copied;
-          button.setAttribute("aria-label", button.dataset.labelCopy || "Copy my email");
-          swapText(button.dataset.labelCopy || "Copy my email");
-        }, 3000);
-      } catch {
-        window.location.assign(`mailto:${email}`);
-      }
-    });
-  })();
-</script>
-
-<script>
-  // @ts-nocheck
-  (() => {
-    const button = document.getElementById("share-profile");
-    if (!(button instanceof HTMLButtonElement)) return;
-
-    const shareData = {
-      title: "Jan-Marlon Leibl · itsjan.dev",
-      text: "Jan-Marlon Leibl · itsjan.dev",
-      url: "https://itsjan.dev",
-    };
-    const defaultLabel = button.getAttribute("aria-label") || "Share this page";
-    const copiedLabel = button.dataset.labelCopied || "Copied";
-    let resetTimer = 0;
-
-    button.addEventListener("click", async () => {
-      try {
-        if (navigator.share) {
-          await navigator.share(shareData);
-        } else {
-          await navigator.clipboard.writeText(shareData.url);
-          button.setAttribute("aria-label", copiedLabel);
-          button.dataset.copied = "true";
-          window.clearTimeout(resetTimer);
-          resetTimer = window.setTimeout(() => {
-            button.setAttribute("aria-label", defaultLabel);
-            delete button.dataset.copied;
-          }, 1800);
-        }
-
-        if (typeof window.posthog?.capture === "function") {
-          window.posthog.capture("profile_shared");
-        }
-      } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-      }
-    });
-  })();
-</script>
-
-<script>
-  // @ts-nocheck
-  const haptics = window.matchMedia("(pointer: coarse)").matches
-    ? import("web-haptics").then(({ WebHaptics }) => WebHaptics.isSupported ? new WebHaptics() : null)
-    : Promise.resolve(null);
-  const assignHaptic = (selector, pattern) => {
-    document.querySelectorAll(selector).forEach((element) => {
-      element.dataset.haptic = pattern;
-    });
-  };
-  assignHaptic("#profile-avatar, [data-avatar-close]", "nudge");
-  assignHaptic("#theme-toggle, #copy-email, #mobile-tech-toggle, .mobile-tech-link, .activity-day.t-tt-trigger, .tech-sticker", "selection");
-  assignHaptic(".project-preview-cta", "success");
-  assignHaptic(".social-link", "light");
-  document.addEventListener("pointerdown", async (event) => {
-    if (event.pointerType !== "touch" || !(event.target instanceof Element)) return;
-    const target = event.target.closest("[data-haptic]");
-    if (!target) return;
-    const device = await haptics;
-    if (device) void device.trigger(target.dataset.haptic || "light");
-  }, { passive: true });
-</script>
-
-<script>
-  // @ts-nocheck
-  (() => {
-    const avatar = document.getElementById("profile-avatar");
-    const modal = document.getElementById("avatar-modal");
-    const closeButton = modal?.querySelector(".avatar-modal-close");
-    const content = modal?.querySelector(".avatar-modal-content");
-    if (!avatar || !modal || !closeButton || !content) return;
-
-    const readMs = (raw, fallback) => {
-      const value = parseFloat(raw);
-      if (!Number.isFinite(value)) return fallback;
-      const unit = raw.trim().toLowerCase();
-      if (unit.endsWith("ms")) return value;
-      if (unit.endsWith("s")) return value * 1000;
-      return value;
-    };
-    const rootStyles = getComputedStyle(document.documentElement);
-    const closeMs = readMs(rootStyles.getPropertyValue("--modal-close-dur"), 150);
-    const modalScale = parseFloat(rootStyles.getPropertyValue("--modal-scale")) || .96;
-    let previousFocus = null;
-
-    const setMorphOrigin = () => {
-      const source = avatar.getBoundingClientRect();
-      const targetWidth = content.offsetWidth || content.getBoundingClientRect().width;
-      const sourceCenterX = source.left + source.width / 2;
-      const sourceCenterY = source.top + source.height / 2;
-      modal.style.setProperty("--avatar-origin-x", `${(sourceCenterX - window.innerWidth / 2) / modalScale}px`);
-      modal.style.setProperty("--avatar-origin-y", `${(sourceCenterY - window.innerHeight / 2) / modalScale}px`);
-      modal.style.setProperty("--avatar-origin-scale", String(source.width / (targetWidth * modalScale)));
-    };
-
-    const openModal = () => {
-      previousFocus = document.activeElement;
-      setMorphOrigin();
-      modal.removeAttribute("inert");
-      modal.classList.remove("is-closing");
-      modal.classList.add("is-open");
-      modal.setAttribute("aria-hidden", "false");
-      document.body.classList.add("is-avatar-modal-open");
-      if (typeof window.posthog?.capture === 'function') {
-        window.posthog.capture('avatar_opened');
-      }
-      closeButton.focus({ preventScroll: true });
-    };
-
-    const closeModal = () => {
-      if (!modal.classList.contains("is-open")) return;
-      modal.classList.remove("is-open");
-      modal.classList.add("is-closing");
-      modal.setAttribute("inert", "");
-      modal.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("is-avatar-modal-open");
-      window.setTimeout(() => modal.classList.remove("is-closing"), closeMs);
-      if (previousFocus instanceof HTMLElement) previousFocus.focus({ preventScroll: true });
-    };
-
-    avatar.addEventListener("click", openModal);
-    window.addEventListener("resize", () => {
-      if (modal.classList.contains("is-open")) setMorphOrigin();
-    });
-    modal.querySelectorAll("[data-avatar-close]").forEach((button) => button.addEventListener("click", closeModal));
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeModal();
-    });
-  })();
-</script>
-
-<script>
-  // @ts-nocheck
-  (() => {
-    const skeletons = document.querySelectorAll(".t-skel");
-    if (!skeletons.length) return;
-
-    const cs = getComputedStyle(document.documentElement);
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const num = (name, fallback) => {
-      const value = parseFloat(cs.getPropertyValue(name));
-      return Number.isFinite(value) ? value : fallback;
-    };
-
-    skeletons.forEach((skel) => {
-      const skeleton = skel.querySelector(".t-skel-skeleton");
-      if (!skeleton) return;
-
-      if (reducedMotion) {
-        skel.classList.add("is-revealed");
-        return;
-      }
-
-      skel.classList.add("is-resetting");
-      skel.classList.remove("is-revealed");
-      skeleton.classList.remove("is-pulsing");
-      void skeleton.offsetWidth;
-      skel.classList.remove("is-resetting");
-      skeleton.classList.add("is-pulsing");
-
-      window.setTimeout(() => {
-        skel.classList.add("is-revealed");
-      }, num("--pulse-dur", 1000) * num("--pulse-count", 1));
-    });
-  })();
-</script>
-
-<script>
-  // @ts-nocheck
-  (() => {
-    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-    const maxDrag = 5;
-    const maxFollow = 5;
-
-    document.querySelectorAll(".tech-sticker").forEach((sticker) => {
-      let dragging = false;
-      let moved = false;
-      let suppressClick = false;
-      let pointerStartX = 0;
-      let pointerStartY = 0;
-
-      const reset = () => {
-        dragging = false;
-        sticker.classList.remove("is-peeling", "is-following");
-        sticker.style.setProperty("--drag-x", "0px");
-        sticker.style.setProperty("--drag-y", "0px");
-      };
-
-      sticker.addEventListener("pointerdown", (event) => {
-        if (event.pointerType === "mouse" && event.button !== 0) return;
-        dragging = true;
-        moved = false;
-        pointerStartX = event.clientX;
-        pointerStartY = event.clientY;
-        sticker.classList.add("is-peeling");
-        sticker.setPointerCapture?.(event.pointerId);
-      });
-
-      sticker.addEventListener("pointermove", (event) => {
-        if (event.pointerType !== "mouse" && !dragging) return;
-        let x;
-        let y;
-        if (dragging) {
-          x = clamp(event.clientX - pointerStartX, -maxDrag, maxDrag);
-          y = clamp(event.clientY - pointerStartY, -maxDrag, maxDrag);
-          moved ||= Math.abs(event.clientX - pointerStartX) > 1 || Math.abs(event.clientY - pointerStartY) > 1;
-        } else {
-          const rect = sticker.getBoundingClientRect();
-          x = clamp((event.clientX - (rect.left + rect.width / 2)) / (rect.width / 2) * maxFollow, -maxFollow, maxFollow);
-          y = clamp((event.clientY - (rect.top + rect.height / 2)) / (rect.height / 2) * maxFollow, -maxFollow, maxFollow);
-          sticker.classList.add("is-following");
-        }
-        sticker.style.setProperty("--drag-x", `${x}px`);
-        sticker.style.setProperty("--drag-y", `${y}px`);
-      });
-
-      sticker.addEventListener("pointerleave", () => {
-        if (!dragging) reset();
-      });
-      sticker.addEventListener("pointerup", () => {
-        if (moved) suppressClick = true;
-        reset();
-      });
-      sticker.addEventListener("pointercancel", reset);
-      sticker.addEventListener("lostpointercapture", reset);
-      sticker.addEventListener("click", (event) => {
-        if (!suppressClick) return;
-        event.preventDefault();
-        suppressClick = false;
-      });
-    });
-  })();
-</script>
-
-<script>
-  // PostHog click tracking for key interaction events
-  (() => {
-    // "Email me" hero contact link
-    document.querySelector('.hero-contact-link')?.addEventListener('click', () => {
-      if (typeof window.posthog?.capture === 'function') {
-        window.posthog.capture('contact_button_clicked');
-      }
-    });
-
-    // Project navigation link
-    document.querySelector('.hero-project-link')?.addEventListener('click', () => {
-      if (typeof window.posthog?.capture === 'function') {
-        window.posthog.capture('projects_section_navigated');
-      }
-    });
-
-    // Project CTA buttons (Finny, Ventry)
-    document.querySelectorAll('.project-preview-cta').forEach((el) => {
-      el.addEventListener('click', () => {
-        const href = el instanceof HTMLAnchorElement ? el.href : '';
-        let project_name = 'unknown';
-        if (href.includes('fnny.app')) project_name = 'finny';
-        else if (href.includes('ventry.host')) project_name = 'ventry';
-        if (typeof window.posthog?.capture === 'function') {
-          window.posthog.capture('project_cta_clicked', { project_name });
-        }
-      });
-    });
-
-    // Social platform links
-    document.querySelectorAll('.social-link').forEach((el) => {
-      el.addEventListener('click', () => {
-        const href = el instanceof HTMLAnchorElement ? el.href : '';
-        let platform = 'unknown';
-        if (href.includes('github.com')) platform = 'github';
-        else if (href.includes('x.com') || href.includes('twitter.com')) platform = 'x';
-        else if (href.includes('linkedin.com')) platform = 'linkedin';
-        else if (href.startsWith('mailto:')) platform = 'email';
-        else if (el.id === 'share-profile') platform = 'share';
-        if (typeof window.posthog?.capture === 'function') {
-          window.posthog.capture('social_link_clicked', { platform });
-        }
-      });
-    });
-  })();
-</script>
-
+  <HomeRuntime />
 </Layout>

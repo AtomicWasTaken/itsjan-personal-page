@@ -1,38 +1,52 @@
 ---
+import "../styles/fonts.css";
 import "../styles/global.css";
 import CookieConsent from "../components/CookieConsent.astro";
 import InteractionRuntime from "../components/InteractionRuntime.astro";
-import PostHog from '../components/posthog.astro';
+import PostHog from "../components/posthog.astro";
 import { detectLocale, tr } from "../lib/i18n";
 import {
   CONTACT_EMAIL,
   OPEN_GRAPH_IMAGE_URL,
+  PERSON_NAME,
   PROFILE_IMAGE_URL,
   SITE_ORIGIN,
+  SITE_NAME,
+  SOCIAL_HANDLES,
   SOCIAL_LINKS,
 } from "../lib/site";
 
 interface Props {
   title?: string;
   description?: string;
+  noindex?: boolean;
 }
 
 const props = Astro.props as Props;
 const locale = detectLocale(Astro.request);
 const copy = tr(locale);
-const title = props.title ?? (locale === "de" ? "Jan-Marlon Leibl · Softwareentwickler aus Bremen" : "Jan-Marlon Leibl · Software developer from Bremen");
-const description = props.description ?? (locale === "de"
-  ? "Ich bin Jan-Marlon, Softwareentwickler aus Bremen und der Kopf hinter Finny, einer App für Belege und Garantiefristen."
-  : "I'm Jan-Marlon, a software developer from Bremen and the person behind Finny, an app for receipts and warranty reminders.");
+const title =
+  props.title ??
+  (locale === "de"
+    ? "Jan-Marlon Leibl · Softwareentwickler aus Bremen"
+    : "Jan-Marlon Leibl · Software developer from Bremen");
+const description =
+  props.description ??
+  (locale === "de"
+    ? "Ich bin Jan-Marlon, Softwareentwickler aus Bremen und der Kopf hinter Finny, einer App für Belege und Garantiefristen."
+    : "I'm Jan-Marlon, a software developer from Bremen and the person behind Finny, an app for receipts and warranty reminders.");
 const requestUrl = new URL(Astro.request.url);
-const requestLocale = requestUrl.pathname.split("/")[1];
-const localizedPath = requestLocale === "de" || requestLocale === "en" ? `/${requestLocale}` : "/";
-const url = `${SITE_ORIGIN}${localizedPath}`;
-const markdownUrl = `${SITE_ORIGIN}${localizedPath === "/" ? "/index.md" : `${localizedPath}.md`}`;
+const pathname = requestUrl.pathname.replace(/\/$/, "") || "/";
+const isPortfolioPage =
+  pathname === "/" || pathname === "/de" || pathname === "/en";
+const url = new URL(pathname, SITE_ORIGIN).href;
+const markdownUrl = isPortfolioPage
+  ? `${SITE_ORIGIN}${pathname === "/" ? "/index.md" : `${pathname}.md`}`
+  : undefined;
 
 Astro.response.headers.set("Vary", "Accept-Language");
 if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
-  Astro.response.headers.set("Link", "</llms.txt>; rel=\"describedby\"");
+  Astro.response.headers.set("Link", '</llms.txt>; rel="describedby"');
 }
 ---
 
@@ -43,33 +57,52 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="author" content="Jan-Marlon Leibl" />
+    <meta name="author" content={PERSON_NAME} />
+    {props.noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta id="theme-color" name="theme-color" content="#ffffff" />
     <script is:inline>
       (() => {
         const root = document.documentElement;
         const storageKey = "itsjan-theme";
         let stored = null;
-        try { stored = window.localStorage.getItem(storageKey); } catch {}
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        const theme = stored === "dark" || stored === "light" ? stored : systemTheme;
+        try {
+          stored = window.localStorage.getItem(storageKey);
+        } catch {
+          // Fall back to the operating-system preference when storage is unavailable.
+        }
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+          .matches
+          ? "dark"
+          : "light";
+        const theme =
+          stored === "dark" || stored === "light" ? stored : systemTheme;
         root.dataset.theme = theme;
         root.style.colorScheme = theme;
-        document.getElementById("theme-color")?.setAttribute("content", theme === "dark" ? "#0b0b0c" : "#ffffff");
+        document
+          .getElementById("theme-color")
+          ?.setAttribute("content", theme === "dark" ? "#0b0b0c" : "#ffffff");
       })();
     </script>
     <link rel="canonical" href={url} />
-    <link rel="alternate" type="text/markdown" href={markdownUrl} />
-    <link rel="alternate" hreflang="en" href={`${SITE_ORIGIN}/en`} />
-    <link rel="alternate" hreflang="de" href={`${SITE_ORIGIN}/de`} />
-    <link rel="alternate" hreflang="x-default" href={SITE_ORIGIN} />
+    {
+      markdownUrl && (
+        <link rel="alternate" type="text/markdown" href={markdownUrl} />
+      )
+    }
+    {
+      isPortfolioPage && (
+        <>
+          <link rel="alternate" hreflang="en" href={`${SITE_ORIGIN}/en`} />
+          <link rel="alternate" hreflang="de" href={`${SITE_ORIGIN}/de`} />
+          <link rel="alternate" hreflang="x-default" href={SITE_ORIGIN} />
+        </>
+      )
+    }
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/jan-profile.jpg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600;700&family=Inter:ital,wght@0,500&display=swap" rel="stylesheet" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="itsjan.dev" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content={locale === "de" ? "de_DE" : "en_US"} />
     <meta property="og:url" content={url} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -79,38 +112,64 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={copy.meta.imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content={`@${SOCIAL_HANDLES.x}`} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={OPEN_GRAPH_IMAGE_URL} />
     <meta name="twitter:image:alt" content={copy.meta.imageAlt} />
-    <script is:inline type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Person",
-          "@id": `${SITE_ORIGIN}/#person`,
-          name: "Jan-Marlon Leibl",
-          url: SITE_ORIGIN,
-          image: PROFILE_IMAGE_URL,
-          jobTitle: copy.meta.jobTitle,
-          email: CONTACT_EMAIL,
-          address: { "@type": "PostalAddress", addressLocality: "Bremen", addressCountry: "DE" },
-          sameAs: Object.values(SOCIAL_LINKS),
-          knowsAbout: ["PHP", "TypeScript", "React", "Next.js", "TYPO3", "Symfony", "Cloudflare"],
-          mainEntityOfPage: url,
-        },
-        {
-          "@type": "WebSite",
-          "@id": `${SITE_ORIGIN}/#website`,
-          name: "itsjan.dev",
-          url: SITE_ORIGIN,
-          description,
-          inLanguage: copy.htmlLang,
-          publisher: { "@id": `${SITE_ORIGIN}/#person` },
-        },
-      ],
-    })} />
-    <script is:inline>
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": `${SITE_ORIGIN}/#person`,
+            name: PERSON_NAME,
+            url: SITE_ORIGIN,
+            image: PROFILE_IMAGE_URL,
+            jobTitle: copy.meta.jobTitle,
+            email: CONTACT_EMAIL,
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Bremen",
+              addressCountry: "DE",
+            },
+            sameAs: Object.values(SOCIAL_LINKS),
+            knowsAbout: [
+              "PHP",
+              "TypeScript",
+              "React",
+              "Next.js",
+              "TYPO3",
+              "Symfony",
+              "Cloudflare",
+            ],
+            mainEntityOfPage: url,
+          },
+          {
+            "@type": "WebSite",
+            "@id": `${SITE_ORIGIN}/#website`,
+            name: SITE_NAME,
+            url: SITE_ORIGIN,
+            description,
+            inLanguage: copy.htmlLang,
+            publisher: { "@id": `${SITE_ORIGIN}/#person` },
+          },
+        ],
+      })}
+    />
+    <script
+      is:inline
+      define:vars={{
+        contactEmail: CONTACT_EMAIL,
+        githubUrl: SOCIAL_LINKS.github,
+        linkedinUrl: SOCIAL_LINKS.linkedin,
+        personName: PERSON_NAME,
+        xUrl: SOCIAL_LINKS.x,
+      }}
+    >
       (() => {
         const modelContext = globalThis.navigator?.modelContext;
         if (!modelContext?.provideContext) return;
@@ -119,17 +178,21 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
           tools: [
             {
               name: "get_profile",
-              description: "Get Jan-Marlon Leibl's developer profile and contact links.",
-              inputSchema: { type: "object", properties: {}, additionalProperties: false },
+              description: `Get ${personName}'s developer profile and contact links.`,
+              inputSchema: {
+                type: "object",
+                properties: {},
+                additionalProperties: false,
+              },
               execute: async () => ({
-                name: "Jan-Marlon Leibl",
+                name: personName,
                 role: "Software developer and founder of Finny",
                 location: "Bremen, Germany",
-                email: "hi@itsjan.dev",
+                email: contactEmail,
                 links: {
-                  github: "https://github.com/AtomicWasTaken",
-                  linkedin: "https://www.linkedin.com/in/janmarlonleibl/",
-                  x: "https://x.com/janodersooo",
+                  github: githubUrl,
+                  linkedin: linkedinUrl,
+                  x: xUrl,
                 },
               }),
             },

@@ -8,14 +8,7 @@ interface Props {
   wrapperClass?: string;
 }
 
-const {
-  id,
-  title,
-  detail,
-  text,
-  class: className,
-  wrapperClass,
-} = Astro.props;
+const { id, title, detail, text, class: className, wrapperClass } = Astro.props;
 ---
 
 <span class:list={["t-tt-wrap", wrapperClass]}>

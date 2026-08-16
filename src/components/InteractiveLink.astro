@@ -29,43 +29,64 @@ const {
   cuelumeHover = "tick",
   cuelumePress = "press",
   cuelumeRelease = "release",
+  target,
+  rel,
   ...attributes
 } = Astro.props;
 const hasTooltip = Boolean(tooltipId && (tooltipTitle || tooltipDetail));
-const variantClass = variant === "primary"
-  ? "button-style squircle"
-  : variant === "text"
-    ? "text-action"
-    : variant === "icon"
-      ? "squircle"
-      : "";
-const linkClass = [variantClass, className, hasTooltip && "t-tt-trigger"].filter(Boolean).join(" ");
+const variantClass =
+  variant === "primary"
+    ? "button-style squircle"
+    : variant === "text"
+      ? "text-action"
+      : variant === "icon"
+        ? "squircle"
+        : "";
+const linkClass = [variantClass, className, hasTooltip && "t-tt-trigger"]
+  .filter(Boolean)
+  .join(" ");
+const linkRel =
+  target === "_blank"
+    ? [...new Set(`${rel ?? ""} noopener noreferrer`.trim().split(/\s+/))].join(
+        " ",
+      )
+    : rel;
 ---
 
-{hasTooltip ? (
-  <Tooltip
-    id={tooltipId!}
-    title={tooltipTitle}
-    detail={tooltipDetail}
-    class={tooltipClass}
-    wrapperClass={wrapperClass}
-  >
+{
+  hasTooltip ? (
+    <Tooltip
+      id={tooltipId!}
+      title={tooltipTitle}
+      detail={tooltipDetail}
+      class={tooltipClass}
+      wrapperClass={wrapperClass}
+    >
+      <a
+        slot="trigger"
+        {...attributes}
+        target={target}
+        rel={linkRel}
+        class={linkClass}
+        aria-describedby={tooltipId}
+        data-cuelume-hover={cuelumeHover}
+        data-cuelume-press={cuelumePress}
+        data-cuelume-release={cuelumeRelease}
+      >
+        <slot />
+      </a>
+    </Tooltip>
+  ) : (
     <a
-      slot="trigger"
       {...attributes}
+      target={target}
+      rel={linkRel}
       class={linkClass}
-      aria-describedby={tooltipId}
       data-cuelume-hover={cuelumeHover}
       data-cuelume-press={cuelumePress}
       data-cuelume-release={cuelumeRelease}
-    ><slot /></a>
-  </Tooltip>
-) : (
-  <a
-    {...attributes}
-    class={linkClass}
-    data-cuelume-hover={cuelumeHover}
-    data-cuelume-press={cuelumePress}
-    data-cuelume-release={cuelumeRelease}
-  ><slot /></a>
-)}
+    >
+      <slot />
+    </a>
+  )
+}

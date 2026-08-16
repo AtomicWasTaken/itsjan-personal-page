@@ -10,31 +10,44 @@ interface Props {
 }
 
 const { locale } = Astro.props;
-const copy = locale === "de"
-  ? {
-      title: "Datenschutz-Einstellungen",
-      text: "Mit Ihrer Zustimmung lade ich PostHog. So sehe ich, welche Bereiche genutzt werden und wo technische Fehler auftreten.",
-      accept: "Analyse erlauben",
-      reject: "Nur notwendige Cookies",
-      settings: "Datenschutz-Einstellungen",
-      settingsShort: "Datenschutz",
-      privacy: "Datenschutzerklärung",
-    }
-  : {
-      title: "Privacy settings",
-      text: "With your permission, I use PostHog to see which parts of the site people use and where technical errors occur.",
-      accept: "Allow analytics",
-      reject: "Necessary cookies only",
-      settings: "Privacy settings",
-      settingsShort: "Privacy",
-      privacy: "Privacy policy",
-    };
+const copy =
+  locale === "de"
+    ? {
+        title: "Datenschutz-Einstellungen",
+        text: "Mit Ihrer Zustimmung lade ich PostHog. So sehe ich, welche Bereiche genutzt werden und wo technische Fehler auftreten.",
+        accept: "Analyse erlauben",
+        reject: "Nur notwendige Cookies",
+        settings: "Datenschutz-Einstellungen",
+        settingsShort: "Datenschutz",
+        privacy: "Datenschutzerklärung",
+      }
+    : {
+        title: "Privacy settings",
+        text: "With your permission, I use PostHog to see which parts of the site people use and where technical errors occur.",
+        accept: "Allow analytics",
+        reject: "Necessary cookies only",
+        settings: "Privacy settings",
+        settingsShort: "Privacy",
+        privacy: "Privacy policy",
+      };
 ---
 
-<aside id="privacy-consent" class="privacy-consent" role="dialog" aria-modal="true" aria-labelledby="privacy-consent-title" hidden>
+<aside
+  id="privacy-consent"
+  class="privacy-consent"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="privacy-consent-title"
+  aria-describedby="privacy-consent-description"
+  hidden
+>
   <div class="privacy-consent__content">
-    <p id="privacy-consent-title" class="privacy-consent__title">{copy.title}</p>
-    <p class="privacy-consent__text">{copy.text}</p>
+    <p id="privacy-consent-title" class="privacy-consent__title">
+      {copy.title}
+    </p>
+    <p id="privacy-consent-description" class="privacy-consent__text">
+      {copy.text}
+    </p>
     <InteractiveLink
       variant="text"
       class="hero-project-link privacy-consent__link"
@@ -45,50 +58,106 @@ const copy = locale === "de"
     </InteractiveLink>
     <WaveDivider class="privacy-consent__wave" />
     <div class="privacy-consent__actions">
-      <InteractiveButton variant="text" id="privacy-reject" class="privacy-consent__button privacy-consent__button--secondary">{copy.reject}</InteractiveButton>
-      <InteractiveButton id="privacy-accept" variant="primary" class="privacy-consent__button privacy-consent__button--primary">{copy.accept}</InteractiveButton>
+      <InteractiveButton
+        variant="text"
+        id="privacy-reject"
+        class="privacy-consent__button privacy-consent__button--secondary"
+        >{copy.reject}</InteractiveButton
+      >
+      <InteractiveButton
+        id="privacy-accept"
+        variant="primary"
+        class="privacy-consent__button privacy-consent__button--primary"
+        >{copy.accept}</InteractiveButton
+      >
     </div>
   </div>
 </aside>
-<InteractiveButton variant="text" id="privacy-settings" class="privacy-settings" aria-controls="privacy-consent">
+<InteractiveButton
+  variant="text"
+  id="privacy-settings"
+  class="privacy-settings"
+  aria-controls="privacy-consent"
+  aria-expanded="false"
+>
   <span class="privacy-settings__label">{copy.settings}</span>
   <span class="privacy-settings__label--short">{copy.settingsShort}</span>
-  <svg class="privacy-settings__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.5 19 6v5.4c0 4.4-2.8 7.7-7 9.1-4.2-1.4-7-4.7-7-9.1V6l7-2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <svg
+    class="privacy-settings__icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+    ><path
+      d="M12 3.5 19 6v5.4c0 4.4-2.8 7.7-7 9.1-4.2-1.4-7-4.7-7-9.1V6l7-2.5Z"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linejoin="round"></path><path
+      d="m9 12 2 2 4-4"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path></svg
+  >
   <ArrowIcon class="privacy-settings__arrow" />
 </InteractiveButton>
 
 <script>
-  // @ts-nocheck
   (() => {
     const key = "itsjan-analytics-consent";
     const dialog = document.getElementById("privacy-consent");
     const accept = document.getElementById("privacy-accept");
     const reject = document.getElementById("privacy-reject");
     const settings = document.getElementById("privacy-settings");
-    if (!dialog || !accept || !reject || !settings) return;
+    if (
+      !(dialog instanceof HTMLElement) ||
+      !(accept instanceof HTMLButtonElement) ||
+      !(reject instanceof HTMLButtonElement) ||
+      !(settings instanceof HTMLButtonElement)
+    )
+      return;
     let hideTimer = 0;
 
     const getChoice = () => {
-      try { return window.localStorage.getItem(key); } catch { return null; }
+      try {
+        return window.localStorage.getItem(key);
+      } catch {
+        return null;
+      }
     };
-    const show = () => {
+    const show = (moveFocus = false) => {
       window.clearTimeout(hideTimer);
       dialog.hidden = false;
+      settings.setAttribute("aria-expanded", "true");
       window.requestAnimationFrame(() => dialog.classList.add("is-visible"));
+      if (moveFocus) accept.focus({ preventScroll: true });
     };
     const hide = () => {
       dialog.classList.remove("is-visible");
-      hideTimer = window.setTimeout(() => { dialog.hidden = true; }, 180);
+      settings.setAttribute("aria-expanded", "false");
+      hideTimer = window.setTimeout(() => {
+        dialog.hidden = true;
+      }, 180);
     };
     const save = (choice: "granted" | "denied") => {
-      try { window.localStorage.setItem(key, choice); } catch {}
+      try {
+        window.localStorage.setItem(key, choice);
+      } catch {
+        // Consent still applies to this page even when storage is unavailable.
+      }
       hide();
-      window.dispatchEvent(new CustomEvent("itsjan:analytics-consent", { detail: choice }));
+      window.dispatchEvent(
+        new CustomEvent("itsjan:analytics-consent", { detail: choice }),
+      );
     };
 
     if (!getChoice()) show();
     accept.addEventListener("click", () => save("granted"));
     reject.addEventListener("click", () => save("denied"));
-    settings.addEventListener("click", show);
+    settings.addEventListener("click", () => show(true));
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      hide();
+      settings.focus({ preventScroll: true });
+    });
   })();
 </script>

@@ -1,29 +1,69 @@
 {
   "name": "itsjan-personal-page",
+  "description": "Jan-Marlon Leibl's bilingual portfolio, built with Astro and deployed on Cloudflare Workers.",
   "type": "module",
   "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "author": "Jan-Marlon Leibl",
+  "homepage": "https://itsjan.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AtomicWasTaken/itsjan-personal-page.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AtomicWasTaken/itsjan-personal-page/issues"
+  },
+  "overrides": {
+    "picomatch": "4.0.5",
+    "sharp": "0.35.2",
+    "smol-toml": "1.6.1",
+    "svgo": "4.0.2"
+  },
+  "packageManager": "bun@1.3.14",
   "engines": {
+    "bun": ">=1.3.0",
     "node": ">=22.12.0"
   },
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "mkdir -p dist && printf \"// placeholder for Cloudflare build\\n\" > dist/_worker.js",
     "build": "astro build",
+    "check": "bun run typecheck && bun run lint && bun run format:check && bun run test && bun run check:content",
+    "check:content": "bun scripts/check-content.mjs",
+    "ci": "bun run check && bun run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings=0",
     "preview": "astro preview",
+    "test": "bun test",
+    "typecheck": "astro check",
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^13.0.2",
-    "@astrojs/sitemap": "^3.7.1",
-    "astro": "^6.0.2",
-    "cuelume": "^0.1.2",
+    "@astrojs/cloudflare": "^14.2.1",
+    "@astrojs/sitemap": "^3.7.3",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "astro": "^7.2.2",
+    "cuelume": "^0.2.2",
     "web-haptics": "^0.0.6"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "@tailwindcss/vite": "^4.2.1",
-    "tailwindcss": "^4.2.1",
-    "typescript": "^6",
-    "wrangler": "^4.72.0"
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/bun": "^1.3.14",
+    "eslint": "^10.8.1",
+    "eslint-plugin-astro": "^3.1.0",
+    "globals": "^17.11.0",
+    "playwright-core": "^1.62.1",
+    "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "wrangler": "^4.123.0"
   }
 }

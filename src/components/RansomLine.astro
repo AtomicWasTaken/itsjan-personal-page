@@ -59,21 +59,25 @@ const glyphs = Array.from(text.toUpperCase()).map((character) => {
 ---
 
 <span class="ransom-line" aria-hidden="true">
-  {glyphs.map((glyph) => glyph.kind === "space" ? (
-    <span class="ransom-space"></span>
-  ) : (
-    <span
-      class="ransom-glyph"
-      style={`--ransom-rotation:${glyph.rotation}deg;--ransom-entry-rotation:${(Number(glyph.rotation) * 1.7).toFixed(2)}deg;--ransom-offset:${glyph.offset}px;--ransom-scale:${glyph.scale};--ransom-entry-scale:${(Number(glyph.scale) * 1.18).toFixed(3)};--ransom-index:${glyph.index}`}
-    >
-      <img
-        src={`/ransom/${glyph.variant.file}`}
-        width={glyph.variant.w}
-        height={glyph.variant.h}
-        alt=""
-        draggable="false"
-        decoding="async"
-      />
-    </span>
-  ))}
+  {
+    glyphs.map((glyph) =>
+      glyph.kind === "space" ? (
+        <span class="ransom-space" />
+      ) : (
+        <span
+          class="ransom-glyph"
+          style={`--ransom-rotation:${glyph.rotation}deg;--ransom-entry-rotation:${(Number(glyph.rotation) * 1.7).toFixed(2)}deg;--ransom-offset:${glyph.offset}px;--ransom-scale:${glyph.scale};--ransom-entry-scale:${(Number(glyph.scale) * 1.18).toFixed(3)};--ransom-index:${glyph.index}`}
+        >
+          <img
+            src={`/ransom/${glyph.variant.file}`}
+            width={glyph.variant.w}
+            height={glyph.variant.h}
+            alt=""
+            draggable="false"
+            decoding="async"
+          />
+        </span>
+      ),
+    )
+  }
 </span>

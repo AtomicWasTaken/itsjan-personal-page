@@ -1,55 +1,10 @@
 // Bilingual content + locale detection from Accept-Language header.
 
-import type { Technology } from "./portfolio";
-import angularLogo from "../assets/logos/angular.svg";
-import appleLogo from "../assets/logos/apple.svg";
-import astroLogo from "../assets/logos/astro.svg";
-import bunLogo from "../assets/logos/bun.svg";
-import claudeLogo from "../assets/logos/claude.svg";
-import cloudflareLogo from "../assets/logos/cloudflare.svg";
-import cursorLogo from "../assets/logos/cursor.svg";
-import dockerLogo from "../assets/logos/docker.svg";
-import giteaLogo from "../assets/logos/gitea.svg";
-import githubLogo from "../assets/logos/github.svg";
-import gitlabLogo from "../assets/logos/gitlab.svg";
-import geminiLogo from "../assets/logos/googlegemini.svg";
-import linuxLogo from "../assets/logos/linux.svg";
-import nextLogo from "../assets/logos/nextdotjs.svg";
-import openaiLogo from "../assets/logos/openai.svg";
-import perplexityLogo from "../assets/logos/perplexity.svg";
-import phpLogo from "../assets/logos/php.svg";
-import phpstormLogo from "../assets/logos/phpstorm.svg";
-import proxmoxLogo from "../assets/logos/proxmox.svg";
-import reactLogo from "../assets/logos/react.svg";
-import tailwindLogo from "../assets/logos/tailwindcss.svg";
-import typescriptLogo from "../assets/logos/typescript.svg";
-import typo3Logo from "../assets/logos/typo3.svg";
-import vscodeLogo from "../assets/logos/vscode.svg";
-import vueLogo from "../assets/logos/vuedotjs.svg";
-import windowsLogo from "../assets/logos/windows11.svg";
-
-export type Locale = "en" | "de";
-
-export function detectLocale(request: Request): Locale {
-  const requestUrl = new URL(request.url);
-  const pathLocale = requestUrl.pathname.split("/")[1];
-  if (pathLocale === "de" || pathLocale === "en") return pathLocale;
-
-  const header = request.headers.get("accept-language");
-  if (!header) return "en";
-  const langs = header
-    .split(",")
-    .map((part) => {
-      const [tag, qs] = part.trim().split(";q=");
-      return { tag: tag.toLowerCase(), q: qs ? parseFloat(qs) : 1 };
-    })
-    .sort((a, b) => b.q - a.q);
-  for (const { tag } of langs) {
-    if (tag.startsWith("de")) return "de";
-    if (tag.startsWith("en")) return "en";
-  }
-  return "en";
-}
+import { TECHNOLOGIES } from "../data/technologies";
+import type { Technology } from "../data/technologies";
+import type { Locale } from "./locale";
+export { detectLocale } from "./locale";
+export type { Locale } from "./locale";
 
 interface Strings {
   htmlLang: string;
@@ -131,7 +86,15 @@ interface Strings {
       warrantyTitle: string;
       warrantyDetail: string;
       warrantyUntil: string;
-      description: { lead: string; first: string; middle: string; second: string; join: string; third: string; end: string };
+      description: {
+        lead: string;
+        first: string;
+        middle: string;
+        second: string;
+        join: string;
+        third: string;
+        end: string;
+      };
       cta: { prefix: string; label: string };
     };
     ventry: {
@@ -148,35 +111,6 @@ interface Strings {
     };
   };
 }
-
-const technologyLogos: Technology[] = [
-  { name: "PHP", logo: phpLogo, href: "https://www.php.net/" },
-  { name: "TypeScript", logo: typescriptLogo, href: "https://www.typescriptlang.org/" },
-  { name: "React", logo: reactLogo, href: "https://react.dev/" },
-  { name: "Next.js", logo: nextLogo, href: "https://nextjs.org/", darkModeLight: true },
-  { name: "TYPO3", logo: typo3Logo, href: "https://typo3.org/" },
-  { name: "Angular", logo: angularLogo, href: "https://angular.dev/" },
-  { name: "Vue", logo: vueLogo, href: "https://vuejs.org/" },
-  { name: "GitHub", logo: githubLogo, href: "https://github.com/", darkModeLight: true },
-  { name: "GitLab", logo: gitlabLogo, href: "https://gitlab.com/" },
-  { name: "Gitea", logo: giteaLogo, href: "https://about.gitea.com/" },
-  { name: "Docker", logo: dockerLogo, href: "https://www.docker.com/" },
-  { name: "Proxmox", logo: proxmoxLogo, href: "https://www.proxmox.com/" },
-  { name: "Linux", logo: linuxLogo, href: "https://www.linux.org/" },
-  { name: "macOS", logo: appleLogo, href: "https://www.apple.com/macos/", darkModeLight: true },
-  { name: "Astro", logo: astroLogo, href: "https://astro.build/" },
-  { name: "Cloudflare", logo: cloudflareLogo, href: "https://www.cloudflare.com/" },
-  { name: "Bun", logo: bunLogo, href: "https://bun.sh/", darkModeLight: true },
-  { name: "Claude", logo: claudeLogo, href: "https://claude.ai/" },
-  { name: "Codex", logo: openaiLogo, href: "https://openai.com/codex", darkModeLight: true },
-  { name: "Cursor", logo: cursorLogo, href: "https://cursor.com/", darkModeLight: true },
-  { name: "Gemini", logo: geminiLogo, href: "https://gemini.google.com/" },
-  { name: "Perplexity", logo: perplexityLogo, href: "https://www.perplexity.ai/" },
-  { name: "VS Code", logo: vscodeLogo, href: "https://code.visualstudio.com/" },
-  { name: "PhpStorm", logo: phpstormLogo, href: "https://www.jetbrains.com/phpstorm/", darkModeLight: true },
-  { name: "Windows", logo: windowsLogo, href: "https://www.microsoft.com/windows" },
-  { name: "Tailwind CSS", logo: tailwindLogo, href: "https://tailwindcss.com/" },
-];
 
 const en: Strings = {
   htmlLang: "en",
@@ -200,9 +134,11 @@ const en: Strings = {
       beforeBremen: "I'm a software developer from ",
       afterBremen: ". After finishing a ",
       apprenticeship: "three-year apprenticeship",
-      afterApprenticeship: " here, I started building the tools I wanted for myself. My current project is ",
+      afterApprenticeship:
+        " here, I started building the tools I wanted for myself. My current project is ",
       finny: "Finny",
-      afterFinny: ", an app that keeps receipts and purchase details in one place and warns me before a warranty expires. Most days I work with PHP, TypeScript and React. Away from that, I run a Proxmox server and usually find something else to fix in my home network.",
+      afterFinny:
+        ", an app that keeps receipts and purchase details in one place and warns me before a warranty expires. Most days I work with PHP, TypeScript and React. Away from that, I run a Proxmox server and usually find something else to fix in my home network.",
     },
     tech: {
       aria: "Tools and technologies I use",
@@ -210,7 +146,7 @@ const en: Strings = {
       mobileViewMore: "Show more",
       mobileViewLess: "Show fewer",
       visitLabel: (name) => `Visit ${name}`,
-      items: technologyLogos,
+      items: TECHNOLOGIES,
     },
     experience: {
       heading: "Experience",
@@ -297,7 +233,15 @@ const en: Strings = {
       warrantyTitle: "WARRANTY",
       warrantyDetail: "covered",
       warrantyUntil: "until 08.2028",
-      description: { lead: "With Finny, my ", first: "receipts", middle: ", ", second: "purchase details", join: " and ", third: "warranties", end: " finally live in one place. It reminds me before I miss an expiry date." },
+      description: {
+        lead: "With Finny, my ",
+        first: "receipts",
+        middle: ", ",
+        second: "purchase details",
+        join: " and ",
+        third: "warranties",
+        end: " finally live in one place. It reminds me before I miss an expiry date.",
+      },
       cta: { prefix: "", label: "Open Finny ↗" },
     },
     ventry: {
@@ -309,7 +253,11 @@ const en: Strings = {
       shareLabel: "expiring link",
       shareStatus: "deletes automatically",
       shareAction: "ready",
-      description: { lead: "Ventry lets me send a file without keeping it online forever. The ", keyword: "link", end: " and the file disappear when the time is up." },
+      description: {
+        lead: "Ventry lets me send a file without keeping it online forever. The ",
+        keyword: "link",
+        end: " and the file disappear when the time is up.",
+      },
       cta: { prefix: "", label: "Open Ventry ↗" },
     },
   },
@@ -337,9 +285,11 @@ const de: Strings = {
       beforeBremen: "Ich bin Softwareentwickler aus ",
       afterBremen: ". Nach meiner ",
       apprenticeship: "dreijährigen Ausbildung",
-      afterApprenticeship: " hier habe ich angefangen, die Tools zu bauen, die mir selbst gefehlt haben. Aktuell arbeite ich an ",
+      afterApprenticeship:
+        " hier habe ich angefangen, die Tools zu bauen, die mir selbst gefehlt haben. Aktuell arbeite ich an ",
       finny: "Finny",
-      afterFinny: ", einer App, die Belege und Kaufdetails an einem Ort sammelt und mich rechtzeitig vor dem Ende einer Garantie erinnert. Im Alltag arbeite ich vor allem mit PHP, TypeScript und React. Wenn noch Zeit bleibt, betreibe ich einen Proxmox-Server und finde in meinem Heimnetzwerk meistens das nächste Problem zum Lösen.",
+      afterFinny:
+        ", einer App, die Belege und Kaufdetails an einem Ort sammelt und mich rechtzeitig vor dem Ende einer Garantie erinnert. Im Alltag arbeite ich vor allem mit PHP, TypeScript und React. Wenn noch Zeit bleibt, betreibe ich einen Proxmox-Server und finde in meinem Heimnetzwerk meistens das nächste Problem zum Lösen.",
     },
     tech: {
       aria: "Tools und Technologien, mit denen ich arbeite",
@@ -347,7 +297,7 @@ const de: Strings = {
       mobileViewMore: "Mehr zeigen",
       mobileViewLess: "Weniger zeigen",
       visitLabel: (name) => `${name} besuchen`,
-      items: technologyLogos,
+      items: TECHNOLOGIES,
     },
     experience: {
       heading: "Erfahrung",
@@ -434,7 +384,15 @@ const de: Strings = {
       warrantyTitle: "GARANTIE",
       warrantyDetail: "noch gültig",
       warrantyUntil: "bis 08.2028",
-      description: { lead: "Mit Finny habe ich meine ", first: "Belege", middle: ", ", second: "Kaufdetails", join: " und ", third: "Garantien", end: " endlich an einem Ort. Die App erinnert mich, bevor ich ein Ablaufdatum verpasse." },
+      description: {
+        lead: "Mit Finny habe ich meine ",
+        first: "Belege",
+        middle: ", ",
+        second: "Kaufdetails",
+        join: " und ",
+        third: "Garantien",
+        end: " endlich an einem Ort. Die App erinnert mich, bevor ich ein Ablaufdatum verpasse.",
+      },
       cta: { prefix: "", label: "Finny öffnen ↗" },
     },
     ventry: {
@@ -446,7 +404,11 @@ const de: Strings = {
       shareLabel: "Link mit Ablaufdatum",
       shareStatus: "löscht sich automatisch",
       shareAction: "bereit",
-      description: { lead: "Mit Ventry kann ich eine Datei teilen, ohne sie dauerhaft online zu lassen. Sobald die Zeit abgelaufen ist, verschwinden ", keyword: "Link", end: " und Datei." },
+      description: {
+        lead: "Mit Ventry kann ich eine Datei teilen, ohne sie dauerhaft online zu lassen. Sobald die Zeit abgelaufen ist, verschwinden ",
+        keyword: "Link",
+        end: " und Datei.",
+      },
       cta: { prefix: "", label: "Ventry öffnen ↗" },
     },
   },

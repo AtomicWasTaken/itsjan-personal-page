@@ -1,9 +1,0 @@
----
-const acceptsHtml = Astro.request.headers.get("accept")?.toLowerCase().includes("text/html") ?? false;
-
-if (!acceptsHtml) {
-  return new Response(null, { status: 404 });
-}
-
-return Astro.redirect("/404", 302);
----

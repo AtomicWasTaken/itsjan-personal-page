@@ -6,7 +6,10 @@ interface Props {
 const { edge = "top" } = Astro.props;
 ---
 
-<div class:list={["top-edge-blur", edge === "bottom" && "bottom-edge-blur"]} aria-hidden="true">
+<div
+  class:list={["top-edge-blur", edge === "bottom" && "bottom-edge-blur"]}
+  aria-hidden="true"
+>
   <div class="top-edge-blur__wash"></div>
   <div class="top-edge-blur__layer top-edge-blur__layer--1"></div>
   <div class="top-edge-blur__layer top-edge-blur__layer--2"></div>

@@ -1,0 +1,7 @@
+.astro
+.wrangler
+.impeccable
+dist
+node_modules
+public/ransom
+bun.lock

@@ -38,46 +38,61 @@ const {
   cuelumeToggle,
   ...attributes
 } = Astro.props;
-const hasTooltip = Boolean(tooltipId && (tooltipTitle || tooltipDetail || tooltipText));
-const variantClass = variant === "primary"
-  ? "button-style squircle"
-  : variant === "text"
-    ? "text-action"
-    : variant === "icon"
-      ? "squircle"
-      : "";
-const buttonClass = [variantClass, className, hasTooltip && "t-tt-trigger"].filter(Boolean).join(" ");
+const hasTooltip = Boolean(
+  tooltipId && (tooltipTitle || tooltipDetail || tooltipText),
+);
+const variantClass =
+  variant === "primary"
+    ? "button-style squircle"
+    : variant === "text"
+      ? "text-action"
+      : variant === "icon"
+        ? "squircle"
+        : "";
+const buttonClass = [variantClass, className, hasTooltip && "t-tt-trigger"]
+  .filter(Boolean)
+  .join(" ");
 ---
 
-{hasTooltip ? (
-  <Tooltip
-    id={tooltipId!}
-    title={tooltipTitle}
-    detail={tooltipDetail}
-    text={tooltipText}
-    class={tooltipClass}
-    wrapperClass={wrapperClass}
-  >
+{
+  hasTooltip ? (
+    <Tooltip
+      id={tooltipId!}
+      title={tooltipTitle}
+      detail={tooltipDetail}
+      text={tooltipText}
+      class={tooltipClass}
+      wrapperClass={wrapperClass}
+    >
+      <button
+        slot="trigger"
+        {...attributes}
+        type={type}
+        class={buttonClass || undefined}
+        aria-describedby={tooltipId}
+        data-cuelume-hover={feedback && cuelumeHover ? cuelumeHover : undefined}
+        data-cuelume-press={feedback && cuelumePress ? cuelumePress : undefined}
+        data-cuelume-release={
+          feedback && cuelumeRelease ? cuelumeRelease : undefined
+        }
+        data-cuelume-toggle={cuelumeToggle}
+      >
+        <slot />
+      </button>
+    </Tooltip>
+  ) : (
     <button
-      slot="trigger"
       {...attributes}
       type={type}
       class={buttonClass || undefined}
-      aria-describedby={tooltipId}
       data-cuelume-hover={feedback && cuelumeHover ? cuelumeHover : undefined}
       data-cuelume-press={feedback && cuelumePress ? cuelumePress : undefined}
-      data-cuelume-release={feedback && cuelumeRelease ? cuelumeRelease : undefined}
+      data-cuelume-release={
+        feedback && cuelumeRelease ? cuelumeRelease : undefined
+      }
       data-cuelume-toggle={cuelumeToggle}
-    ><slot /></button>
-  </Tooltip>
-) : (
-  <button
-    {...attributes}
-    type={type}
-    class={buttonClass || undefined}
-    data-cuelume-hover={feedback && cuelumeHover ? cuelumeHover : undefined}
-    data-cuelume-press={feedback && cuelumePress ? cuelumePress : undefined}
-    data-cuelume-release={feedback && cuelumeRelease ? cuelumeRelease : undefined}
-    data-cuelume-toggle={cuelumeToggle}
-  ><slot /></button>
-)}
+    >
+      <slot />
+    </button>
+  )
+}
