@@ -1363,11 +1363,7 @@ html[data-theme="dark"] .ventry-file-row b {
   clip-path: none;
   transition: none;
 }
-.t-skel.is-resetting .t-skel-skeleton,
-.t-skel.is-resetting .t-skel-content {
-  transition: none !important;
-}
-.t-skel-skeleton.is-pulsing > * {
+.t-skel-skeleton.is-pulsing {
   animation: t-skel-pulse var(--pulse-dur) ease-in-out var(--pulse-count);
 }
 .activity-reveal.t-skel .t-skel-skeleton .activity-day,
@@ -2661,7 +2657,7 @@ html[data-theme="dark"] .social-card-linkedin-action {
   .t-skel-content {
     transition: none !important;
   }
-  .t-skel-skeleton.is-pulsing > * {
+  .t-skel-skeleton.is-pulsing {
     animation: none !important;
   }
   .activity-reveal.t-skel .activity-day {

@@ -181,9 +181,12 @@
           label.dataset.text = nextText;
           label.classList.remove("is-exit");
           label.classList.add("is-enter-start");
-          void label.offsetHeight;
-          label.classList.remove("is-enter-start");
-          isSwapping = false;
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+              label.classList.remove("is-enter-start");
+              isSwapping = false;
+            });
+          });
         },
         readCssTime("--text-swap-dur", 150),
       );
@@ -218,9 +221,12 @@
           label.textContent = nextText;
           label.classList.remove("is-exit");
           label.classList.add("is-enter-start");
-          void label.offsetHeight;
-          label.classList.remove("is-enter-start");
-          isSwapping = false;
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+              label.classList.remove("is-enter-start");
+              isSwapping = false;
+            });
+          });
         },
         readCssTime("--text-swap-dur", 150),
       );
@@ -434,19 +440,11 @@
     };
 
     skeletons.forEach((container) => {
-      const skeleton = container.querySelector<HTMLElement>(".t-skel-skeleton");
-      if (!skeleton) return;
       if (reducedMotion) {
         container.classList.add("is-revealed");
         return;
       }
 
-      container.classList.add("is-resetting");
-      container.classList.remove("is-revealed");
-      skeleton.classList.remove("is-pulsing");
-      void skeleton.offsetWidth;
-      container.classList.remove("is-resetting");
-      skeleton.classList.add("is-pulsing");
       window.setTimeout(
         () => {
           container.classList.add("is-revealed");
