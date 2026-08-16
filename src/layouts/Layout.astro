@@ -20,10 +20,10 @@ interface Props {
 const props = Astro.props as Props;
 const locale = detectLocale(Astro.request);
 const copy = tr(locale);
-const title = props.title ?? (locale === "de" ? "Jan-Marlon Leibl · Entwickler aus Bremen" : "Jan-Marlon Leibl · Developer from Bremen");
+const title = props.title ?? (locale === "de" ? "Jan-Marlon Leibl · Softwareentwickler aus Bremen" : "Jan-Marlon Leibl · Software developer from Bremen");
 const description = props.description ?? (locale === "de"
-  ? "Jan-Marlon Leibl ist Softwareentwickler aus Bremen. Er baut Finny, eine App für Belege und Garantie-Erinnerungen."
-  : "Jan-Marlon Leibl is a software developer from Bremen. He is building Finny, an app for receipts and warranty reminders.");
+  ? "Ich bin Jan-Marlon, Softwareentwickler aus Bremen und der Kopf hinter Finny, einer App für Belege und Garantiefristen."
+  : "I'm Jan-Marlon, a software developer from Bremen and the person behind Finny, an app for receipts and warranty reminders.");
 const requestUrl = new URL(Astro.request.url);
 const requestLocale = requestUrl.pathname.split("/")[1];
 const localizedPath = requestLocale === "de" || requestLocale === "en" ? `/${requestLocale}` : "/";
@@ -119,7 +119,7 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
           tools: [
             {
               name: "get_profile",
-              description: "Get Jan-Marlon Leibl's public developer profile and contact links.",
+              description: "Get Jan-Marlon Leibl's developer profile and contact links.",
               inputSchema: { type: "object", properties: {}, additionalProperties: false },
               execute: async () => ({
                 name: "Jan-Marlon Leibl",

@@ -6,12 +6,12 @@ import { detectLocale } from "../lib/i18n";
 
 const locale = detectLocale(Astro.request);
 const de = locale === "de";
-const headline = de ? "DIE SEITE IST WEG" : "PAGE NOT FOUND";
-const lines = de ? ["DIE SEITE", "IST WEG"] : ["PAGE NOT", "FOUND"];
+const headline = de ? "HIER IST NICHTS" : "NOTHING HERE";
+const lines = de ? ["HIER IST", "NICHTS"] : ["NOTHING", "HERE"];
 const title = de ? "Seite nicht gefunden · Jan-Marlon Leibl" : "Page not found · Jan-Marlon Leibl";
 const description = de
-  ? "Diese Seite konnte nicht gefunden werden."
-  : "This page could not be found.";
+  ? "Unter dieser Adresse gibt es keine Seite."
+  : "There is no page at this address.";
 const homeHref = de ? "/de" : "/en";
 const pageSeed = Math.floor(Math.random() * 0x100000000);
 
@@ -32,13 +32,13 @@ Astro.response.headers.set("Cache-Control", "no-store");
 
       <p class="not-found-copy">
         {de
-          ? "Diese Seite ist verschwunden. Vielleicht bist du falsch abgebogen."
-          : "This page has disappeared. Maybe you took a wrong turn."}
+          ? "Unter dieser Adresse gibt es nichts. Vielleicht ist der Link falsch oder inzwischen veraltet."
+          : "There is nothing at this address. The link may be wrong or out of date."}
       </p>
 
       <div class="not-found-actions">
         <InteractiveLink variant="primary" class="not-found-home" href={homeHref}>
-          <span>{de ? "Zur Startseite" : "Back home"}</span>
+          <span>{de ? "Zurück zur Startseite" : "Go home"}</span>
         </InteractiveLink>
       </div>
     </main>

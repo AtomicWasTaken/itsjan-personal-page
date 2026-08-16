@@ -664,18 +664,17 @@ main img {
   border-radius: 4px;
   color: var(--text);
   font-weight: 500;
-  text-decoration-line: underline;
-  text-decoration-style: solid;
-  text-decoration-color: var(--text-tertiary);
-  text-decoration-thickness: 2px;
-  text-decoration-skip-ink: auto;
-  text-underline-offset: 4px;
 }
 
-.experience-organization-logo {
+.experience-organization-mark {
   width: 20px;
   height: 20px;
   flex: 0 0 auto;
+  outline: 0;
+  object-fit: contain;
+}
+.experience-organization--with-logo { margin-left: 4px; }
+.experience-organization-logo {
   background: currentColor;
   -webkit-mask: var(--experience-organization-logo) center / contain no-repeat;
   mask: var(--experience-organization-logo) center / contain no-repeat;
@@ -1177,7 +1176,7 @@ html[data-theme="dark"] .ventry-file-row b {
 .tech-sticker:hover,
 .tech-sticker:focus-visible { z-index: 40; }
 .activity-day[data-level="1"] { background: var(--activity-1); }.activity-day[data-level="2"] { background: var(--activity-2); }.activity-day[data-level="3"] { background: var(--activity-3); }.activity-day[data-level="4"] { background: var(--activity-4); }
-/* transitions.dev — skeleton loader and reveal */
+/* transitions.dev: skeleton loader and reveal */
 .activity-reveal { width: 100%; min-height: 67px; }
 .t-skel { position: relative; }
 .t-skel-skeleton,
@@ -1329,11 +1328,14 @@ html[data-theme="dark"] .ventry-file-row b {
   display: flex;
   align-items: flex-end;
   overflow: hidden;
+  padding: 8px;
   border: 0;
-  border-radius: 12px;
-  background: var(--social-card-surface);
+  border-radius: 22px;
+  background: var(--card-shell);
   box-shadow:
-    0 0 0 1px var(--social-card-border),
+    inset 0 1px 0 rgba(255, 255, 255, .16),
+    inset 0 0 12px rgba(255, 255, 255, .04),
+    var(--card-shadow),
     0 12px 30px rgba(0, 0, 0, .14);
   color: var(--social-card-fg);
   transition:
@@ -1343,12 +1345,13 @@ html[data-theme="dark"] .ventry-file-row b {
 }
 .social-preview__panel {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 8px;
+  left: 8px;
   box-sizing: border-box;
   visibility: hidden;
-  overflow: visible;
-  border-radius: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--social-card-surface);
   opacity: 0;
   color: var(--social-card-fg);
   font-family: "Inter", "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -1617,8 +1620,10 @@ html[data-theme="dark"] .social-preview-group {
 }
 html[data-theme="dark"] .social-preview__viewport {
   box-shadow:
-    0 0 0 1px var(--social-card-border),
-    0 14px 34px rgba(0, 0, 0, .38);
+    inset 0 1px 0 rgba(255, 255, 255, .16),
+    inset 0 0 12px rgba(255, 255, 255, .04),
+    var(--card-shadow),
+    0 14px 34px rgba(0, 0, 0, .26);
 }
 html[data-theme="dark"] .social-card-contributions i[data-level="0"] {
   background: #353538;
@@ -1966,7 +1971,7 @@ html[data-theme="dark"] .social-card-linkedin-action {
   transition: none;
 }
 
-/* Transitions.dev — Shimmer text */
+/* transitions.dev: shimmer text */
 .t-shimmer {
   position: relative;
   display: inline-block;

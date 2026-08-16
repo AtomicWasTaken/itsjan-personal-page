@@ -2,19 +2,19 @@
 
 ## Identity
 
-Jan-Marlon Leibl is a software developer based in Bremen, Germany. He communicates in German and English and can be reached at hi@itsjan.dev. His public website is https://itsjan.dev.
+Jan-Marlon Leibl is a software developer from Bremen, Germany. He speaks German and English and can be reached at hi@itsjan.dev. His website is https://itsjan.dev.
 
 Jan started coding at age 11 in C# after a friend showed him a small application. He completed a three-year software development apprenticeship at team neusta in Bremen from 2023 to 2026.
 
 ## Current focus
 
-Jan is building Finny, a receipt and warranty-reminder app. Finny keeps receipt and purchase details together and reminds people before a warranty expires. The public product site is https://fnny.app.
+Jan is building Finny, an app that keeps receipts, purchase details and warranty dates in one place. It sends a reminder before a warranty expires. The product site is https://fnny.app.
 
 ## Experience
 
 ### Finny · Bremen · 2026 to present
 
-Jan is building Finny with TypeScript, React, and Next.js. The product focuses on useful reminders and keeping purchase information easy to find.
+Jan is building Finny with TypeScript, React, and Next.js. The app keeps purchase information easy to find and sends warranty reminders.
 
 ### team neusta · Bremen · 2023 to 2026
 
@@ -22,7 +22,7 @@ Jan completed his software development apprenticeship at team neusta. He worked 
 
 ### Ventry · 2023 to 2024
 
-Jan built Ventry, a temporary file-sharing service. It creates links that expire and remove the shared file after the share period. The project is available at https://ventry.host.
+Jan built Ventry to share files without leaving them online forever. Its links expire and remove the shared file automatically. The project is available at https://ventry.host.
 
 ## Technical areas
 

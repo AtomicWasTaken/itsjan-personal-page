@@ -18,8 +18,8 @@ his work, or the projects linked from itsjan.dev.
 
 ## Projects
 
-- Finny: https://fnny.app — keeps receipts and purchase details together and reminds people before warranties expire.
-- Ventry: https://ventry.host — creates temporary file-sharing links that expire and remove the shared file.
+- Finny: https://fnny.app. It keeps receipts, purchase details and warranty dates together, then sends a reminder before a warranty expires.
+- Ventry: https://ventry.host. It shares files through links that expire and remove the file automatically.
 
 ## Public links
 

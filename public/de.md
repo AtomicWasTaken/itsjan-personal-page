@@ -1,18 +1,18 @@
 # Jan-Marlon Leibl
 
-Jan-Marlon Leibl ist Softwareentwickler aus Bremen. Er baut Finny, eine App, die Belege und Kaufdetails zusammenhält und vor Ablauf einer Garantie erinnert.
+Ich bin Jan-Marlon, Softwareentwickler aus Bremen. Ich baue Tools, die mir selbst gefehlt haben. Aktuell ist das Finny, eine App für Belege, Kaufdetails und Garantiefristen.
 
 ## Erfahrung
 
-- **Finny · 2026 bis heute · Bremen** — Entwicklung einer App für Belege und Garantie-Erinnerungen mit TypeScript, React und Next.js.
-- **team neusta · 2023 bis 2026 · Bremen** — Dreijährige Ausbildung zum Softwareentwickler und Kundenprojekte mit PHP, TypeScript, TYPO3, Symfony und Git.
-- **Ventry · 2023 bis 2024** — Entwicklung eines Dienstes zum temporären Teilen von Dateien mit ablaufenden Links.
+- **Finny · seit 2026 · Bremen:** Ich entwickle die App mit TypeScript, React und Next.js.
+- **team neusta · 2023 bis 2026 · Bremen:** Dort habe ich meine dreijährige Ausbildung zum Softwareentwickler abgeschlossen und an Kundenprojekten mit PHP, TypeScript, TYPO3, Symfony und Git gearbeitet.
+- **Ventry · 2023 bis 2024:** Ich wollte Dateien unkompliziert über Links teilen, die von selbst ablaufen. Daraus entstand Ventry.
 
 ## Projekte
 
-- [Finny](https://fnny.app) hält Belege und Kaufdetails zusammen und erinnert vor Ablauf einer Garantie.
-- [Ventry](https://ventry.host) erstellt temporäre Links zum Teilen von Dateien, die nach Ablauf entfernt werden.
+- [Finny](https://fnny.app) sammelt Belege, Kaufdetails und Garantiefristen an einem Ort. Vor Ablauf einer Garantie gibt die App rechtzeitig Bescheid.
+- [Ventry](https://ventry.host) teilt Dateien, ohne sie dauerhaft online zu lassen. Sobald die Zeit abgelaufen ist, verschwinden Link und Datei.
 
 ## Kontakt
 
-E-Mail: [hi@itsjan.dev](mailto:hi@itsjan.dev). Außerdem gibt es [GitHub](https://github.com/AtomicWasTaken), [LinkedIn](https://www.linkedin.com/in/janmarlonleibl/), und [X](https://x.com/janodersooo).
+Am einfachsten erreichst du mich unter [hi@itsjan.dev](mailto:hi@itsjan.dev). Du findest mich außerdem auf [GitHub](https://github.com/AtomicWasTaken), [LinkedIn](https://www.linkedin.com/in/janmarlonleibl/) und [X](https://x.com/janodersooo).

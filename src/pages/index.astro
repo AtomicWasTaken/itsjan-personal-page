@@ -127,8 +127,8 @@ const currentYear = new Date().getFullYear();
       {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{copy.intro.afterBremen}<span class="keyword">{copy.intro.apprenticeship}</span>{copy.intro.afterApprenticeship}<span class="keyword">{copy.intro.finny}</span>{copy.intro.afterFinny}
     </p>
     <div class="mt-5 flex flex-wrap gap-3">
-      <InteractiveLink variant="primary" class="hero-contact-link" href="mailto:hi@itsjan.dev">{locale === "de" ? "Kontakt aufnehmen" : "Get in touch"}</InteractiveLink>
-      <InteractiveLink variant="text" class="hero-project-link" href="#projects"><span>{locale === "de" ? "Projekte ansehen" : "See projects"}</span><ArrowIcon /></InteractiveLink>
+      <InteractiveLink variant="primary" class="hero-contact-link" href="mailto:hi@itsjan.dev">{locale === "de" ? "E-Mail schreiben" : "Email me"}</InteractiveLink>
+      <InteractiveLink variant="text" class="hero-project-link" href="#projects"><span>{locale === "de" ? "Zu den Projekten" : "Jump to projects"}</span><ArrowIcon /></InteractiveLink>
     </div>
   </section>
   <WaveDivider />
@@ -139,13 +139,26 @@ const currentYear = new Date().getFullYear();
       {copy.experience.items.map((item) => (
         <li class="experience-item min-w-0">
           <p class="experience-period mb-[3px] text-[13px] leading-5 text-[var(--text-tertiary)]">{item.period}<span aria-hidden="true">, </span>{item.location}</p>
-          <h3 class="m-0 flex min-w-0 flex-wrap items-center gap-2 text-base leading-[22px] font-semibold text-[var(--text)]">
+          <h3 class="m-0 flex min-w-0 flex-wrap items-center gap-1 text-base leading-[22px] font-semibold text-[var(--text)]">
             {item.title}
-            <span class="experience-organization inline-flex items-center gap-0.5">
+            <span class:list={[
+              "experience-organization inline-flex items-center gap-0.5",
+              ["Finny", "Ventry", "team neusta"].includes(item.organization) && "experience-organization--with-logo",
+            ]}>
+              {item.organization === "Finny" && (
+                <Image src={finnyFavicon} alt="" width="20" height="20" class="experience-organization-mark" />
+              )}
               {item.organization.toLowerCase() === "team neusta" && (
                 <span
-                  class="experience-organization-logo"
+                  class="experience-organization-mark experience-organization-logo"
                   style={`--experience-organization-logo: url(${teamNeustaLogo.src})`}
+                  aria-hidden="true"
+                ></span>
+              )}
+              {item.organization === "Ventry" && (
+                <span
+                  class="experience-organization-mark experience-organization-logo"
+                  style={`--experience-organization-logo: url(${ventryLogo.src})`}
                   aria-hidden="true"
                 ></span>
               )}
@@ -187,7 +200,7 @@ const currentYear = new Date().getFullYear();
       <article class="project-preview w-full overflow-visible">
         <div class="project-preview-surface">
           <div class="project-preview-image project-preview-image--finny" role="img" aria-label={copy.finny.previewAria}>
-            <span class="preview-brand"><Image src={finnyFavicon} alt="" width={28} height={28} />finny</span>
+            <span class="preview-brand"><Image src={finnyFavicon} alt="" width={28} height={28} />Finny</span>
             <span class="preview-receipt preview-receipt--one" aria-hidden="true"><b>{copy.finny.receiptTitle}</b><i>{copy.finny.receiptVendor}</i><i>{copy.finny.receiptDetail}</i></span>
             <span class="preview-receipt preview-receipt--two" aria-hidden="true"><b>{copy.finny.warrantyTitle}</b><i>{copy.finny.warrantyDetail}</i><small>{copy.finny.warrantyUntil}</small></span>
           </div>
@@ -364,9 +377,9 @@ const currentYear = new Date().getFullYear();
   <footer id="site-footer" class="site-footer">
     <InteractiveLink variant="text" href="https://github.com/AtomicWasTaken/itsjan-personal-page" target="_blank" rel="noreferrer" wrapperClass="site-footer-source" tooltipId="site-footer-github-tooltip" tooltipTitle="github.com" tooltipDetail="/AtomicWasTaken/itsjan-personal-page" tooltipClass="social-tooltip">
       <GitHubIcon />
-      <span class="site-footer-source__label">{locale === "de" ? "Quellcode ansehen" : "View source code"}</span>
+      <span class="site-footer-source__label">{locale === "de" ? "Code auf GitHub" : "Source on GitHub"}</span>
     </InteractiveLink>
-    <p>© Copyright {currentYear} · {locale === "de" ? "Alle Rechte vorbehalten" : "All rights reserved"}, Jan-Marlon Leibl</p>
+    <p>© {currentYear} Jan-Marlon Leibl</p>
   </footer>
 </main>
 <script>
@@ -383,8 +396,8 @@ const currentYear = new Date().getFullYear();
       accordion.setAttribute("data-open", String(nextOpen));
       toggle.setAttribute("aria-expanded", String(nextOpen));
       label.textContent = nextOpen
-        ? (toggle.dataset.labelLess || "Show less")
-        : (toggle.dataset.labelMore || "View more");
+        ? (toggle.dataset.labelLess || "Show fewer")
+        : (toggle.dataset.labelMore || "Show more");
       if (nextOpen && typeof window.posthog?.capture === 'function') {
         window.posthog.capture('tech_accordion_expanded');
       }
@@ -555,13 +568,13 @@ const currentYear = new Date().getFullYear();
           window.posthog.capture('email_copied');
         }
         button.dataset.copied = "true";
-        button.setAttribute("aria-label", button.dataset.labelCopied || "Email copied");
-        swapText(button.dataset.labelCopied || "Email copied");
+        button.setAttribute("aria-label", button.dataset.labelCopied || "Copied");
+        swapText(button.dataset.labelCopied || "Copied");
         window.clearTimeout(resetTimer);
         resetTimer = window.setTimeout(() => {
           delete button.dataset.copied;
-          button.setAttribute("aria-label", button.dataset.labelCopy || "Copy email");
-          swapText(button.dataset.labelCopy || "Copy email");
+          button.setAttribute("aria-label", button.dataset.labelCopy || "Copy my email");
+          swapText(button.dataset.labelCopy || "Copy my email");
         }, 3000);
       } catch {
         window.location.assign(`mailto:${email}`);
@@ -577,12 +590,12 @@ const currentYear = new Date().getFullYear();
     if (!(button instanceof HTMLButtonElement)) return;
 
     const shareData = {
-      title: "Jan-Marlon Leibl - itsjan.dev",
-      text: "Jan-Marlon Leibl - itsjan.dev",
+      title: "Jan-Marlon Leibl · itsjan.dev",
+      text: "Jan-Marlon Leibl · itsjan.dev",
       url: "https://itsjan.dev",
     };
-    const defaultLabel = button.getAttribute("aria-label") || "Share profile";
-    const copiedLabel = button.dataset.labelCopied || "Link copied";
+    const defaultLabel = button.getAttribute("aria-label") || "Share this page";
+    const copiedLabel = button.dataset.labelCopied || "Copied";
     let resetTimer = 0;
 
     button.addEventListener("click", async () => {
@@ -807,14 +820,14 @@ const currentYear = new Date().getFullYear();
 <script>
   // PostHog click tracking for key interaction events
   (() => {
-    // "Get in touch" hero contact link
+    // "Email me" hero contact link
     document.querySelector('.hero-contact-link')?.addEventListener('click', () => {
       if (typeof window.posthog?.capture === 'function') {
         window.posthog.capture('contact_button_clicked');
       }
     });
 
-    // "See projects" hero navigation link
+    // Project navigation link
     document.querySelector('.hero-project-link')?.addEventListener('click', () => {
       if (typeof window.posthog?.capture === 'function') {
         window.posthog.capture('projects_section_navigated');

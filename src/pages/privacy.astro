@@ -9,8 +9,8 @@ const locale = detectLocale(Astro.request);
 const de = locale === "de";
 const title = de ? "Datenschutzerklärung · Jan-Marlon Leibl" : "Privacy policy · Jan-Marlon Leibl";
 const description = de
-  ? "Informationen zur Verarbeitung personenbezogener Daten auf itsjan.dev."
-  : "Information about the processing of personal data on itsjan.dev.";
+  ? "Wie itsjan.dev mit personenbezogenen Daten umgeht."
+  : "How itsjan.dev handles personal data.";
 ---
 
 <Layout title={title} description={description}>
@@ -20,7 +20,7 @@ const description = de
     <main class="privacy-main">
     <InteractiveLink variant="text" class="hero-project-link privacy-back" href="/">
       <ArrowIcon direction="left" />
-      <span>{de ? "Zurück zur Website" : "Back to the website"}</span>
+      <span>{de ? "Zurück zur Startseite" : "Back home"}</span>
     </InteractiveLink>
     {de ? (
       <>
@@ -33,13 +33,13 @@ const description = de
         </section>
         <section>
           <h2>Hosting</h2>
-          <p>Diese Website wird über Cloudflare bereitgestellt. Beim Aufruf verarbeitet Cloudflare technisch erforderliche Verbindungsdaten, insbesondere IP-Adresse, Zeitpunkt und angeforderte Inhalte, um die Website sicher auszuliefern.</p>
+          <p>Cloudflare liefert diese Website aus. Dafür verarbeitet der Dienst technisch notwendige Verbindungsdaten wie Ihre IP-Adresse, den Zeitpunkt des Aufrufs und die angeforderten Inhalte.</p>
           <InteractiveLink variant="text" class="privacy-action-link" href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">Cloudflare Privacy Policy <ArrowIcon direction="external" /></InteractiveLink>
         </section>
         <section>
           <h2>Reichweitenmessung mit PostHog</h2>
-          <p>Wenn Sie ausdrücklich zustimmen, verwenden wir PostHog (PostHog, Inc.) mit EU-Datenstandort. Damit sehen wir, welche Seiten und Funktionen genutzt werden, und können technische Fehler finden. Dabei können aufgerufene Seiten, Interaktionen, Browser- und Geräteinformationen sowie eine pseudonyme Kennung verarbeitet werden.</p>
-          <p>Rechtsgrundlage ist Ihre Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO sowie § 25 Abs. 1 TDDDG. Die Einwilligung ist freiwillig und kann jederzeit über „Datenschutz-Einstellungen“ widerrufen werden. Ohne Einwilligung wird PostHog nicht initialisiert und es werden keine Analyse-Cookies gesetzt.</p>
+          <p>Ich lade PostHog (PostHog, Inc.) mit EU-Datenstandort nur, wenn Sie ausdrücklich zustimmen. Das Tool zeigt mir, welche Seiten und Funktionen genutzt werden, und hilft bei der Suche nach technischen Fehlern. Dabei kann PostHog aufgerufene Seiten, Interaktionen, Browser- und Geräteinformationen sowie eine pseudonyme Kennung verarbeiten.</p>
+          <p>Rechtsgrundlage ist Ihre Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO sowie § 25 Abs. 1 TDDDG. Sie entscheiden freiwillig und können Ihre Einwilligung jederzeit über die Datenschutz-Einstellungen widerrufen. Ohne Ihre Zustimmung startet PostHog nicht und setzt keine Analyse-Cookies.</p>
           <div class="privacy-link-list">
             <InteractiveLink variant="text" class="privacy-action-link" href="https://posthog.com/privacy" target="_blank" rel="noreferrer">PostHog Datenschutzhinweise <ArrowIcon direction="external" /></InteractiveLink>
             <InteractiveLink variant="text" class="privacy-action-link" href="https://posthog.com/dpa" target="_blank" rel="noreferrer">PostHog Auftragsverarbeitungsvereinbarung <ArrowIcon direction="external" /></InteractiveLink>
@@ -47,11 +47,11 @@ const description = de
         </section>
         <section>
           <h2>Fehlerdiagnose</h2>
-          <p>Mit Einwilligung können technische Fehler und nicht behandelte JavaScript-Ausnahmen an PostHog übermittelt werden. Formulareingaben und Konsoleninhalte werden dabei nicht absichtlich erfasst. Session Replay ist auf dieser Website derzeit nicht aktiviert.</p>
+          <p>Wenn Sie zugestimmt haben, kann PostHog technische Fehler und nicht behandelte JavaScript-Ausnahmen erhalten. Formulareingaben und Inhalte aus der Konsole erfasse ich nicht absichtlich. Session Replay ist auf dieser Website ausgeschaltet.</p>
         </section>
         <section>
           <h2>Ihre Rechte</h2>
-          <p>Sie haben, soweit die gesetzlichen Voraussetzungen vorliegen, das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Sie können sich außerdem bei einer Datenschutzaufsichtsbehörde beschweren. Für Anfragen genügt eine E-Mail an die oben genannte Adresse.</p>
+          <p>Soweit die gesetzlichen Voraussetzungen vorliegen, haben Sie das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Sie können sich außerdem bei einer Datenschutzaufsichtsbehörde beschweren. Für eine Anfrage reicht eine E-Mail an die oben genannte Adresse.</p>
         </section>
       </>
     ) : (
@@ -65,13 +65,13 @@ const description = de
         </section>
         <section>
           <h2>Hosting</h2>
-          <p>This website is delivered through Cloudflare. Cloudflare processes technically necessary connection data, including IP address, time of request, and requested content, to deliver the site securely.</p>
+          <p>Cloudflare delivers this website. To do that, the service processes necessary connection data such as your IP address, the time of the request and the requested content.</p>
           <InteractiveLink variant="text" class="privacy-action-link" href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">Cloudflare Privacy Policy <ArrowIcon direction="external" /></InteractiveLink>
         </section>
         <section>
           <h2>Analytics with PostHog</h2>
-          <p>If you explicitly agree, we use PostHog (PostHog, Inc.) with EU data hosting. This lets us see which pages and features are used and helps us find technical errors. The data can include visited pages, interactions, browser and device information, and a pseudonymous identifier.</p>
-          <p>The legal basis is your consent. It is voluntary and can be withdrawn at any time through “Privacy settings”. Without consent, PostHog is not initialized and no analytics cookies are set.</p>
+          <p>I load PostHog (PostHog, Inc.) with EU data hosting only after you explicitly agree. It shows me which pages and features people use and helps me find technical errors. PostHog may process visited pages, interactions, browser and device information, and a pseudonymous identifier.</p>
+          <p>The legal basis is your consent. The choice is voluntary, and you can withdraw it at any time in the privacy settings. Without your consent, PostHog does not start or set analytics cookies.</p>
           <div class="privacy-link-list">
             <InteractiveLink variant="text" class="privacy-action-link" href="https://posthog.com/privacy" target="_blank" rel="noreferrer">PostHog Privacy notice <ArrowIcon direction="external" /></InteractiveLink>
             <InteractiveLink variant="text" class="privacy-action-link" href="https://posthog.com/dpa" target="_blank" rel="noreferrer">PostHog Data Processing Agreement <ArrowIcon direction="external" /></InteractiveLink>
@@ -79,11 +79,11 @@ const description = de
         </section>
         <section>
           <h2>Error diagnostics</h2>
-          <p>With consent, technical errors and unhandled JavaScript exceptions may be sent to PostHog. Form inputs and console output are not intentionally captured. Session Replay is not currently enabled on this site.</p>
+          <p>After you consent, PostHog may receive technical errors and unhandled JavaScript exceptions. I do not intentionally capture form input or console output. Session Replay is turned off on this site.</p>
         </section>
         <section>
           <h2>Your rights</h2>
-          <p>Subject to applicable law, you may have rights to access, correct, delete, restrict, port, or object to processing of your personal data, and to lodge a complaint with a data-protection authority. Contact the address above for requests.</p>
+          <p>Where the law applies, you may request access, correction, deletion, restriction or transfer of your personal data, or object to its processing. You can also complain to a data protection authority. Send requests to the email address above.</p>
         </section>
       </>
     )}
