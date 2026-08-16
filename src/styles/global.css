@@ -2411,6 +2411,16 @@ html[data-theme="dark"] .social-card-linkedin-action {
   outline-offset: 3px;
 }
 @supports (corner-shape: squircle) {
+  .project-preview,
+  .social-preview__viewport,
+  .avatar-modal-content,
+  .activity-tooltip {
+    corner-shape: squircle;
+  }
+  .project-preview,
+  .social-preview__viewport {
+    border-radius: 2rem;
+  }
   .squircle,
   .social-link,
   .theme-toggle,
