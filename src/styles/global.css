@@ -1213,9 +1213,6 @@ html[data-theme="dark"] .ventry-file-row b {
   overflow: visible;
   padding: 10px 0 8px;
 }
-.activity-scroll-mobile {
-  display: none;
-}
 .activity-grid {
   display: grid;
   grid-auto-flow: column;
@@ -1312,91 +1309,21 @@ html[data-theme="dark"] .ventry-file-row b {
 }
 /* transitions.dev: skeleton loader and reveal */
 .activity-reveal {
+  position: relative;
   width: 100%;
   min-height: 67px;
 }
-.t-skel {
-  position: relative;
-}
-.t-skel-skeleton,
-.t-skel-content {
-  position: absolute;
-  inset: 0;
-}
-
-.t-skel-skeleton {
-  z-index: 1;
-  opacity: 1;
-  filter: blur(0);
-  clip-path: inset(0 0 0 0);
-  transition:
-    opacity var(--reveal-dur) var(--reveal-ease),
-    filter var(--reveal-dur) var(--reveal-ease),
-    clip-path var(--reveal-dur) var(--reveal-ease);
-}
-.t-skel-content {
-  z-index: 2;
-  opacity: 0;
-  filter: blur(var(--reveal-blur));
-  clip-path: inset(0 100% 0 0);
-  transition:
-    opacity var(--reveal-dur) var(--reveal-ease),
-    filter var(--reveal-dur) var(--reveal-ease),
-    clip-path var(--reveal-dur) var(--reveal-ease);
-}
-.t-skel.is-revealed .t-skel-skeleton {
-  opacity: 1;
-  filter: blur(var(--reveal-blur));
-  clip-path: inset(0 0 0 100%);
-}
-.t-skel.is-revealed .t-skel-content {
-  opacity: 1;
-  filter: blur(0);
-  clip-path: inset(0 0 0 0);
-}
-.activity-reveal.t-skel .t-skel-skeleton,
-.activity-reveal.t-skel .t-skel-content,
-.activity-reveal.t-skel.is-revealed .t-skel-skeleton,
-.activity-reveal.t-skel.is-revealed .t-skel-content {
-  opacity: 1;
-  filter: none;
-  clip-path: none;
-  transition: none;
-}
-.t-skel-skeleton.is-pulsing {
+.activity-reveal:not(.is-revealed) .activity-grid {
   animation: t-skel-pulse var(--pulse-dur) ease-in-out var(--pulse-count);
 }
-.activity-reveal.t-skel .t-skel-skeleton .activity-day,
-.activity-reveal.t-skel .t-skel-content .activity-day {
-  transition-delay: calc(var(--activity-order) * var(--activity-reveal-step));
+.activity-reveal:not(.is-revealed) .activity-day {
+  background: var(--activity-0);
 }
-.activity-reveal.t-skel .t-skel-skeleton .activity-day {
-  transition: opacity var(--activity-reveal-duration) var(--reveal-ease);
-  opacity: 1;
-}
-.activity-reveal.t-skel .t-skel-content .activity-day {
-  transition-property: opacity, filter;
+.activity-reveal .activity-day {
+  transition-property: background-color;
   transition-duration: var(--activity-reveal-duration);
   transition-timing-function: var(--reveal-ease);
-  opacity: 0;
-  filter: blur(var(--reveal-blur));
-}
-.activity-reveal.t-skel .activity-day {
   transition-delay: calc(var(--activity-order) * var(--activity-reveal-step));
-}
-.activity-reveal.t-skel.is-revealed .t-skel-skeleton .activity-day {
-  opacity: 1;
-}
-.activity-reveal.t-skel.is-revealed .t-skel-content .activity-day {
-  opacity: 1;
-  filter: blur(0);
-}
-.activity-reveal.t-skel.is-revealed
-  .t-skel-content
-  .activity-day[data-level="0"] {
-  opacity: 0;
-  filter: none;
-  transition: none;
 }
 @keyframes t-skel-pulse {
   0%,
@@ -2566,19 +2493,13 @@ html[data-theme="dark"] .social-card-linkedin-action {
   .project-preview-image .ventry-file-panel {
     display: none;
   }
-  .activity-scroll-desktop {
-    display: none;
-  }
-  .activity-scroll-mobile {
-    display: block;
-  }
-  .activity-grid-mobile {
+  .activity-grid {
     grid-template-rows: repeat(7, 5px);
     grid-auto-columns: 5px;
     column-gap: 0;
     row-gap: 2px;
   }
-  .activity-grid-mobile .activity-day {
+  .activity-grid .activity-day {
     border-radius: 1.5px;
   }
   .activity-tooltip {
@@ -2588,7 +2509,7 @@ html[data-theme="dark"] .social-card-linkedin-action {
     text-align: center;
     white-space: normal;
   }
-  .activity-reveal-mobile {
+  .activity-reveal {
     min-height: 47px;
   }
   .preview-receipt {
@@ -2653,14 +2574,10 @@ html[data-theme="dark"] .social-card-linkedin-action {
     animation: none !important;
     clip-path: none !important;
   }
-  .t-skel-skeleton,
-  .t-skel-content {
-    transition: none !important;
-  }
-  .t-skel-skeleton.is-pulsing {
+  .activity-reveal:not(.is-revealed) .activity-grid {
     animation: none !important;
   }
-  .activity-reveal.t-skel .activity-day {
+  .activity-reveal .activity-day {
     transition: none !important;
   }
   .t-tt {

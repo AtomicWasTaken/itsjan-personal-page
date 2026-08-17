@@ -58,8 +58,7 @@ interface Strings {
     };
     activity: {
       heading: string;
-      desktopAria: string;
-      mobileAria: string;
+      aria: string;
       less: string;
       more: string;
       contribution: string;
@@ -205,8 +204,7 @@ const en: Strings = {
     },
     activity: {
       heading: "My year on GitHub",
-      desktopAria: "My GitHub contributions over the past year",
-      mobileAria: "My GitHub contributions over the past year",
+      aria: "My GitHub contributions over the past year",
       less: "Less",
       more: "More",
       contribution: "contribution",
@@ -356,8 +354,7 @@ const de: Strings = {
     },
     activity: {
       heading: "Mein Jahr auf GitHub",
-      desktopAria: "Meine GitHub-Beiträge im letzten Jahr",
-      mobileAria: "Meine GitHub-Beiträge im letzten Jahr",
+      aria: "Meine GitHub-Beiträge im letzten Jahr",
       less: "Weniger",
       more: "Mehr",
       contribution: "Beitrag",
