@@ -75,7 +75,7 @@ const securityHeaders = {
   "X-Frame-Options": "DENY",
 } as const;
 
-function acceptsMarkdown(acceptHeader: string | null): boolean {
+export function acceptsMarkdown(acceptHeader: string | null): boolean {
   if (!acceptHeader) return false;
 
   return acceptHeader.split(",").some((entry) => {
@@ -143,7 +143,7 @@ function textResponse(
   );
 }
 
-function applyResponseHeaders(
+export function applyResponseHeaders(
   response: Response,
   variesByLanguage = false,
 ): Response {
@@ -161,8 +161,9 @@ function applyResponseHeaders(
   });
 }
 
-export const onRequest = defineMiddleware(async (context, next) => {
-  const request = context.request;
+export async function contentResponseFor(
+  request: Request,
+): Promise<Response | undefined> {
   const pathname = new URL(request.url).pathname.replace(/\/$/, "") || "/";
   const markdown = markdownFor(request, pathname);
   const textResource = textResources[pathname];
@@ -189,6 +190,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
       pathname === "/" || pathname === "/privacy",
     );
   }
+
+  return undefined;
+}
+
+export const onRequest = defineMiddleware(async (context, next) => {
+  const contentResponse = await contentResponseFor(context.request);
+  if (contentResponse) return contentResponse;
 
   return applyResponseHeaders(await next());
 });

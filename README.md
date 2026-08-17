@@ -49,6 +49,7 @@ and analytics integration with your own PostHog project, copy `.env.example` to
 ```sh
 bun run check       # types, lint, formatting, tests, and content integrity
 bun run build       # production Cloudflare build
+bun run test:browser # browser integration checks against a local preview
 bun run ci          # full local equivalent of CI
 bun audit           # dependency vulnerability audit (requires network access)
 ```
