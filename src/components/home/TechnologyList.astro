@@ -1,0 +1,38 @@
+---
+import type { Technology } from "../../data/technologies";
+import type { PortfolioCopy } from "../../lib/i18n";
+import InteractiveLink from "../InteractiveLink.astro";
+
+interface Props {
+  ariaLabel: string;
+  technologies: Technology[];
+  visitLabel: PortfolioCopy["tech"]["visitLabel"];
+}
+
+const { ariaLabel, technologies, visitLabel } = Astro.props;
+---
+
+<ul
+  class="mobile-tech-grid mb-0 grid list-none grid-cols-4 gap-2 p-0"
+  aria-label={ariaLabel}
+>
+  {
+    technologies.map((technology) => {
+      const Logo = technology.logo;
+      return (
+        <li>
+          <InteractiveLink
+            class={`mobile-tech-link flex min-h-[76px] flex-col items-center justify-center gap-2 rounded-[14px] text-[11px] leading-[14px] text-[var(--text-tertiary)]${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
+            href={technology.href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={visitLabel(technology.name)}
+          >
+            <Logo width="28" height="28" aria-hidden="true" focusable="false" />
+            <span>{technology.name}</span>
+          </InteractiveLink>
+        </li>
+      );
+    })
+  }
+</ul>

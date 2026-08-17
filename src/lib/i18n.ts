@@ -111,6 +111,8 @@ interface Strings {
   };
 }
 
+export type PortfolioCopy = Strings["portfolio"];
+
 const en: Strings = {
   htmlLang: "en",
   meta: {

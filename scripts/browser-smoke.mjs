@@ -237,10 +237,39 @@ try {
   );
   assert.equal(await share.getAttribute("data-copied"), "true");
 
+  const technologyAccordion = page.locator("#mobile-tech-accordion");
+  const technologyToggle = page.locator("#mobile-tech-toggle");
+  await technologyToggle.evaluate((element) => {
+    if (element instanceof HTMLButtonElement) element.click();
+  });
+  assert.equal(await technologyAccordion.getAttribute("data-open"), "true");
+  assert.equal(await technologyToggle.getAttribute("aria-expanded"), "true");
+
+  const copyEmail = page.locator("#copy-email");
+  await copyEmail.click();
+  await page.waitForFunction(() =>
+    document.querySelector("#copy-email")?.hasAttribute("data-copied"),
+  );
+  assert.equal(
+    await page.evaluate(() => globalThis.__browserTestClipboard),
+    "hi@itsjan.dev",
+  );
+
+  const socialPreviewRoot = page.locator("[data-social-preview-root]");
+  const socialPreview = page.locator("[data-social-preview]");
+  await page.locator('[data-social-preview-key="github"]').focus();
+  assert.equal(
+    await socialPreviewRoot.getAttribute("data-preview-open"),
+    "true",
+  );
+  assert.equal(await socialPreview.getAttribute("aria-hidden"), "false");
+  await page.locator('[data-analytics-platform="email"]').focus();
+  assert.equal(await socialPreview.getAttribute("aria-hidden"), "true");
+
   assert.deepEqual(consoleProblems, []);
 
   process.stdout.write(
-    `Browser smoke passed: consent, analytics lifecycle, theme, avatar, share, activity graph; ${interceptedAnalyticsRequests} analytics request(s) intercepted.\n`,
+    `Browser smoke passed: consent, analytics lifecycle, theme, avatar, share, email copy, technology accordion, social preview, activity graph; ${interceptedAnalyticsRequests} analytics request(s) intercepted.\n`,
   );
 } catch (error) {
   if (page) {

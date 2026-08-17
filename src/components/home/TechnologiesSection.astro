@@ -1,0 +1,63 @@
+---
+import type { Technology } from "../../data/technologies";
+import type { PortfolioCopy } from "../../lib/i18n";
+import InteractiveButton from "../InteractiveButton.astro";
+import TechnologyList from "./TechnologyList.astro";
+
+interface Props {
+  copy: PortfolioCopy["tech"];
+  featured: Technology[];
+  additional: Technology[];
+}
+
+const { copy, featured, additional } = Astro.props;
+---
+
+<section class="mobile-tech-section">
+  <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
+    {copy.mobileHeading}
+  </h2>
+  <div
+    id="mobile-tech-accordion"
+    class="t-acc mobile-tech-accordion"
+    data-open="false"
+  >
+    <div id="mobile-tech-list" class="mt-6">
+      <TechnologyList
+        technologies={featured}
+        ariaLabel={copy.aria}
+        visitLabel={copy.visitLabel}
+      />
+    </div>
+    <div id="mobile-tech-additional" class="t-acc-panel">
+      <div class="t-acc-panel-inner">
+        <TechnologyList
+          technologies={additional}
+          ariaLabel={copy.aria}
+          visitLabel={copy.visitLabel}
+        />
+      </div>
+    </div>
+    <InteractiveButton
+      id="mobile-tech-toggle"
+      variant="primary"
+      class="t-acc-head mobile-tech-toggle"
+      aria-controls="mobile-tech-additional"
+      aria-expanded="false"
+      data-label-more={copy.mobileViewMore}
+      data-label-less={copy.mobileViewLess}
+    >
+      <span class="mobile-tech-toggle-label">{copy.mobileViewMore}</span>
+      <span class="t-acc-chevron" aria-hidden="true"
+        ><svg viewBox="0 0 16 16" fill="none"
+          ><path
+            d="M4 6.5L8 10.5L12 6.5"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path></svg
+        ></span
+      >
+    </InteractiveButton>
+  </div>
+</section>

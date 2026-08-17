@@ -1,36 +1,22 @@
 ---
-import Layout from "../layouts/Layout.astro";
 import ActivityGraph from "../components/ActivityGraph.astro";
 import EdgeBlur from "../components/EdgeBlur.astro";
 import HomeRuntime from "../components/HomeRuntime.astro";
-import InteractiveButton from "../components/InteractiveButton.astro";
-import InteractiveLink from "../components/InteractiveLink.astro";
-import SocialLinks from "../components/SocialLinks.astro";
 import WaveDivider from "../components/WaveDivider.astro";
-import ArrowIcon from "../components/icons/ArrowIcon.astro";
-import BotIcon from "../components/icons/BotIcon.astro";
-import GitHubIcon from "../components/icons/GitHubIcon.astro";
-import { Image } from "astro:assets";
-import finnyFavicon from "../assets/finny-favicon.png";
-import profile160 from "../assets/jan-profile-160.avif";
-import profile320 from "../assets/jan-profile-320.avif";
-import teamNeustaLogo from "../assets/team-neusta-orb.svg";
-import ventryLogo from "../assets/ventry-logo-white-56.png";
+import ConnectSection from "../components/home/ConnectSection.astro";
+import ExperienceSection from "../components/home/ExperienceSection.astro";
+import PortfolioChrome from "../components/home/PortfolioChrome.astro";
+import PortfolioFooter from "../components/home/PortfolioFooter.astro";
+import ProfileSection from "../components/home/ProfileSection.astro";
+import ProjectsSection from "../components/home/ProjectsSection.astro";
+import TechnologiesSection from "../components/home/TechnologiesSection.astro";
+import Layout from "../layouts/Layout.astro";
+import { buildActivity, fetchGithubContributions } from "../lib/github";
 import { detectLocale, tr } from "../lib/i18n";
 import { ageYears } from "../lib/jan";
-import { buildActivity, fetchGithubContributions } from "../lib/github";
-import {
-  CONTACT_EMAIL,
-  CONTACT_MAILTO,
-  FINNY_URL,
-  PERSON_NAME,
-  SOURCE_REPOSITORY_URL,
-  VENTRY_URL,
-} from "../lib/site";
 import {
   createStickerLayout,
   createTechnologyCollections,
-  toStickerStyle,
 } from "../lib/portfolio";
 
 const locale = detectLocale(Astro.request);
@@ -43,565 +29,47 @@ const technologies = createTechnologyCollections(copy.tech.items);
 const activity = buildActivity(githubDays, locale, copy.activity);
 const activityTotal = activity.reduce((total, day) => total + day.count, 0);
 const activityAriaLabel = `${copy.activity.aria}: ${new Intl.NumberFormat(locale).format(activityTotal)} ${activityTotal === 1 ? copy.activity.contribution : copy.activity.contributions}`;
-const stickerLayout = createStickerLayout(copy.tech.items.length);
 const linkedinUrl =
   locale === "en"
     ? "https://www.linkedin.com/in/janmarlonleibl/?locale=en-US"
     : "https://www.linkedin.com/in/janmarlonleibl/";
-const currentYear = new Date().getFullYear();
-const llmsUrl = new URL("/llms.txt", Astro.url).href;
-const llmsTooltipTitle = new URL(llmsUrl).host;
 ---
 
 <Layout>
   <div class="portfolio-shell">
     <EdgeBlur />
     <EdgeBlur edge="bottom" />
-    <aside class="tech-stickers" aria-label={copy.tech.aria}>
-      <div class="tech-sticker-side tech-sticker-side--left">
-        {
-          copy.tech.items.map((technology, index) => {
-            const placement = stickerLayout[index];
-            return (
-              placement.side === "left" && (
-                <InteractiveLink
-                  href={technology.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  class={`tech-sticker tech-sticker--left tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
-                  style={toStickerStyle(placement)}
-                  aria-label={technology.name}
-                >
-                  <img
-                    src={technology.logo.src}
-                    alt=""
-                    width="28"
-                    height="28"
-                    decoding="async"
-                    draggable="false"
-                  />
-                </InteractiveLink>
-              )
-            );
-          })
-        }
-      </div>
-      <div class="tech-sticker-side tech-sticker-side--right">
-        {
-          copy.tech.items.map((technology, index) => {
-            const placement = stickerLayout[index];
-            return (
-              placement.side === "right" && (
-                <InteractiveLink
-                  href={technology.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  class={`tech-sticker tech-sticker--right tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
-                  style={toStickerStyle(placement)}
-                  aria-label={technology.name}
-                >
-                  <img
-                    src={technology.logo.src}
-                    alt=""
-                    width="28"
-                    height="28"
-                    decoding="async"
-                    draggable="false"
-                  />
-                </InteractiveLink>
-              )
-            );
-          })
-        }
-      </div>
-    </aside>
-    <div
-      id="avatar-modal"
-      class="t-modal avatar-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-hidden="true"
-      aria-label={copy.avatar.expand}
-      inert
-    >
-      <InteractiveButton
-        class="avatar-modal-backdrop"
-        data-avatar-close
-        feedback={false}
-        tabindex="-1"
-        aria-label={copy.avatar.collapse}
-      />
-      <div class="avatar-modal-content">
-        <InteractiveButton
-          variant="icon"
-          class="avatar-modal-close"
-          data-avatar-close
-          cuelumeToggle="release"
-          cuelumeRelease={false}
-          aria-label={copy.avatar.collapse}
-        >
-          <span aria-hidden="true">×</span>
-        </InteractiveButton>
-        <Image
-          src={profile320}
-          alt={PERSON_NAME}
-          width={320}
-          height={320}
-          class="avatar-modal-image"
-        />
-      </div>
-    </div>
+    <PortfolioChrome
+      technologies={copy.tech.items}
+      stickerLayout={createStickerLayout(copy.tech.items.length)}
+      labels={{
+        ...copy.avatar,
+        technologies: copy.tech.aria,
+      }}
+    />
     <main
       class="portfolio-main mx-auto min-h-screen w-full max-w-2xl space-y-12 px-6 py-36 transition-[filter] max-[520px]:px-5 md:space-y-14"
     >
-      <section>
-        <div class="profile-row mb-5 flex items-start justify-between">
-          <InteractiveButton
-            id="profile-avatar"
-            class="profile-avatar"
-            cuelumeHover="whisper"
-            cuelumeRelease={false}
-            aria-label={copy.avatar.expand}
-            aria-haspopup="dialog"
-            aria-controls="avatar-modal"
-          >
-            <Image
-              src={profile160}
-              alt={PERSON_NAME}
-              width={160}
-              height={160}
-              class="profile-image"
-              priority
-            />
-          </InteractiveButton>
-          <InteractiveButton
-            id="theme-toggle"
-            variant="icon"
-            class="theme-toggle"
-            cuelumeToggle="toggle"
-            cuelumeRelease={false}
-            aria-label={copy.theme.label}
-            aria-pressed="false"
-            data-label-dark={copy.theme.toDark}
-            data-label-light={copy.theme.toLight}
-          >
-            <span class="theme-icon theme-icon--sun" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none"
-                ><circle cx="12" cy="12" r="3.5"></circle><path
-                  d="M12 2.5v2M12 19.5v2M4.5 12h-2M21.5 12h-2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"
-                ></path></svg
-              >
-            </span>
-            <span class="theme-icon theme-icon--moon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none"
-                ><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"
-                ></path></svg
-              >
-            </span>
-          </InteractiveButton>
-        </div>
-        <h1 class="text-2xl font-medium tracking-tight">{PERSON_NAME}</h1>
-        <p
-          class="profile-subtitle mt-1 text-sm leading-5 text-[var(--text-tertiary)]"
-          data-text-states={JSON.stringify(copy.subtitleStates(currentAge))}
-        >
-          <span
-            class="t-text-swap t-shimmer"
-            data-text={copy.subtitle(currentAge)}
-            >{copy.subtitle(currentAge)}</span
-          >
-        </p>
-        <p
-          class="mt-4 max-w-lg text-[17px] leading-7 font-normal text-[var(--text-secondary)]"
-        >
-          {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{
-            copy.intro.afterBremen
-          }<span class="keyword">{copy.intro.apprenticeship}</span>{
-            copy.intro.afterApprenticeship
-          }<span class="keyword">{copy.intro.finny}</span>{
-            copy.intro.afterFinny
-          }
-        </p>
-        <div class="mt-5 flex flex-wrap gap-3">
-          <InteractiveLink
-            variant="primary"
-            class="hero-contact-link"
-            href={CONTACT_MAILTO}
-            data-analytics-event="contact_button_clicked"
-            >{
-              locale === "de" ? "E-Mail schreiben" : "Email me"
-            }</InteractiveLink
-          >
-          <InteractiveLink
-            variant="text"
-            class="hero-project-link"
-            href="#projects"
-            data-analytics-event="projects_section_navigated"
-            ><span
-              >{locale === "de" ? "Zu den Projekten" : "Jump to projects"}</span
-            ><ArrowIcon /></InteractiveLink
-          >
-        </div>
-      </section>
+      <ProfileSection {copy} {locale} {currentAge} />
       <WaveDivider />
-
-      <section>
-        <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
-          {copy.experience.heading}
-        </h2>
-        <ol
-          class="experience-list mt-6 mb-0 flex list-none flex-col gap-9 p-0 max-[520px]:gap-[34px]"
-        >
-          {
-            copy.experience.items.map((item) => (
-              <li class="experience-item min-w-0">
-                <p class="experience-period mb-[3px] text-[13px] leading-5 text-[var(--text-tertiary)]">
-                  {item.period}
-                  <span aria-hidden="true">, </span>
-                  {item.location}
-                </p>
-                <h3 class="m-0 flex min-w-0 flex-wrap items-center gap-1 text-base leading-[22px] font-semibold text-[var(--text)]">
-                  {item.title}
-                  <span
-                    class:list={[
-                      "experience-organization inline-flex items-center gap-0.5",
-                      ["Finny", "Ventry", "team neusta"].includes(
-                        item.organization,
-                      ) && "experience-organization--with-logo",
-                    ]}
-                  >
-                    {item.organization === "Finny" && (
-                      <Image
-                        src={finnyFavicon}
-                        alt=""
-                        width="20"
-                        height="20"
-                        class="experience-organization-mark"
-                      />
-                    )}
-                    {item.organization.toLowerCase() === "team neusta" && (
-                      <span
-                        class="experience-organization-mark experience-organization-logo"
-                        style={`--experience-organization-logo: url(${teamNeustaLogo.src})`}
-                        aria-hidden="true"
-                      />
-                    )}
-                    {item.organization === "Ventry" && (
-                      <span
-                        class="experience-organization-mark experience-organization-logo"
-                        style={`--experience-organization-logo: url(${ventryLogo.src})`}
-                        aria-hidden="true"
-                      />
-                    )}
-                    {item.organization}
-                  </span>
-                </h3>
-                {item.secondary && (
-                  <div class="experience-secondary relative mt-[5px] pl-9 text-[var(--text-tertiary)]">
-                    <div
-                      class="experience-role-branch border-border absolute left-2 h-7 w-4.5 rounded-bl-lg border-b-2 border-l-2"
-                      aria-hidden="true"
-                    />
-                    <p class="m-0 block text-[11px] leading-[15px]">
-                      {item.secondary.period}
-                    </p>
-                    <strong class="m-0 block text-[13px] leading-[18px] font-medium text-[var(--text-secondary)]">
-                      {item.secondary.title}
-                    </strong>
-                  </div>
-                )}
-                <ul class="experience-bullets list-circle mt-[18px] mb-0 flex flex-col gap-[7px] pl-[18px] text-[15px] leading-[22px] text-[var(--text-secondary)] max-[520px]:text-sm max-[520px]:leading-[21px]">
-                  {item.bullets.map((bullet) => (
-                    <li>{bullet}</li>
-                  ))}
-                </ul>
-                <ul
-                  class="experience-technologies mt-4 mb-0 flex list-none flex-wrap gap-2 p-0"
-                  aria-label={copy.tech.aria}
-                >
-                  {technologies.find(item.technologies).map((technology) => {
-                    const Logo = technology.logo;
-                    return (
-                      <li>
-                        <span
-                          class={
-                            technology.darkModeLight
-                              ? "experience-technology experience-technology--dark-logo"
-                              : "experience-technology"
-                          }
-                        >
-                          <Logo
-                            width="16"
-                            height="16"
-                            aria-hidden="true"
-                            focusable="false"
-                          />
-                          <span>{technology.name}</span>
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </li>
-            ))
-          }
-        </ol>
-      </section>
+      <ExperienceSection
+        experience={copy.experience}
+        technologyAriaLabel={copy.tech.aria}
+        technologies={technologies.all}
+      />
       <WaveDivider />
-
-      <section id="projects">
-        <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
-          {copy.projects}
-        </h2>
-        <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <article class="project-preview w-full overflow-visible">
-            <div class="project-preview-surface">
-              <div
-                class="project-preview-image project-preview-image--finny"
-                role="img"
-                aria-label={copy.finny.previewAria}
-              >
-                <span class="preview-brand"
-                  ><Image
-                    src={finnyFavicon}
-                    alt=""
-                    width={28}
-                    height={28}
-                  />Finny</span
-                >
-                <span
-                  class="preview-receipt preview-receipt--one"
-                  aria-hidden="true"
-                  ><b>{copy.finny.receiptTitle}</b><i
-                    >{copy.finny.receiptVendor}</i
-                  ><i>{copy.finny.receiptDetail}</i></span
-                >
-                <span
-                  class="preview-receipt preview-receipt--two"
-                  aria-hidden="true"
-                  ><b>{copy.finny.warrantyTitle}</b><i
-                    >{copy.finny.warrantyDetail}</i
-                  ><small>{copy.finny.warrantyUntil}</small></span
-                >
-              </div>
-              <div class="project-preview-copy p-4">
-                <p
-                  class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"
-                >
-                  {copy.finny.description.lead}<span class="keyword"
-                    >{copy.finny.description.first}</span
-                  >{copy.finny.description.middle}<span class="keyword"
-                    >{copy.finny.description.second}</span
-                  >{copy.finny.description.join}<span class="keyword"
-                    >{copy.finny.description.third}</span
-                  >{copy.finny.description.end}
-                </p>
-                <div class="project-preview-action">
-                  <InteractiveLink
-                    variant="primary"
-                    href={FINNY_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    class="project-preview-cta"
-                    data-analytics-event="project_cta_clicked"
-                    data-analytics-project="finny"
-                    >{copy.finny.cta.label}</InteractiveLink
-                  >
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="project-preview w-full overflow-visible">
-            <div class="project-preview-surface">
-              <div
-                class="project-preview-image project-preview-image--ventry"
-                role="img"
-                aria-label={copy.ventry.previewAria}
-              >
-                <span class="preview-brand preview-brand--ventry">
-                  <Image
-                    class="ventry-mark"
-                    src={ventryLogo}
-                    alt=""
-                    width={28}
-                    height={28}
-                    loading="lazy"
-                  />
-                  ventry.host
-                </span>
-                <span class="ventry-file-panel" aria-hidden="true">
-                  <span class="ventry-file-panel-head"
-                    ><b>{copy.ventry.panelTitle}</b><i
-                      >{copy.ventry.panelCount}</i
-                    ></span
-                  >
-                  <span class="ventry-file-row">
-                    <span class="ventry-file-icon"
-                      ><svg viewBox="0 0 24 24" fill="none"
-                        ><path
-                          d="M6 4.5h8l4 4v11H6v-15Z"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linejoin="round"></path><path
-                          d="M14 4.5v4h4"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linejoin="round"></path></svg
-                      ></span
-                    >
-                    <span
-                      ><b>portrait.jpg</b><small>{copy.ventry.fileStatus}</small
-                      ></span
-                    >
-                    <i>2.4 MB</i>
-                  </span>
-                  <span class="ventry-file-row ventry-file-row--muted">
-                    <span class="ventry-file-icon"
-                      ><svg viewBox="0 0 24 24" fill="none"
-                        ><path
-                          d="M8 12h8m-4-4 4 4-4 4"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"></path></svg
-                      ></span
-                    >
-                    <span
-                      ><b>{copy.ventry.shareLabel}</b><small
-                        >{copy.ventry.shareStatus}</small
-                      ></span
-                    >
-                    <i>{copy.ventry.shareAction}</i>
-                  </span>
-                </span>
-              </div>
-              <div class="project-preview-copy p-4">
-                <p
-                  class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"
-                >
-                  {copy.ventry.description.lead}<span class="keyword"
-                    >{copy.ventry.description.keyword}</span
-                  >{copy.ventry.description.end}
-                </p>
-                <div class="project-preview-action">
-                  <InteractiveLink
-                    variant="primary"
-                    href={VENTRY_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    class="project-preview-cta"
-                    data-analytics-event="project_cta_clicked"
-                    data-analytics-project="ventry"
-                    >{copy.ventry.cta.label}</InteractiveLink
-                  >
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
+      <ProjectsSection
+        heading={copy.projects}
+        finny={copy.finny}
+        ventry={copy.ventry}
+      />
       <WaveDivider />
-
-      <section class="mobile-tech-section">
-        <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
-          {copy.tech.mobileHeading}
-        </h2>
-        <div
-          id="mobile-tech-accordion"
-          class="t-acc mobile-tech-accordion"
-          data-open="false"
-        >
-          <ul
-            id="mobile-tech-list"
-            class="mobile-tech-grid mt-6 mb-0 grid list-none grid-cols-4 gap-2 p-0"
-            aria-label={copy.tech.aria}
-          >
-            {
-              technologies.featured.map((technology) => {
-                const Logo = technology.logo;
-                return (
-                  <li>
-                    <InteractiveLink
-                      class={`mobile-tech-link flex min-h-[76px] flex-col items-center justify-center gap-2 rounded-[14px] text-[11px] leading-[14px] text-[var(--text-tertiary)]${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
-                      href={technology.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={copy.tech.visitLabel(technology.name)}
-                    >
-                      <Logo
-                        width="28"
-                        height="28"
-                        aria-hidden="true"
-                        focusable="false"
-                      />
-                      <span>{technology.name}</span>
-                    </InteractiveLink>
-                  </li>
-                );
-              })
-            }
-          </ul>
-          <div id="mobile-tech-additional" class="t-acc-panel">
-            <div class="t-acc-panel-inner">
-              <ul
-                class="mobile-tech-grid mb-0 grid list-none grid-cols-4 gap-2 p-0"
-                aria-label={copy.tech.aria}
-              >
-                {
-                  technologies.additional.map((technology) => {
-                    const Logo = technology.logo;
-                    return (
-                      <li>
-                        <InteractiveLink
-                          class={`mobile-tech-link flex min-h-[76px] flex-col items-center justify-center gap-2 rounded-[14px] text-[11px] leading-[14px] text-[var(--text-tertiary)]${technology.darkModeLight ? " mobile-tech-link--dark-logo" : ""}`}
-                          href={technology.href}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={copy.tech.visitLabel(technology.name)}
-                        >
-                          <Logo
-                            width="28"
-                            height="28"
-                            aria-hidden="true"
-                            focusable="false"
-                          />
-                          <span>{technology.name}</span>
-                        </InteractiveLink>
-                      </li>
-                    );
-                  })
-                }
-              </ul>
-            </div>
-          </div>
-          <InteractiveButton
-            id="mobile-tech-toggle"
-            variant="primary"
-            class="t-acc-head mobile-tech-toggle"
-            aria-controls="mobile-tech-additional"
-            aria-expanded="false"
-            data-label-more={copy.tech.mobileViewMore}
-            data-label-less={copy.tech.mobileViewLess}
-          >
-            <span class="mobile-tech-toggle-label"
-              >{copy.tech.mobileViewMore}</span
-            >
-            <span class="t-acc-chevron" aria-hidden="true"
-              ><svg viewBox="0 0 16 16" fill="none"
-                ><path
-                  d="M4 6.5L8 10.5L12 6.5"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"></path></svg
-              ></span
-            >
-          </InteractiveButton>
-        </div>
-      </section>
+      <TechnologiesSection
+        copy={copy.tech}
+        featured={technologies.featured}
+        additional={technologies.additional}
+      />
       <WaveDivider class="wave--mobile" />
-
       <section>
         <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
           {copy.activity.heading}
@@ -614,95 +82,13 @@ const llmsTooltipTitle = new URL(llmsUrl).host;
         />
       </section>
       <WaveDivider />
-
-      <section>
-        <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
-          {copy.connect.heading}
-        </h2>
-        <div
-          class="connect-row mt-6 flex items-center justify-between gap-5 max-[520px]:flex-col max-[520px]:items-start max-[520px]:gap-3"
-        >
-          <SocialLinks
-            locale={locale}
-            linkedinUrl={linkedinUrl}
-            activity={activity}
-            labels={copy.connect}
-          />
-          <InteractiveButton
-            id="copy-email"
-            variant="primary"
-            class="copy-email-button"
-            data-email={CONTACT_EMAIL}
-            data-label-copy={copy.connect.copyEmail}
-            data-label-copied={copy.connect.emailCopied}
-            aria-label={copy.connect.copyEmail}
-          >
-            <span
-              class="copy-email-icon copy-email-icon--copy"
-              aria-hidden="true"
-              ><svg viewBox="0 0 24 24" fill="none"
-                ><rect x="8" y="8" width="11" height="11" rx="2"></rect><path
-                  d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"
-                ></path></svg
-              ></span
-            >
-            <span
-              class="copy-email-icon copy-email-icon--check"
-              aria-hidden="true"
-              ><svg viewBox="0 0 24 24" fill="none"
-                ><path d="m5 12 4 4L19 6"></path></svg
-              ></span
-            >
-            <span class="copy-email-label-slot">
-              <span class="copy-email-label t-text-swap" aria-live="polite"
-                >{copy.connect.copyEmail}</span
-              >
-              <span class="copy-email-label-measure" aria-hidden="true"
-                >{copy.connect.copyEmail}</span
-              >
-              <span class="copy-email-label-measure" aria-hidden="true"
-                >{copy.connect.emailCopied}</span
-              >
-            </span>
-          </InteractiveButton>
-        </div>
-      </section>
-
-      <footer id="site-footer" class="site-footer">
-        <div class="site-footer-links">
-          <InteractiveLink
-            variant="text"
-            href={SOURCE_REPOSITORY_URL}
-            target="_blank"
-            rel="noreferrer"
-            wrapperClass="site-footer-resource"
-            tooltipId="site-footer-github-tooltip"
-            tooltipTitle="github.com"
-            tooltipDetail="/AtomicWasTaken/itsjan-personal-page"
-            tooltipClass="social-tooltip"
-          >
-            <GitHubIcon />
-            <span class="site-footer-link__label"
-              >{locale === "de" ? "Code auf GitHub" : "Source on GitHub"}</span
-            >
-          </InteractiveLink>
-          <InteractiveLink
-            variant="text"
-            href={llmsUrl}
-            wrapperClass="site-footer-resource"
-            tooltipId="site-footer-llms-tooltip"
-            tooltipTitle={llmsTooltipTitle}
-            tooltipDetail="/llms.txt"
-            tooltipClass="social-tooltip"
-          >
-            <BotIcon />
-            <span class="site-footer-link__label">llms.txt</span>
-          </InteractiveLink>
-        </div>
-        <p>© {currentYear} {PERSON_NAME}</p>
-      </footer>
+      <ConnectSection {activity} copy={copy.connect} {linkedinUrl} {locale} />
+      <PortfolioFooter
+        currentYear={new Date().getFullYear()}
+        llmsUrl={new URL("/llms.txt", Astro.url).href}
+        {locale}
+      />
     </main>
   </div>
-
   <HomeRuntime />
 </Layout>

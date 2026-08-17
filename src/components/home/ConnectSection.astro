@@ -1,0 +1,61 @@
+---
+import type { ActivityDay } from "../../lib/github";
+import type { PortfolioCopy } from "../../lib/i18n";
+import type { Locale } from "../../lib/locale";
+import { CONTACT_EMAIL } from "../../lib/site";
+import InteractiveButton from "../InteractiveButton.astro";
+import SocialLinks from "../SocialLinks.astro";
+
+interface Props {
+  activity: ActivityDay[];
+  copy: PortfolioCopy["connect"];
+  linkedinUrl: string;
+  locale: Locale;
+}
+
+const { activity, copy, linkedinUrl, locale } = Astro.props;
+---
+
+<section>
+  <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
+    {copy.heading}
+  </h2>
+  <div
+    class="connect-row mt-6 flex items-center justify-between gap-5 max-[520px]:flex-col max-[520px]:items-start max-[520px]:gap-3"
+  >
+    <SocialLinks {locale} {linkedinUrl} {activity} labels={copy} />
+    <InteractiveButton
+      id="copy-email"
+      variant="primary"
+      class="copy-email-button"
+      data-email={CONTACT_EMAIL}
+      data-label-copy={copy.copyEmail}
+      data-label-copied={copy.emailCopied}
+      aria-label={copy.copyEmail}
+    >
+      <span class="copy-email-icon copy-email-icon--copy" aria-hidden="true"
+        ><svg viewBox="0 0 24 24" fill="none"
+          ><rect x="8" y="8" width="11" height="11" rx="2"></rect><path
+            d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"
+          ></path></svg
+        ></span
+      >
+      <span class="copy-email-icon copy-email-icon--check" aria-hidden="true"
+        ><svg viewBox="0 0 24 24" fill="none"
+          ><path d="m5 12 4 4L19 6"></path></svg
+        ></span
+      >
+      <span class="copy-email-label-slot">
+        <span class="copy-email-label t-text-swap" aria-live="polite"
+          >{copy.copyEmail}</span
+        >
+        <span class="copy-email-label-measure" aria-hidden="true"
+          >{copy.copyEmail}</span
+        >
+        <span class="copy-email-label-measure" aria-hidden="true"
+          >{copy.emailCopied}</span
+        >
+      </span>
+    </InteractiveButton>
+  </div>
+</section>

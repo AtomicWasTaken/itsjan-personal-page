@@ -1,0 +1,104 @@
+---
+import { Image } from "astro:assets";
+import profile160 from "../../assets/jan-profile-160.avif";
+import type { PortfolioCopy } from "../../lib/i18n";
+import type { Locale } from "../../lib/locale";
+import { CONTACT_MAILTO, PERSON_NAME } from "../../lib/site";
+import InteractiveButton from "../InteractiveButton.astro";
+import InteractiveLink from "../InteractiveLink.astro";
+import ArrowIcon from "../icons/ArrowIcon.astro";
+
+interface Props {
+  copy: Pick<
+    PortfolioCopy,
+    "avatar" | "theme" | "intro" | "subtitle" | "subtitleStates"
+  >;
+  locale: Locale;
+  currentAge: number;
+}
+
+const { copy, locale, currentAge } = Astro.props;
+---
+
+<section>
+  <div class="profile-row mb-5 flex items-start justify-between">
+    <InteractiveButton
+      id="profile-avatar"
+      class="profile-avatar"
+      cuelumeHover="whisper"
+      cuelumeRelease={false}
+      aria-label={copy.avatar.expand}
+      aria-haspopup="dialog"
+      aria-controls="avatar-modal"
+    >
+      <Image
+        src={profile160}
+        alt={PERSON_NAME}
+        width={160}
+        height={160}
+        class="profile-image"
+        priority
+      />
+    </InteractiveButton>
+    <InteractiveButton
+      id="theme-toggle"
+      variant="icon"
+      class="theme-toggle"
+      cuelumeToggle="toggle"
+      cuelumeRelease={false}
+      aria-label={copy.theme.label}
+      aria-pressed="false"
+      data-label-dark={copy.theme.toDark}
+      data-label-light={copy.theme.toLight}
+    >
+      <span class="theme-icon theme-icon--sun" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"
+          ><circle cx="12" cy="12" r="3.5"></circle><path
+            d="M12 2.5v2M12 19.5v2M4.5 12h-2M21.5 12h-2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"
+          ></path></svg
+        >
+      </span>
+      <span class="theme-icon theme-icon--moon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"
+          ><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"
+          ></path></svg
+        >
+      </span>
+    </InteractiveButton>
+  </div>
+  <h1 class="text-2xl font-medium tracking-tight">{PERSON_NAME}</h1>
+  <p
+    class="profile-subtitle mt-1 text-sm leading-5 text-[var(--text-tertiary)]"
+    data-text-states={JSON.stringify(copy.subtitleStates(currentAge))}
+  >
+    <span class="t-text-swap t-shimmer" data-text={copy.subtitle(currentAge)}
+      >{copy.subtitle(currentAge)}</span
+    >
+  </p>
+  <p
+    class="mt-4 max-w-lg text-[17px] leading-7 font-normal text-[var(--text-secondary)]"
+  >
+    {copy.intro.beforeBremen}<span class="keyword">Bremen</span>{
+      copy.intro.afterBremen
+    }<span class="keyword">{copy.intro.apprenticeship}</span>{
+      copy.intro.afterApprenticeship
+    }<span class="keyword">{copy.intro.finny}</span>{copy.intro.afterFinny}
+  </p>
+  <div class="mt-5 flex flex-wrap gap-3">
+    <InteractiveLink
+      variant="primary"
+      class="hero-contact-link"
+      href={CONTACT_MAILTO}
+      data-analytics-event="contact_button_clicked"
+      >{locale === "de" ? "E-Mail schreiben" : "Email me"}</InteractiveLink
+    >
+    <InteractiveLink
+      variant="text"
+      class="hero-project-link"
+      href="#projects"
+      data-analytics-event="projects_section_navigated"
+      ><span>{locale === "de" ? "Zu den Projekten" : "Jump to projects"}</span
+      ><ArrowIcon /></InteractiveLink
+    >
+  </div>
+</section>
