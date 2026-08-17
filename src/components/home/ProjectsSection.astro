@@ -1,0 +1,158 @@
+---
+import { Image } from "astro:assets";
+import finnyFavicon from "../../assets/finny-favicon.png";
+import ventryLogo from "../../assets/ventry-logo-white-56.png";
+import type { PortfolioCopy } from "../../lib/i18n";
+import { FINNY_URL, VENTRY_URL } from "../../lib/site";
+import InteractiveLink from "../InteractiveLink.astro";
+
+interface Props {
+  heading: string;
+  finny: PortfolioCopy["finny"];
+  ventry: PortfolioCopy["ventry"];
+}
+
+const { heading, finny, ventry } = Astro.props;
+---
+
+<section id="projects">
+  <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
+    {heading}
+  </h2>
+  <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <article class="project-preview w-full overflow-visible">
+      <div class="project-preview-surface">
+        <div
+          class="project-preview-image project-preview-image--finny"
+          role="img"
+          aria-label={finny.previewAria}
+        >
+          <span class="preview-brand"
+            ><Image
+              src={finnyFavicon}
+              alt=""
+              width={28}
+              height={28}
+            />Finny</span
+          >
+          <span class="preview-receipt preview-receipt--one" aria-hidden="true"
+            ><b>{finny.receiptTitle}</b><i>{finny.receiptVendor}</i><i
+              >{finny.receiptDetail}</i
+            ></span
+          >
+          <span class="preview-receipt preview-receipt--two" aria-hidden="true"
+            ><b>{finny.warrantyTitle}</b><i>{finny.warrantyDetail}</i><small
+              >{finny.warrantyUntil}</small
+            ></span
+          >
+        </div>
+        <div class="project-preview-copy p-4">
+          <p
+            class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"
+          >
+            {finny.description.lead}<span class="keyword"
+              >{finny.description.first}</span
+            >{finny.description.middle}<span class="keyword"
+              >{finny.description.second}</span
+            >{finny.description.join}<span class="keyword"
+              >{finny.description.third}</span
+            >{finny.description.end}
+          </p>
+          <div class="project-preview-action">
+            <InteractiveLink
+              variant="primary"
+              href={FINNY_URL}
+              target="_blank"
+              rel="noreferrer"
+              class="project-preview-cta"
+              data-analytics-event="project_cta_clicked"
+              data-analytics-project="finny">{finny.cta.label}</InteractiveLink
+            >
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="project-preview w-full overflow-visible">
+      <div class="project-preview-surface">
+        <div
+          class="project-preview-image project-preview-image--ventry"
+          role="img"
+          aria-label={ventry.previewAria}
+        >
+          <span class="preview-brand preview-brand--ventry">
+            <Image
+              class="ventry-mark"
+              src={ventryLogo}
+              alt=""
+              width={28}
+              height={28}
+              loading="lazy"
+            />
+            ventry.host
+          </span>
+          <span class="ventry-file-panel" aria-hidden="true">
+            <span class="ventry-file-panel-head"
+              ><b>{ventry.panelTitle}</b><i>{ventry.panelCount}</i></span
+            >
+            <span class="ventry-file-row">
+              <span class="ventry-file-icon"
+                ><svg viewBox="0 0 24 24" fill="none"
+                  ><path
+                    d="M6 4.5h8l4 4v11H6v-15Z"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linejoin="round"></path><path
+                    d="M14 4.5v4h4"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linejoin="round"></path></svg
+                ></span
+              >
+              <span><b>portrait.jpg</b><small>{ventry.fileStatus}</small></span>
+              <i>2.4 MB</i>
+            </span>
+            <span class="ventry-file-row ventry-file-row--muted">
+              <span class="ventry-file-icon"
+                ><svg viewBox="0 0 24 24" fill="none"
+                  ><path
+                    d="M8 12h8m-4-4 4 4-4 4"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"></path></svg
+                ></span
+              >
+              <span
+                ><b>{ventry.shareLabel}</b><small>{ventry.shareStatus}</small
+                ></span
+              >
+              <i>{ventry.shareAction}</i>
+            </span>
+          </span>
+        </div>
+        <div class="project-preview-copy p-4">
+          <p
+            class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"
+          >
+            {ventry.description.lead}<span class="keyword"
+              >{ventry.description.keyword}</span
+            >{ventry.description.end}
+          </p>
+          <div class="project-preview-action">
+            <InteractiveLink
+              variant="primary"
+              href={VENTRY_URL}
+              target="_blank"
+              rel="noreferrer"
+              class="project-preview-cta"
+              data-analytics-event="project_cta_clicked"
+              data-analytics-project="ventry"
+              >{ventry.cta.label}</InteractiveLink
+            >
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>

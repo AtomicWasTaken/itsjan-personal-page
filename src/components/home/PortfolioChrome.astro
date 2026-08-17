@@ -1,0 +1,88 @@
+---
+import { Image } from "astro:assets";
+import profile320 from "../../assets/jan-profile-320.avif";
+import type { Technology } from "../../data/technologies";
+import type { StickerPlacement } from "../../lib/portfolio";
+import { toStickerStyle } from "../../lib/portfolio";
+import { PERSON_NAME } from "../../lib/site";
+import InteractiveButton from "../InteractiveButton.astro";
+import InteractiveLink from "../InteractiveLink.astro";
+
+interface Props {
+  technologies: Technology[];
+  stickerLayout: StickerPlacement[];
+  labels: { expand: string; collapse: string; technologies: string };
+}
+
+const { technologies, stickerLayout, labels } = Astro.props;
+---
+
+<aside class="tech-stickers" aria-label={labels.technologies}>
+  {
+    (["left", "right"] as const).map((side) => (
+      <div class={`tech-sticker-side tech-sticker-side--${side}`}>
+        {technologies.map((technology, index) => {
+          const placement = stickerLayout[index];
+          return (
+            placement.side === side && (
+              <InteractiveLink
+                href={technology.href}
+                target="_blank"
+                rel="noreferrer"
+                class={`tech-sticker tech-sticker--${side} tech-sticker-${index + 1}${technology.darkModeLight ? " tech-sticker--dark-logo" : ""}`}
+                style={toStickerStyle(placement)}
+                aria-label={technology.name}
+              >
+                <img
+                  src={technology.logo.src}
+                  alt=""
+                  width="28"
+                  height="28"
+                  decoding="async"
+                  draggable="false"
+                />
+              </InteractiveLink>
+            )
+          );
+        })}
+      </div>
+    ))
+  }
+</aside>
+
+<div
+  id="avatar-modal"
+  class="t-modal avatar-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-hidden="true"
+  aria-label={labels.expand}
+  inert
+>
+  <InteractiveButton
+    class="avatar-modal-backdrop"
+    data-avatar-close
+    feedback={false}
+    tabindex="-1"
+    aria-label={labels.collapse}
+  />
+  <div class="avatar-modal-content">
+    <InteractiveButton
+      variant="icon"
+      class="avatar-modal-close"
+      data-avatar-close
+      cuelumeToggle="release"
+      cuelumeRelease={false}
+      aria-label={labels.collapse}
+    >
+      <span aria-hidden="true">×</span>
+    </InteractiveButton>
+    <Image
+      src={profile320}
+      alt={PERSON_NAME}
+      width={320}
+      height={320}
+      class="avatar-modal-image"
+    />
+  </div>
+</div>

@@ -1,0 +1,49 @@
+---
+import type { Locale } from "../../lib/locale";
+import { PERSON_NAME, SOURCE_REPOSITORY_URL } from "../../lib/site";
+import InteractiveLink from "../InteractiveLink.astro";
+import BotIcon from "../icons/BotIcon.astro";
+import GitHubIcon from "../icons/GitHubIcon.astro";
+
+interface Props {
+  currentYear: number;
+  llmsUrl: string;
+  locale: Locale;
+}
+
+const { currentYear, llmsUrl, locale } = Astro.props;
+---
+
+<footer id="site-footer" class="site-footer">
+  <div class="site-footer-links">
+    <InteractiveLink
+      variant="text"
+      href={SOURCE_REPOSITORY_URL}
+      target="_blank"
+      rel="noreferrer"
+      wrapperClass="site-footer-resource"
+      tooltipId="site-footer-github-tooltip"
+      tooltipTitle="github.com"
+      tooltipDetail="/AtomicWasTaken/itsjan-personal-page"
+      tooltipClass="social-tooltip"
+    >
+      <GitHubIcon />
+      <span class="site-footer-link__label"
+        >{locale === "de" ? "Code auf GitHub" : "Source on GitHub"}</span
+      >
+    </InteractiveLink>
+    <InteractiveLink
+      variant="text"
+      href={llmsUrl}
+      wrapperClass="site-footer-resource"
+      tooltipId="site-footer-llms-tooltip"
+      tooltipTitle={new URL(llmsUrl).host}
+      tooltipDetail="/llms.txt"
+      tooltipClass="social-tooltip"
+    >
+      <BotIcon />
+      <span class="site-footer-link__label">llms.txt</span>
+    </InteractiveLink>
+  </div>
+  <p>© {currentYear} {PERSON_NAME}</p>
+</footer>

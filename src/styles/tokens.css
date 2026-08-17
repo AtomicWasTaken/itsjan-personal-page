@@ -1,0 +1,175 @@
+:root {
+  --accent-ink: oklch(32% 0.07 240);
+  --accent-strong: oklch(48% 0.13 240);
+  --accent-mid: oklch(74% 0.09 240);
+  --accent-soft: oklch(89% 0.055 240);
+  --shadow-grey: #29292b;
+  --text: #111113;
+  --text-secondary: #4a4a4f;
+  /* Keeps secondary metadata and mobile tech labels above WCAG AA on white. */
+  --text-tertiary: #66666c;
+  --page: #fff;
+  --surface: #fff;
+  --selection-bg: var(--accent-soft);
+  --selection-text: var(--accent-ink);
+  --card-shell: #f2f2f2;
+  --card-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  --divider: rgba(0, 0, 0, 0.08);
+  --chip-border: rgba(0, 0, 0, 0.05);
+  --image-outline: rgba(0, 0, 0, 0.1);
+  --button-bg: #20252a;
+  --button-hover-bg: var(--shadow-grey);
+  --button-surface: linear-gradient(180deg, #3c4145 0%, #20252a 100%);
+  --button-hover-surface: linear-gradient(180deg, #464b4f 0%, #292e32 100%);
+  --button-text: #fff;
+  --button-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(9, 12, 14, 0.9), 0 3px 0 #0e1113,
+    0 7px 12px rgba(17, 18, 20, 0.24);
+  --button-shadow-hover:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36), inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(9, 12, 14, 0.95), 0 4px 0 #0e1113,
+    0 9px 16px rgba(17, 18, 20, 0.28);
+  --button-shadow-pressed:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.32),
+    0 0 0 1px rgba(9, 12, 14, 0.9), 0 1px 0 #0e1113,
+    0 3px 6px rgba(17, 18, 20, 0.2);
+  --focus-ring: var(--accent-strong);
+  --top-edge-blur-height: 128px;
+  /* Normalize every idle logo to the same neutral gray. */
+  --tech-filter: brightness(0) saturate(100%);
+  --tech-opacity: 0.42;
+  --activity-0: #ebebeb;
+  --activity-1: oklch(84% 0.04 240);
+  --activity-2: oklch(74% 0.075 240);
+  --activity-3: oklch(63% 0.11 240);
+  --activity-4: oklch(48% 0.13 240);
+  --pulse-dur: 1000ms;
+  --pulse-count: 1;
+  --pulse-min: 0.5;
+  --reveal-dur: 400ms;
+  --reveal-blur: 2px;
+  --reveal-ease: ease-in-out;
+  --tt-in-dur: 150ms;
+  --tt-out-dur: 50ms;
+  --tt-scale: 0.98;
+  --tt-delay: 80ms;
+  --tt-in-ease: ease-out;
+  --tt-out-ease: ease-out;
+  --tt-bg: var(--text);
+  --tt-fg: var(--page);
+  --tech-card-blur: 5px;
+  --tech-hover-scale: 1.08;
+  --modal-open-dur: 250ms;
+  --modal-close-dur: 150ms;
+  --modal-scale: 0.96;
+  --modal-scale-close: 0.96;
+  --modal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* A deliberate column-wise sweep: all seven rows advance together. */
+  --activity-reveal-step: 8ms;
+  --activity-reveal-duration: 280ms;
+  --shadow-border:
+    0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.04);
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --text-swap-dur: 150ms;
+  --text-swap-translate-y: 4px;
+  --text-swap-blur: 2px;
+  --text-swap-ease: ease-in-out;
+  --shimmer-dur: 2000ms;
+  --shimmer-base: var(--text-tertiary);
+  --shimmer-highlight: var(--text);
+  --shimmer-band: 400%;
+  --shimmer-ease: linear;
+  --acc-expand: 250ms;
+  --acc-collapse: 250ms;
+  --acc-chevron: 250ms;
+  --acc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --theme-ripple-duration: 420ms;
+  --theme-ripple-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html[data-theme="dark"] {
+  --text: #ededee;
+  --text-secondary: #b5b5b9;
+  --text-tertiary: #85858a;
+  --page: #0b0b0c;
+  --surface: #151517;
+  --selection-bg: oklch(30% 0.01 240);
+  --selection-text: #fff;
+  --card-shell: #222225;
+  --card-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --divider: rgba(255, 255, 255, 0.1);
+  --chip-border: rgba(255, 255, 255, 0.065);
+  --image-outline: rgba(255, 255, 255, 0.1);
+  --button-bg: #e6e6e8;
+  --button-hover-bg: #fff;
+  --button-surface: linear-gradient(180deg, #fff 0%, #d9d9dd 100%);
+  --button-hover-surface: linear-gradient(180deg, #fff 0%, #e5e5e8 100%);
+  --button-text: #111113;
+  --button-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(0, 0, 0, 0.16),
+    0 0 0 1px rgba(80, 80, 86, 0.48), 0 3px 0 #aaaab0,
+    0 7px 12px rgba(0, 0, 0, 0.26);
+  --button-shadow-hover:
+    inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(80, 80, 86, 0.55), 0 4px 0 #a4a4aa,
+    0 9px 16px rgba(0, 0, 0, 0.3);
+  --button-shadow-pressed:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(80, 80, 86, 0.48), 0 1px 0 #aaaab0,
+    0 3px 6px rgba(0, 0, 0, 0.2);
+  --focus-ring: var(--accent-mid);
+  --tech-filter: grayscale(1) brightness(0) invert(1);
+  --tech-opacity: 0.5;
+  --activity-0: #29292c;
+  --activity-1: oklch(35% 0.04 240);
+  --activity-2: oklch(48% 0.07 240);
+  --activity-3: oklch(64% 0.1 240);
+  --activity-4: oklch(80% 0.08 240);
+  --shadow-border: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    color-scheme: dark;
+    --text: #ededee;
+    --text-secondary: #b5b5b9;
+    --text-tertiary: #85858a;
+    --page: #0b0b0c;
+    --surface: #151517;
+    --selection-bg: oklch(30% 0.01 240);
+    --selection-text: #fff;
+    --card-shell: #222225;
+    --card-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+    --divider: rgba(255, 255, 255, 0.1);
+    --chip-border: rgba(255, 255, 255, 0.065);
+    --image-outline: rgba(255, 255, 255, 0.1);
+    --button-bg: #e6e6e8;
+    --button-hover-bg: #fff;
+    --button-surface: linear-gradient(180deg, #fff 0%, #d9d9dd 100%);
+    --button-hover-surface: linear-gradient(180deg, #fff 0%, #e5e5e8 100%);
+    --button-text: #111113;
+    --button-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(80, 80, 86, 0.48),
+      0 3px 0 #aaaab0, 0 7px 12px rgba(0, 0, 0, 0.26);
+    --button-shadow-hover:
+      inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+      0 0 0 1px rgba(80, 80, 86, 0.55), 0 4px 0 #a4a4aa,
+      0 9px 16px rgba(0, 0, 0, 0.3);
+    --button-shadow-pressed:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(80, 80, 86, 0.48),
+      0 1px 0 #aaaab0, 0 3px 6px rgba(0, 0, 0, 0.2);
+    --focus-ring: var(--accent-mid);
+    --tech-filter: grayscale(1) brightness(0) invert(1);
+    --tech-opacity: 0.5;
+    --activity-0: #29292c;
+    --activity-1: oklch(35% 0.04 240);
+    --activity-2: oklch(48% 0.07 240);
+    --activity-3: oklch(64% 0.1 240);
+    --activity-4: oklch(80% 0.08 240);
+    --shadow-border: 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+}

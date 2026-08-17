@@ -1,0 +1,125 @@
+---
+import { Image } from "astro:assets";
+import finnyFavicon from "../../assets/finny-favicon.png";
+import teamNeustaLogo from "../../assets/team-neusta-orb.svg";
+import ventryLogo from "../../assets/ventry-logo-white-56.png";
+import type { Technology } from "../../data/technologies";
+import type { PortfolioCopy } from "../../lib/i18n";
+
+interface Props {
+  experience: PortfolioCopy["experience"];
+  technologyAriaLabel: string;
+  technologies: Technology[];
+}
+
+const { experience, technologyAriaLabel, technologies } = Astro.props;
+const technologiesByName = new Map(
+  technologies.map((technology) => [technology.name, technology]),
+);
+---
+
+<section>
+  <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
+    {experience.heading}
+  </h2>
+  <ol
+    class="experience-list mt-6 mb-0 flex list-none flex-col gap-9 p-0 max-[520px]:gap-[34px]"
+  >
+    {
+      experience.items.map((item) => (
+        <li class="experience-item min-w-0">
+          <p class="experience-period mb-[3px] text-[13px] leading-5 text-[var(--text-tertiary)]">
+            {item.period}
+            <span aria-hidden="true">, </span>
+            {item.location}
+          </p>
+          <h3 class="m-0 flex min-w-0 flex-wrap items-center gap-1 text-base leading-[22px] font-semibold text-[var(--text)]">
+            {item.title}
+            <span
+              class:list={[
+                "experience-organization inline-flex items-center gap-0.5",
+                ["Finny", "Ventry", "team neusta"].includes(
+                  item.organization,
+                ) && "experience-organization--with-logo",
+              ]}
+            >
+              {item.organization === "Finny" && (
+                <Image
+                  src={finnyFavicon}
+                  alt=""
+                  width="20"
+                  height="20"
+                  class="experience-organization-mark"
+                />
+              )}
+              {item.organization.toLowerCase() === "team neusta" && (
+                <span
+                  class="experience-organization-mark experience-organization-logo"
+                  style={`--experience-organization-logo: url(${teamNeustaLogo.src})`}
+                  aria-hidden="true"
+                />
+              )}
+              {item.organization === "Ventry" && (
+                <span
+                  class="experience-organization-mark experience-organization-logo"
+                  style={`--experience-organization-logo: url(${ventryLogo.src})`}
+                  aria-hidden="true"
+                />
+              )}
+              {item.organization}
+            </span>
+          </h3>
+          {item.secondary && (
+            <div class="experience-secondary relative mt-[5px] pl-9 text-[var(--text-tertiary)]">
+              <div
+                class="experience-role-branch border-border absolute left-2 h-7 w-4.5 rounded-bl-lg border-b-2 border-l-2"
+                aria-hidden="true"
+              />
+              <p class="m-0 block text-[11px] leading-[15px]">
+                {item.secondary.period}
+              </p>
+              <strong class="m-0 block text-[13px] leading-[18px] font-medium text-[var(--text-secondary)]">
+                {item.secondary.title}
+              </strong>
+            </div>
+          )}
+          <ul class="experience-bullets list-circle mt-[18px] mb-0 flex flex-col gap-[7px] pl-[18px] text-[15px] leading-[22px] text-[var(--text-secondary)] max-[520px]:text-sm max-[520px]:leading-[21px]">
+            {item.bullets.map((bullet) => (
+              <li>{bullet}</li>
+            ))}
+          </ul>
+          <ul
+            class="experience-technologies mt-4 mb-0 flex list-none flex-wrap gap-2 p-0"
+            aria-label={technologyAriaLabel}
+          >
+            {item.technologies
+              .map((name) => technologiesByName.get(name))
+              .map((technology) => {
+                if (!technology) return null;
+                const Logo = technology.logo;
+                return (
+                  <li>
+                    <span
+                      class={
+                        technology.darkModeLight
+                          ? "experience-technology experience-technology--dark-logo"
+                          : "experience-technology"
+                      }
+                    >
+                      <Logo
+                        width="16"
+                        height="16"
+                        aria-hidden="true"
+                        focusable="false"
+                      />
+                      <span>{technology.name}</span>
+                    </span>
+                  </li>
+                );
+              })}
+          </ul>
+        </li>
+      ))
+    }
+  </ol>
+</section>
