@@ -68,9 +68,28 @@ function markdownFor(request: Request, pathname: string): string | undefined {
   return markdownRoutes[pathname];
 }
 
+// Worker responses own security policy because HTML and negotiated text are
+// generated dynamically. public/_headers only owns static asset MIME/cache rules.
+const contentSecurityPolicy = [
+  "base-uri 'self'",
+  "connect-src 'self' https://t.itsjan.dev",
+  "default-src 'self'",
+  "font-src 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  "img-src 'self' data:",
+  "object-src 'none'",
+  "script-src 'self' 'unsafe-inline' https://t.itsjan.dev",
+  "style-src 'self' 'unsafe-inline'",
+  "worker-src 'self' blob:",
+].join("; ");
+
 const securityHeaders = {
+  "Content-Security-Policy": contentSecurityPolicy,
+  "Cross-Origin-Opener-Policy": "same-origin",
   "Permissions-Policy": "camera=(), geolocation=(), microphone=()",
   "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Strict-Transport-Security": "max-age=31536000",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
 } as const;
@@ -153,6 +172,12 @@ export function applyResponseHeaders(
   Object.entries(securityHeaders).forEach(([name, value]) =>
     headers.set(name, value),
   );
+  if (
+    headers.get("Content-Type")?.startsWith("text/html") &&
+    !headers.has("Cache-Control")
+  ) {
+    headers.set("Cache-Control", "no-store");
+  }
 
   return new Response(response.body, {
     status: response.status,

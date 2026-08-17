@@ -34,6 +34,9 @@ jobs:
       - name: Build production Worker
         run: bun run build
 
+      - name: Validate Worker deployment bundle
+        run: bun run check:deploy
+
       - name: Run browser integration tests
         run: bun run test:browser
 

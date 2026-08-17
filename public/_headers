@@ -1,3 +1,20 @@
+# Static assets only. Dynamic HTML, negotiated text, and security headers are
+# owned by src/middleware.ts so policy cannot diverge between representations.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/ransom/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+/favicon.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/jan-profile.jpg
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/og.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
 /*.md
   Content-Type: text/markdown; charset=utf-8
 
