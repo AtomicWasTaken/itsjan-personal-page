@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import ActivityGraph from "../components/ActivityGraph.astro";
 import EdgeBlur from "../components/EdgeBlur.astro";
 import HomeRuntime from "../components/HomeRuntime.astro";
 import InteractiveButton from "../components/InteractiveButton.astro";
@@ -17,11 +18,7 @@ import teamNeustaLogo from "../assets/team-neusta-orb.svg";
 import ventryLogo from "../assets/ventry-logo-white-56.png";
 import { detectLocale, tr } from "../lib/i18n";
 import { ageYears } from "../lib/jan";
-import {
-  activityRevealOrder,
-  buildActivity,
-  fetchGithubContributions,
-} from "../lib/github";
+import { buildActivity, fetchGithubContributions } from "../lib/github";
 import {
   CONTACT_EMAIL,
   CONTACT_MAILTO,
@@ -44,6 +41,8 @@ const githubDays = await fetchGithubContributions((task) =>
 );
 const technologies = createTechnologyCollections(copy.tech.items);
 const activity = buildActivity(githubDays, locale, copy.activity);
+const activityTotal = activity.reduce((total, day) => total + day.count, 0);
+const activityAriaLabel = `${copy.activity.aria}: ${new Intl.NumberFormat(locale).format(activityTotal)} ${activityTotal === 1 ? copy.activity.contribution : copy.activity.contributions}`;
 const stickerLayout = createStickerLayout(copy.tech.items.length);
 const linkedinUrl =
   locale === "en"
@@ -607,145 +606,12 @@ const llmsTooltipTitle = new URL(llmsUrl).host;
         <h2 class="text-2xl font-medium tracking-tight text-[var(--text)]">
           {copy.activity.heading}
         </h2>
-        <div class="mt-6">
-          <div
-            class="activity-scroll activity-scroll-desktop"
-            role="group"
-            aria-label={copy.activity.desktopAria}
-          >
-            <div class="t-skel activity-reveal" data-state="loading">
-              <div
-                class="t-skel-skeleton is-pulsing activity-grid"
-                aria-hidden="true"
-              >
-                {
-                  activity.map((_, index) => (
-                    <span
-                      class="activity-day"
-                      data-level="0"
-                      style={`--activity-order:${activityRevealOrder(index)}`}
-                    />
-                  ))
-                }
-              </div>
-              <div class="t-skel-content activity-grid">
-                {
-                  activity.map((day, index) =>
-                    day.count > 0 ? (
-                      <span class="t-tt-wrap activity-tooltip-wrap">
-                        <span
-                          class="activity-day t-tt-trigger"
-                          data-cuelume-hover="tick"
-                          data-level={day.level}
-                          data-project={day.project}
-                          role="img"
-                          aria-label={day.label}
-                          aria-describedby={`activity-tooltip-desktop-${index}`}
-                          tabindex="0"
-                          style={`--activity-order:${activityRevealOrder(index)}`}
-                        />
-                        <span
-                          id={`activity-tooltip-desktop-${index}`}
-                          class="t-tt activity-tooltip"
-                          role="tooltip"
-                        >
-                          {day.label}
-                        </span>
-                      </span>
-                    ) : (
-                      <span
-                        class="activity-day"
-                        data-level={day.level}
-                        data-project={day.project}
-                        role="img"
-                        aria-label={day.label}
-                        style={`--activity-order:${activityRevealOrder(index)}`}
-                      />
-                    ),
-                  )
-                }
-              </div>
-            </div>
-          </div>
-          <div
-            class="activity-scroll activity-scroll-mobile"
-            role="group"
-            aria-label={copy.activity.mobileAria}
-          >
-            <div
-              class="t-skel activity-reveal activity-reveal-mobile"
-              data-state="loading"
-            >
-              <div
-                class="t-skel-skeleton is-pulsing activity-grid activity-grid-mobile"
-                aria-hidden="true"
-              >
-                {
-                  activity.map((_, index) => (
-                    <span
-                      class="activity-day"
-                      data-level="0"
-                      style={`--activity-order:${activityRevealOrder(index)}`}
-                    />
-                  ))
-                }
-              </div>
-              <div class="t-skel-content activity-grid activity-grid-mobile">
-                {
-                  activity.map((day, index) =>
-                    day.count > 0 ? (
-                      <span class="t-tt-wrap activity-tooltip-wrap">
-                        <span
-                          class="activity-day t-tt-trigger"
-                          data-cuelume-hover="tick"
-                          data-level={day.level}
-                          data-project={day.project}
-                          role="img"
-                          aria-label={day.label}
-                          aria-describedby={`activity-tooltip-mobile-${index}`}
-                          tabindex="0"
-                          style={`--activity-order:${activityRevealOrder(index)}`}
-                        />
-                        <span
-                          id={`activity-tooltip-mobile-${index}`}
-                          class="t-tt activity-tooltip"
-                          role="tooltip"
-                        >
-                          {day.label}
-                        </span>
-                      </span>
-                    ) : (
-                      <span
-                        class="activity-day"
-                        data-level={day.level}
-                        data-project={day.project}
-                        role="img"
-                        aria-label={day.label}
-                        style={`--activity-order:${activityRevealOrder(index)}`}
-                      />
-                    ),
-                  )
-                }
-              </div>
-            </div>
-          </div>
-          <div
-            class="activity-legend mt-2 flex items-center justify-end gap-1 [font-family:Geist_Mono,ui-monospace,monospace] text-[10px] text-[var(--text-tertiary)]"
-            aria-hidden="true"
-          >
-            <span>{copy.activity.less}</span><i
-              class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]"
-              data-level="0"></i><i
-              class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]"
-              data-level="1"></i><i
-              class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]"
-              data-level="2"></i><i
-              class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]"
-              data-level="3"></i><i
-              class="block size-[7px] rounded-[2px] max-[520px]:size-[5px] max-[520px]:rounded-[1.5px]"
-              data-level="4"></i><span>{copy.activity.more}</span>
-          </div>
-        </div>
+        <ActivityGraph
+          {activity}
+          ariaLabel={activityAriaLabel}
+          lessLabel={copy.activity.less}
+          moreLabel={copy.activity.more}
+        />
       </section>
       <WaveDivider />
 
