@@ -10,6 +10,7 @@ import PortfolioFooter from "../components/home/PortfolioFooter.astro";
 import ProfileSection from "../components/home/ProfileSection.astro";
 import ProjectsSection from "../components/home/ProjectsSection.astro";
 import TechnologiesSection from "../components/home/TechnologiesSection.astro";
+import { TECHNOLOGIES } from "../data/technologies";
 import Layout from "../layouts/Layout.astro";
 import { buildActivity, fetchGithubContributions } from "../lib/github";
 import { detectLocale, tr } from "../lib/i18n";
@@ -25,7 +26,7 @@ const currentAge = ageYears();
 const githubDays = await fetchGithubContributions((task) =>
   Astro.locals.cfContext.waitUntil(task),
 );
-const technologies = createTechnologyCollections(copy.tech.items);
+const technologies = createTechnologyCollections();
 const activity = buildActivity(githubDays, locale, copy.activity);
 const activityTotal = activity.reduce((total, day) => total + day.count, 0);
 const activityAriaLabel = `${copy.activity.aria}: ${new Intl.NumberFormat(locale).format(activityTotal)} ${activityTotal === 1 ? copy.activity.contribution : copy.activity.contributions}`;
@@ -40,8 +41,8 @@ const linkedinUrl =
     <EdgeBlur />
     <EdgeBlur edge="bottom" />
     <PortfolioChrome
-      technologies={copy.tech.items}
-      stickerLayout={createStickerLayout(copy.tech.items.length)}
+      technologies={TECHNOLOGIES}
+      stickerLayout={createStickerLayout(TECHNOLOGIES.length)}
       labels={{
         ...copy.avatar,
         technologies: copy.tech.aria,

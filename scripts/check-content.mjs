@@ -28,15 +28,18 @@ const discoveryPath = new URL(
   import.meta.url,
 );
 const headersPath = new URL("../public/_headers", import.meta.url);
+const privacyPagePath = new URL("../src/pages/privacy.astro", import.meta.url);
 
-const [skill, discoverySource, headers, ...publicTexts] = await Promise.all([
-  readFile(skillPath),
-  readFile(discoveryPath, "utf8"),
-  readFile(headersPath, "utf8"),
-  ...publicTextResources.map(({ path }) =>
-    readFile(new URL(path, import.meta.url)),
-  ),
-]);
+const [skill, discoverySource, headers, privacyPage, ...publicTexts] =
+  await Promise.all([
+    readFile(skillPath),
+    readFile(discoveryPath, "utf8"),
+    readFile(headersPath, "utf8"),
+    readFile(privacyPagePath, "utf8"),
+    ...publicTextResources.map(({ path }) =>
+      readFile(new URL(path, import.meta.url)),
+    ),
+  ]);
 
 const discovery = JSON.parse(discoverySource);
 const publishedDigest = discovery.skills?.find(
@@ -231,6 +234,57 @@ if (englishProfile !== indexProfile) {
   );
 }
 
+const privacyRepresentations = {
+  de: {
+    markdown: utf8.decode(publicTexts[6]),
+    date: "12. August 2026",
+    headings: [
+      "Datenschutzerklärung",
+      "Verantwortlicher",
+      "Hosting",
+      "Reichweitenmessung mit PostHog",
+      "Fehlerdiagnose",
+      "Ihre Rechte",
+    ],
+  },
+  en: {
+    markdown: utf8.decode(publicTexts[7]),
+    date: "12 August 2026",
+    headings: [
+      "Privacy policy",
+      "Controller",
+      "Hosting",
+      "Analytics with PostHog",
+      "Error diagnostics",
+      "Your rights",
+    ],
+  },
+};
+const privacyLinks = [
+  "mailto:hi@itsjan.dev",
+  "https://www.cloudflare.com/privacypolicy/",
+  "https://posthog.com/privacy",
+  "https://posthog.com/dpa",
+];
+
+Object.entries(privacyRepresentations).forEach(
+  ([locale, { markdown, date, headings }]) => {
+    const requiredValues = [date, ...headings, ...privacyLinks];
+    requiredValues.forEach((value) => {
+      if (!markdown.includes(value)) {
+        errors.push(
+          `src/content/resources/privacy.${locale}.md is missing shared privacy value: ${value}`,
+        );
+      }
+      if (!privacyPage.includes(value)) {
+        errors.push(
+          `src/pages/privacy.astro is missing the ${locale} privacy value: ${value}`,
+        );
+      }
+    });
+  },
+);
+
 if (!headers.includes("Content-Type: text/markdown; charset=utf-8")) {
   errors.push("public/_headers must declare UTF-8 for Markdown resources.");
 }
@@ -243,6 +297,6 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   process.stdout.write(
-    `Content resources use consistent languages and valid UTF-8; Agent Skill digest is current.\n`,
+    `Content resources use consistent languages and valid UTF-8; privacy representations and Agent Skill digest are current.\n`,
   );
 }

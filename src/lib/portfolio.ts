@@ -1,5 +1,5 @@
-import { EXPERIENCE_ONLY_TECHNOLOGIES } from "../data/technologies";
-import type { Technology } from "../data/technologies";
+import { ALL_TECHNOLOGIES } from "../data/technologies";
+import type { TechnologyId } from "../data/technologies";
 
 export type StickerPlacement = {
   side: "left" | "right";
@@ -9,15 +9,15 @@ export type StickerPlacement = {
   rotation: number;
 };
 
-const FEATURED_MOBILE_TECHNOLOGIES = [
-  "PHP",
-  "TypeScript",
-  "React",
-  "Next.js",
-  "TYPO3",
-  "Symfony",
-  "Git",
-  "Docker",
+const FEATURED_MOBILE_TECHNOLOGIES: readonly TechnologyId[] = [
+  "php",
+  "typescript",
+  "react",
+  "nextjs",
+  "typo3",
+  "symfony",
+  "git",
+  "docker",
 ];
 
 const STICKER_HORIZONTAL_BANDS = [
@@ -26,25 +26,20 @@ const STICKER_HORIZONTAL_BANDS = [
   [72, 94],
 ] as const;
 
-export function createTechnologyCollections(technologies: Technology[]) {
-  const all = [...technologies, ...EXPERIENCE_ONLY_TECHNOLOGIES];
-  const byName = new Map(
-    all.map((technology) => [technology.name, technology]),
+export function createTechnologyCollections() {
+  const byId = new Map(
+    ALL_TECHNOLOGIES.map((technology) => [technology.id, technology]),
   );
-  const featured = FEATURED_MOBILE_TECHNOLOGIES.map((name) =>
-    byName.get(name),
-  ).filter((technology): technology is Technology => Boolean(technology));
+  const featured = FEATURED_MOBILE_TECHNOLOGIES.map((id) =>
+    byId.get(id),
+  ).filter((technology) => technology !== undefined);
 
   return {
-    all,
+    all: ALL_TECHNOLOGIES,
     featured,
-    additional: all.filter(
-      (technology) => !FEATURED_MOBILE_TECHNOLOGIES.includes(technology.name),
+    additional: ALL_TECHNOLOGIES.filter(
+      (technology) => !FEATURED_MOBILE_TECHNOLOGIES.includes(technology.id),
     ),
-    find: (names: string[]) =>
-      names
-        .map((name) => byName.get(name))
-        .filter((technology): technology is Technology => Boolean(technology)),
   };
 }
 

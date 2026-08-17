@@ -2,8 +2,8 @@
 import { Image } from "astro:assets";
 import finnyFavicon from "../../assets/finny-favicon.png";
 import ventryLogo from "../../assets/ventry-logo-white-56.png";
+import { PROJECTS } from "../../data/portfolio";
 import type { PortfolioCopy } from "../../lib/i18n";
-import { FINNY_URL, VENTRY_URL } from "../../lib/site";
 import InteractiveLink from "../InteractiveLink.astro";
 
 interface Props {
@@ -61,12 +61,13 @@ const { heading, finny, ventry } = Astro.props;
           <div class="project-preview-action">
             <InteractiveLink
               variant="primary"
-              href={FINNY_URL}
+              href={PROJECTS[finny.id].href}
               target="_blank"
               rel="noreferrer"
               class="project-preview-cta"
               data-analytics-event="project_cta_clicked"
-              data-analytics-project="finny">{finny.cta.label}</InteractiveLink
+              data-analytics-project={finny.id}
+              >{finny.cta.label}</InteractiveLink
             >
           </div>
         </div>
@@ -142,12 +143,12 @@ const { heading, finny, ventry } = Astro.props;
           <div class="project-preview-action">
             <InteractiveLink
               variant="primary"
-              href={VENTRY_URL}
+              href={PROJECTS[ventry.id].href}
               target="_blank"
               rel="noreferrer"
               class="project-preview-cta"
               data-analytics-event="project_cta_clicked"
-              data-analytics-project="ventry"
+              data-analytics-project={ventry.id}
               >{ventry.cta.label}</InteractiveLink
             >
           </div>
