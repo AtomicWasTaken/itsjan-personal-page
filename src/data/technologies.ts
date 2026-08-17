@@ -30,85 +30,178 @@ import vueLogo from "../assets/logos/vuedotjs.svg";
 import windowsLogo from "../assets/logos/windows11.svg";
 
 export type Technology = {
+  id: TechnologyId;
   name: string;
   logo: SvgComponent & ImageMetadata;
   href: string;
   darkModeLight?: boolean;
 };
 
+export type TechnologyId =
+  | "angular"
+  | "astro"
+  | "bun"
+  | "claude"
+  | "cloudflare"
+  | "codex"
+  | "cursor"
+  | "docker"
+  | "git"
+  | "gitea"
+  | "github"
+  | "gitlab"
+  | "linux"
+  | "macos"
+  | "nextjs"
+  | "gemini"
+  | "perplexity"
+  | "php"
+  | "phpstorm"
+  | "proxmox"
+  | "react"
+  | "symfony"
+  | "tailwindcss"
+  | "typescript"
+  | "typo3"
+  | "vscode"
+  | "vue"
+  | "windows";
+
 export const TECHNOLOGIES: Technology[] = [
-  { name: "PHP", logo: phpLogo, href: "https://www.php.net/" },
+  { id: "php", name: "PHP", logo: phpLogo, href: "https://www.php.net/" },
   {
+    id: "typescript",
     name: "TypeScript",
     logo: typescriptLogo,
     href: "https://www.typescriptlang.org/",
   },
-  { name: "React", logo: reactLogo, href: "https://react.dev/" },
+  { id: "react", name: "React", logo: reactLogo, href: "https://react.dev/" },
   {
+    id: "nextjs",
     name: "Next.js",
     logo: nextLogo,
     href: "https://nextjs.org/",
     darkModeLight: true,
   },
-  { name: "TYPO3", logo: typo3Logo, href: "https://typo3.org/" },
-  { name: "Angular", logo: angularLogo, href: "https://angular.dev/" },
-  { name: "Vue", logo: vueLogo, href: "https://vuejs.org/" },
+  { id: "typo3", name: "TYPO3", logo: typo3Logo, href: "https://typo3.org/" },
   {
+    id: "angular",
+    name: "Angular",
+    logo: angularLogo,
+    href: "https://angular.dev/",
+  },
+  { id: "vue", name: "Vue", logo: vueLogo, href: "https://vuejs.org/" },
+  {
+    id: "github",
     name: "GitHub",
     logo: githubLogo,
     href: "https://github.com/",
     darkModeLight: true,
   },
-  { name: "GitLab", logo: gitlabLogo, href: "https://gitlab.com/" },
-  { name: "Gitea", logo: giteaLogo, href: "https://about.gitea.com/" },
-  { name: "Docker", logo: dockerLogo, href: "https://www.docker.com/" },
-  { name: "Proxmox", logo: proxmoxLogo, href: "https://www.proxmox.com/" },
-  { name: "Linux", logo: linuxLogo, href: "https://www.linux.org/" },
   {
+    id: "gitlab",
+    name: "GitLab",
+    logo: gitlabLogo,
+    href: "https://gitlab.com/",
+  },
+  {
+    id: "gitea",
+    name: "Gitea",
+    logo: giteaLogo,
+    href: "https://about.gitea.com/",
+  },
+  {
+    id: "docker",
+    name: "Docker",
+    logo: dockerLogo,
+    href: "https://www.docker.com/",
+  },
+  {
+    id: "proxmox",
+    name: "Proxmox",
+    logo: proxmoxLogo,
+    href: "https://www.proxmox.com/",
+  },
+  {
+    id: "linux",
+    name: "Linux",
+    logo: linuxLogo,
+    href: "https://www.linux.org/",
+  },
+  {
+    id: "macos",
     name: "macOS",
     logo: appleLogo,
     href: "https://www.apple.com/macos/",
     darkModeLight: true,
   },
-  { name: "Astro", logo: astroLogo, href: "https://astro.build/" },
+  { id: "astro", name: "Astro", logo: astroLogo, href: "https://astro.build/" },
   {
+    id: "cloudflare",
     name: "Cloudflare",
     logo: cloudflareLogo,
     href: "https://www.cloudflare.com/",
   },
-  { name: "Bun", logo: bunLogo, href: "https://bun.sh/", darkModeLight: true },
-  { name: "Claude", logo: claudeLogo, href: "https://claude.ai/" },
   {
+    id: "bun",
+    name: "Bun",
+    logo: bunLogo,
+    href: "https://bun.sh/",
+    darkModeLight: true,
+  },
+  {
+    id: "claude",
+    name: "Claude",
+    logo: claudeLogo,
+    href: "https://claude.ai/",
+  },
+  {
+    id: "codex",
     name: "Codex",
     logo: openaiLogo,
     href: "https://openai.com/codex",
     darkModeLight: true,
   },
   {
+    id: "cursor",
     name: "Cursor",
     logo: cursorLogo,
     href: "https://cursor.com/",
     darkModeLight: true,
   },
-  { name: "Gemini", logo: geminiLogo, href: "https://gemini.google.com/" },
   {
+    id: "gemini",
+    name: "Gemini",
+    logo: geminiLogo,
+    href: "https://gemini.google.com/",
+  },
+  {
+    id: "perplexity",
     name: "Perplexity",
     logo: perplexityLogo,
     href: "https://www.perplexity.ai/",
   },
-  { name: "VS Code", logo: vscodeLogo, href: "https://code.visualstudio.com/" },
   {
+    id: "vscode",
+    name: "VS Code",
+    logo: vscodeLogo,
+    href: "https://code.visualstudio.com/",
+  },
+  {
+    id: "phpstorm",
     name: "PhpStorm",
     logo: phpstormLogo,
     href: "https://www.jetbrains.com/phpstorm/",
     darkModeLight: true,
   },
   {
+    id: "windows",
     name: "Windows",
     logo: windowsLogo,
     href: "https://www.microsoft.com/windows",
   },
   {
+    id: "tailwindcss",
     name: "Tailwind CSS",
     logo: tailwindLogo,
     href: "https://tailwindcss.com/",
@@ -117,10 +210,16 @@ export const TECHNOLOGIES: Technology[] = [
 
 export const EXPERIENCE_ONLY_TECHNOLOGIES: Technology[] = [
   {
+    id: "symfony",
     name: "Symfony",
     logo: symfonyLogo,
     href: "https://symfony.com/",
     darkModeLight: true,
   },
-  { name: "Git", logo: gitLogo, href: "https://git-scm.com/" },
+  { id: "git", name: "Git", logo: gitLogo, href: "https://git-scm.com/" },
+];
+
+export const ALL_TECHNOLOGIES = [
+  ...TECHNOLOGIES,
+  ...EXPERIENCE_ONLY_TECHNOLOGIES,
 ];

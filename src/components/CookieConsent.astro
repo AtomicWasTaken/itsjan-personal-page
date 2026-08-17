@@ -1,5 +1,5 @@
 ---
-import type { Locale } from "../lib/i18n";
+import { tr, type Locale } from "../lib/i18n";
 import InteractiveButton from "./InteractiveButton.astro";
 import InteractiveLink from "./InteractiveLink.astro";
 import WaveDivider from "./WaveDivider.astro";
@@ -10,26 +10,7 @@ interface Props {
 }
 
 const { locale } = Astro.props;
-const copy =
-  locale === "de"
-    ? {
-        title: "Datenschutz-Einstellungen",
-        text: "Mit Ihrer Zustimmung lade ich PostHog. So sehe ich, welche Bereiche genutzt werden und wo technische Fehler auftreten.",
-        accept: "Analyse erlauben",
-        reject: "Nur notwendige Cookies",
-        settings: "Datenschutz-Einstellungen",
-        settingsShort: "Datenschutz",
-        privacy: "Datenschutzerklärung",
-      }
-    : {
-        title: "Privacy settings",
-        text: "With your permission, I use PostHog to see which parts of the site people use and where technical errors occur.",
-        accept: "Allow analytics",
-        reject: "Necessary cookies only",
-        settings: "Privacy settings",
-        settingsShort: "Privacy",
-        privacy: "Privacy policy",
-      };
+const copy = tr(locale).privacyConsent;
 ---
 
 <aside

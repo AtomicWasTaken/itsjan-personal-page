@@ -1,8 +1,13 @@
 // Bilingual content + locale detection from Accept-Language header.
 
-import { TECHNOLOGIES } from "../data/technologies";
-import type { Technology } from "../data/technologies";
+import type {
+  ExperienceId,
+  OrganizationId,
+  ProjectId,
+} from "../data/portfolio";
+import type { TechnologyId } from "../data/technologies";
 import type { Locale } from "./locale";
+import { validatePortfolioContent } from "./content-validation";
 export { detectLocale } from "./locale";
 export type { Locale } from "./locale";
 
@@ -11,6 +16,15 @@ interface Strings {
   meta: {
     imageAlt: string;
     jobTitle: string;
+  };
+  privacyConsent: {
+    title: string;
+    text: string;
+    accept: string;
+    reject: string;
+    settings: string;
+    settingsShort: string;
+    privacy: string;
   };
   portfolio: {
     subtitle: (age: number) => string;
@@ -33,13 +47,14 @@ interface Strings {
       mobileViewMore: string;
       mobileViewLess: string;
       visitLabel: (name: string) => string;
-      items: Technology[];
     };
     experience: {
       heading: string;
       items: {
+        id: ExperienceId;
         period: string;
         title: string;
+        organizationId: OrganizationId;
         organization: string;
         location: string;
         secondary?: {
@@ -47,7 +62,7 @@ interface Strings {
           title: string;
         };
         bullets: string[];
-        technologies: string[];
+        technologies: TechnologyId[];
       }[];
     };
     projects: string;
@@ -77,6 +92,7 @@ interface Strings {
       emailCopied: string;
     };
     finny: {
+      id: Extract<ProjectId, "finny">;
       linkAria: string;
       previewAria: string;
       receiptTitle: string;
@@ -97,6 +113,7 @@ interface Strings {
       cta: { prefix: string; label: string };
     };
     ventry: {
+      id: Extract<ProjectId, "ventry">;
       linkAria: string;
       previewAria: string;
       panelTitle: string;
@@ -118,6 +135,15 @@ const en: Strings = {
   meta: {
     imageAlt: "Jan-Marlon Leibl's portfolio",
     jobTitle: "Software Developer",
+  },
+  privacyConsent: {
+    title: "Privacy settings",
+    text: "With your permission, I use PostHog to see which parts of the site people use and where technical errors occur.",
+    accept: "Allow analytics",
+    reject: "Necessary cookies only",
+    settings: "Privacy settings",
+    settingsShort: "Privacy",
+    privacy: "Privacy policy",
   },
   portfolio: {
     subtitle: (age) => `${age}, software developer from Bremen`,
@@ -147,24 +173,27 @@ const en: Strings = {
       mobileViewMore: "Show more",
       mobileViewLess: "Show fewer",
       visitLabel: (name) => `Visit ${name}`,
-      items: TECHNOLOGIES,
     },
     experience: {
       heading: "Experience",
       items: [
         {
+          id: "building-finny",
           period: "Since 2026",
           title: "Building",
+          organizationId: "finny",
           organization: "Finny",
           location: "Bremen",
           bullets: [
             "I'm building Finny to keep receipts and purchase details in one place, with a reminder before each warranty expires.",
           ],
-          technologies: ["TypeScript", "React", "Next.js"],
+          technologies: ["typescript", "react", "nextjs"],
         },
         {
+          id: "team-neusta-apprenticeship",
           period: "2023 to 2026",
           title: "Software development apprenticeship at",
+          organizationId: "team-neusta",
           organization: "team neusta",
           location: "Bremen",
           secondary: {
@@ -174,27 +203,31 @@ const en: Strings = {
           bullets: [
             "I worked on client projects using PHP, TypeScript and TYPO3.",
           ],
-          technologies: ["PHP", "Symfony", "TypeScript", "TYPO3", "Git"],
+          technologies: ["php", "symfony", "typescript", "typo3", "git"],
         },
         {
+          id: "built-ventry",
           period: "2023 to 2024",
           title: "Built",
+          organizationId: "ventry",
           organization: "Ventry",
           location: "Bremen",
           bullets: [
             "I built Ventry because I wanted a simple way to share files through links that expire on their own.",
           ],
-          technologies: ["TypeScript", "Next.js"],
+          technologies: ["typescript", "nextjs"],
         },
         {
+          id: "homelab",
           period: "Personal",
           title: "Running my",
+          organizationId: "homelab",
           organization: "homelab",
           location: "Bremen",
           bullets: [
             "I keep a Proxmox node and my home network running, upgrade hardware and chase down whatever broke this time.",
           ],
-          technologies: ["Proxmox", "Linux", "Windows"],
+          technologies: ["proxmox", "linux", "windows"],
         },
       ],
     },
@@ -225,6 +258,7 @@ const en: Strings = {
       emailCopied: "Copied",
     },
     finny: {
+      id: "finny",
       linkAria: "Open Finny",
       previewAria: "Preview of Finny",
       receiptTitle: "RECEIPT",
@@ -245,6 +279,7 @@ const en: Strings = {
       cta: { prefix: "", label: "Open Finny ↗" },
     },
     ventry: {
+      id: "ventry",
       linkAria: "Open Ventry",
       previewAria: "Preview of Ventry",
       panelTitle: "RECENT UPLOADS",
@@ -268,6 +303,15 @@ const de: Strings = {
   meta: {
     imageAlt: "Portfolio von Jan-Marlon Leibl",
     jobTitle: "Softwareentwickler",
+  },
+  privacyConsent: {
+    title: "Datenschutz-Einstellungen",
+    text: "Mit Ihrer Zustimmung lade ich PostHog. So sehe ich, welche Bereiche genutzt werden und wo technische Fehler auftreten.",
+    accept: "Analyse erlauben",
+    reject: "Nur notwendige Cookies",
+    settings: "Datenschutz-Einstellungen",
+    settingsShort: "Datenschutz",
+    privacy: "Datenschutzerklärung",
   },
   portfolio: {
     subtitle: (age) => `${age}, Softwareentwickler aus Bremen`,
@@ -297,24 +341,27 @@ const de: Strings = {
       mobileViewMore: "Mehr zeigen",
       mobileViewLess: "Weniger zeigen",
       visitLabel: (name) => `${name} besuchen`,
-      items: TECHNOLOGIES,
     },
     experience: {
       heading: "Erfahrung",
       items: [
         {
+          id: "building-finny",
           period: "Seit 2026",
           title: "Ich entwickle",
+          organizationId: "finny",
           organization: "Finny",
           location: "Bremen",
           bullets: [
             "Ich baue Finny, damit Belege und Kaufdetails nicht mehr an verschiedenen Orten liegen. Vor Ablauf einer Garantie gibt die App rechtzeitig Bescheid.",
           ],
-          technologies: ["TypeScript", "React", "Next.js"],
+          technologies: ["typescript", "react", "nextjs"],
         },
         {
+          id: "team-neusta-apprenticeship",
           period: "2023 bis 2026",
           title: "Ausbildung zum Softwareentwickler bei",
+          organizationId: "team-neusta",
           organization: "team neusta",
           location: "Bremen",
           secondary: {
@@ -324,27 +371,31 @@ const de: Strings = {
           bullets: [
             "Bei Kundenprojekten habe ich hauptsächlich mit PHP, TypeScript und TYPO3 gearbeitet.",
           ],
-          technologies: ["PHP", "Symfony", "TypeScript", "TYPO3", "Git"],
+          technologies: ["php", "symfony", "typescript", "typo3", "git"],
         },
         {
+          id: "built-ventry",
           period: "2023 bis 2024",
           title: "Entwickelt",
+          organizationId: "ventry",
           organization: "Ventry",
           location: "Bremen",
           bullets: [
             "Ventry entstand, weil ich Dateien unkompliziert über Links teilen wollte, die von selbst ablaufen.",
           ],
-          technologies: ["TypeScript", "Next.js"],
+          technologies: ["typescript", "nextjs"],
         },
         {
+          id: "homelab",
           period: "Privat",
           title: "Betreibe mein",
+          organizationId: "homelab",
           organization: "Homelab",
           location: "Bremen",
           bullets: [
             "Ich halte einen Proxmox-Node und mein Heimnetz am Laufen, rüste Hardware auf und suche heraus, was diesmal kaputtgegangen ist.",
           ],
-          technologies: ["Proxmox", "Linux", "Windows"],
+          technologies: ["proxmox", "linux", "windows"],
         },
       ],
     },
@@ -375,6 +426,7 @@ const de: Strings = {
       emailCopied: "Kopiert",
     },
     finny: {
+      id: "finny",
       linkAria: "Finny öffnen",
       previewAria: "Vorschau von Finny",
       receiptTitle: "BELEG",
@@ -395,6 +447,7 @@ const de: Strings = {
       cta: { prefix: "", label: "Finny öffnen ↗" },
     },
     ventry: {
+      id: "ventry",
       linkAria: "Ventry öffnen",
       previewAria: "Vorschau von Ventry",
       panelTitle: "LETZTE DATEIEN",
@@ -414,6 +467,7 @@ const de: Strings = {
 };
 
 const dict = { en, de };
+validatePortfolioContent(dict);
 
 export function tr(locale: Locale): Strings {
   return dict[locale];

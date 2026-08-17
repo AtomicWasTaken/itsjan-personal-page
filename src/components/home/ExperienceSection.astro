@@ -13,8 +13,8 @@ interface Props {
 }
 
 const { experience, technologyAriaLabel, technologies } = Astro.props;
-const technologiesByName = new Map(
-  technologies.map((technology) => [technology.name, technology]),
+const technologiesById = new Map(
+  technologies.map((technology) => [technology.id, technology]),
 );
 ---
 
@@ -38,12 +38,11 @@ const technologiesByName = new Map(
             <span
               class:list={[
                 "experience-organization inline-flex items-center gap-0.5",
-                ["Finny", "Ventry", "team neusta"].includes(
-                  item.organization,
-                ) && "experience-organization--with-logo",
+                item.organizationId !== "homelab" &&
+                  "experience-organization--with-logo",
               ]}
             >
-              {item.organization === "Finny" && (
+              {item.organizationId === "finny" && (
                 <Image
                   src={finnyFavicon}
                   alt=""
@@ -52,14 +51,14 @@ const technologiesByName = new Map(
                   class="experience-organization-mark"
                 />
               )}
-              {item.organization.toLowerCase() === "team neusta" && (
+              {item.organizationId === "team-neusta" && (
                 <span
                   class="experience-organization-mark experience-organization-logo"
                   style={`--experience-organization-logo: url(${teamNeustaLogo.src})`}
                   aria-hidden="true"
                 />
               )}
-              {item.organization === "Ventry" && (
+              {item.organizationId === "ventry" && (
                 <span
                   class="experience-organization-mark experience-organization-logo"
                   style={`--experience-organization-logo: url(${ventryLogo.src})`}
@@ -93,7 +92,7 @@ const technologiesByName = new Map(
             aria-label={technologyAriaLabel}
           >
             {item.technologies
-              .map((name) => technologiesByName.get(name))
+              .map((id) => technologiesById.get(id))
               .map((technology) => {
                 if (!technology) return null;
                 const Logo = technology.logo;
