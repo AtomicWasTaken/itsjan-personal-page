@@ -23,7 +23,7 @@ interface Props {
   noindex?: boolean;
 }
 
-const props = Astro.props as Props;
+const props: Props = Astro.props;
 const locale = detectLocale(Astro.request);
 const copy = tr(locale);
 const title =
