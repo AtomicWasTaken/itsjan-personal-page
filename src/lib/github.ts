@@ -15,50 +15,147 @@ export type ActivityDay = {
 };
 
 const CONTRIBUTIONS_URL = `https://github.com/users/${SOCIAL_HANDLES.github}/contributions`;
-const CACHE_URL = `${SITE_ORIGIN}/_cache/github-contributions`;
+const FRESH_CACHE_URL = `${SITE_ORIGIN}/_cache/github-contributions/fresh`;
+const LAST_KNOWN_CACHE_URL = `${SITE_ORIGIN}/_cache/github-contributions/last-known`;
 const CACHE_SECONDS = 15 * 60;
+const LAST_KNOWN_CACHE_SECONDS = 7 * 24 * 60 * 60;
 const FALLBACK_DAYS = 365;
 const ACTIVITY_ROWS = 7;
+const activeRefreshes = new Set<string>();
 
-export async function fetchGithubContributions(): Promise<GithubDay[]> {
-  const cache = getEdgeCache();
-  const cacheKey = new Request(CACHE_URL);
+export type ContributionCache = Pick<Cache, "match" | "put">;
 
+type GithubContributionOptions = {
+  cache?: ContributionCache;
+  fetcher?: GithubFetcher;
+};
+
+type GithubFetcher = (
+  input: string | URL | Request,
+  init?: RequestInit,
+) => Promise<Response>;
+
+export type BackgroundScheduler = (task: Promise<void>) => void;
+
+export async function fetchGithubContributions(
+  schedule: BackgroundScheduler,
+  options: GithubContributionOptions = {},
+): Promise<GithubDay[]> {
+  const cache = options.cache ?? getEdgeCache();
+  const freshCacheKey = new Request(FRESH_CACHE_URL);
+  const lastKnownCacheKey = new Request(LAST_KNOWN_CACHE_URL);
+  const fresh = await readCachedContributions(cache, freshCacheKey);
+
+  if (fresh) return fresh;
+
+  const lastKnown = await readCachedContributions(cache, lastKnownCacheKey);
+  scheduleRefresh(schedule, {
+    cache,
+    fetcher: options.fetcher ?? fetch,
+    freshCacheKey,
+    lastKnownCacheKey,
+  });
+
+  return lastKnown ?? [];
+}
+
+type RefreshOptions = Required<
+  Pick<GithubContributionOptions, "cache" | "fetcher">
+> & {
+  freshCacheKey: Request;
+  lastKnownCacheKey: Request;
+};
+
+function scheduleRefresh(
+  schedule: BackgroundScheduler,
+  options: RefreshOptions,
+): void {
+  if (activeRefreshes.has(FRESH_CACHE_URL)) return;
+  activeRefreshes.add(FRESH_CACHE_URL);
+
+  const refresh = refreshContributions(options)
+    .catch((error: unknown) => {
+      console.error(
+        JSON.stringify({
+          message: "GitHub contribution refresh failed",
+          error: error instanceof Error ? error.message : String(error),
+        }),
+      );
+    })
+    .finally(() => activeRefreshes.delete(FRESH_CACHE_URL));
+
+  schedule(refresh);
+}
+
+async function refreshContributions({
+  cache,
+  fetcher,
+  freshCacheKey,
+  lastKnownCacheKey,
+}: RefreshOptions): Promise<void> {
+  const response = await fetcher(CONTRIBUTIONS_URL, {
+    headers: {
+      accept: "text/html",
+      "user-agent": `${new URL(SITE_ORIGIN).hostname} contribution graph`,
+    },
+    signal: AbortSignal.timeout(5_000),
+  });
+  if (!response.ok) throw new Error(`GitHub returned HTTP ${response.status}`);
+
+  const contributions = parseGithubContributions(await response.text());
+  if (!contributions.length) {
+    throw new Error("GitHub returned no contribution days");
+  }
+
+  await Promise.all([
+    writeCachedContributions(
+      cache,
+      freshCacheKey,
+      contributions,
+      CACHE_SECONDS,
+    ),
+    writeCachedContributions(
+      cache,
+      lastKnownCacheKey,
+      contributions,
+      LAST_KNOWN_CACHE_SECONDS,
+    ),
+  ]);
+}
+
+async function readCachedContributions(
+  cache: ContributionCache,
+  cacheKey: Request,
+): Promise<GithubDay[] | undefined> {
   try {
-    const cached = await cache?.match(cacheKey);
-    if (cached) {
-      const data: unknown = await cached.json();
-      if (Array.isArray(data)) return data.filter(isGithubDay);
-    }
+    const cached = await cache.match(cacheKey);
+    if (!cached) return undefined;
 
-    const response = await fetch(CONTRIBUTIONS_URL, {
-      headers: {
-        accept: "text/html",
-        "user-agent": `${new URL(SITE_ORIGIN).hostname} contribution graph`,
-      },
-      signal: AbortSignal.timeout(5_000),
-    });
-    if (!response.ok) return [];
+    const data: unknown = await cached.json();
+    if (!Array.isArray(data)) return undefined;
 
-    const contributions = parseGithubContributions(await response.text());
-    if (contributions.length && cache) {
-      try {
-        await cache.put(
-          cacheKey,
-          Response.json(contributions, {
-            headers: {
-              "Cache-Control": `public, max-age=${CACHE_SECONDS}, stale-while-revalidate=${CACHE_SECONDS}`,
-            },
-          }),
-        );
-      } catch {
-        // A cache write should never discard a successful GitHub response.
-      }
-    }
-
-    return contributions;
+    const contributions = data.filter(isGithubDay);
+    return contributions.length ? contributions : undefined;
   } catch {
-    return [];
+    return undefined;
+  }
+}
+
+async function writeCachedContributions(
+  cache: ContributionCache,
+  cacheKey: Request,
+  contributions: GithubDay[],
+  maxAge: number,
+): Promise<void> {
+  try {
+    await cache.put(
+      cacheKey,
+      Response.json(contributions, {
+        headers: { "Cache-Control": `public, max-age=${maxAge}` },
+      }),
+    );
+  } catch {
+    // Cache failures should not turn a successful refresh into a page failure.
   }
 }
 
@@ -150,9 +247,18 @@ export function parseGithubContributions(html: string): GithubDay[] {
   return [...daysByDate.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
 
-function getEdgeCache(): Cache | undefined {
-  return (globalThis.caches as (CacheStorage & { default?: Cache }) | undefined)
-    ?.default;
+function getEdgeCache(): ContributionCache {
+  const cache = (
+    globalThis.caches as (CacheStorage & { default?: Cache }) | undefined
+  )?.default;
+  return cache ?? createNoopCache();
+}
+
+function createNoopCache(): ContributionCache {
+  return {
+    match: () => Promise.resolve(undefined),
+    put: () => Promise.resolve(),
+  };
 }
 
 function isGithubDay(value: unknown): value is GithubDay {
