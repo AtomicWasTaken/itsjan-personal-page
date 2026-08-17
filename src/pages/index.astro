@@ -39,7 +39,9 @@ import {
 const locale = detectLocale(Astro.request);
 const copy = tr(locale).portfolio;
 const currentAge = ageYears();
-const githubDays = await fetchGithubContributions();
+const githubDays = await fetchGithubContributions((task) =>
+  Astro.locals.cfContext.waitUntil(task),
+);
 const technologies = createTechnologyCollections(copy.tech.items);
 const activity = buildActivity(githubDays, locale, copy.activity);
 const stickerLayout = createStickerLayout(copy.tech.items.length);
