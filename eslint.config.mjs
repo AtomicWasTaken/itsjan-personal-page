@@ -8,7 +8,10 @@ export default [
     ignores: [".astro/**", ".wrangler/**", "dist/**", "node_modules/**"],
   },
   js.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
+    ...config,
+    files: ["**/*.{ts,tsx,mts,cts}"],
+  })),
   ...astro.configs.recommended,
   {
     files: ["**/*.{js,mjs,ts,astro}"],
@@ -24,12 +27,32 @@ export default [
     },
   },
   {
+    files: ["**/*.{ts,tsx,mts,cts}"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-floating-promises": "error",
+    },
+  },
+  {
     files: ["**/*.astro"],
+    plugins: {
+      "@typescript-eslint": tseslint.plugin,
+    },
     languageOptions: {
       parserOptions: {
         parser: tseslint.parser,
         extraFileExtensions: [".astro"],
+        project: "./tsconfig.json",
+        tsconfigRootDir: import.meta.dirname,
       },
+    },
+    rules: {
+      "@typescript-eslint/no-floating-promises": "error",
     },
   },
 ];

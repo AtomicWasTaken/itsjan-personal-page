@@ -17,11 +17,11 @@ function createCache(initial: Record<string, GithubDay[]> = {}): {
 } {
   const values = new Map(Object.entries(initial));
   const cache: ContributionCache = {
-    async match(request) {
+    match(request) {
       const value = values.get(
         request instanceof Request ? request.url : request.toString(),
       );
-      return value ? Response.json(value) : undefined;
+      return Promise.resolve(value ? Response.json(value) : undefined);
     },
     async put(request, response) {
       const url = request instanceof Request ? request.url : request.toString();

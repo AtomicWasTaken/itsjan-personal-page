@@ -1,6 +1,6 @@
 import { describe, expect, mock, test } from "bun:test";
 
-mock.module("astro:middleware", () => ({
+await mock.module("astro:middleware", () => ({
   defineMiddleware: <Middleware>(middleware: Middleware) => middleware,
 }));
 
