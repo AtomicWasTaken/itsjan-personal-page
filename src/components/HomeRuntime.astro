@@ -299,11 +299,20 @@
   };
 
   const initializeHaptics = () => {
-    const haptics = window.matchMedia("(pointer: coarse)").matches
-      ? import("web-haptics").then(({ WebHaptics }) =>
-          WebHaptics.isSupported ? new WebHaptics() : null,
-        )
-      : Promise.resolve(null);
+    let hapticsPromise:
+      Promise<import("web-haptics").WebHaptics | null> | undefined;
+    const getHaptics = () => {
+      if (!window.matchMedia("(pointer: coarse)").matches)
+        return Promise.resolve(null);
+      if (!hapticsPromise) {
+        hapticsPromise = import("web-haptics")
+          .then(({ WebHaptics }) =>
+            WebHaptics.isSupported ? new WebHaptics() : null,
+          )
+          .catch(() => null);
+      }
+      return hapticsPromise;
+    };
 
     const assign = (selector: string, pattern: string) => {
       document.querySelectorAll<HTMLElement>(selector).forEach((element) => {
@@ -326,8 +335,11 @@
           return;
         const target = event.target.closest<HTMLElement>("[data-haptic]");
         if (!target) return;
-        const device = await haptics;
-        if (device) void device.trigger(target.dataset.haptic ?? "light");
+        const device = await getHaptics();
+        if (device)
+          void device
+            .trigger(target.dataset.haptic ?? "light")
+            .catch(() => undefined);
       },
       { passive: true },
     );
