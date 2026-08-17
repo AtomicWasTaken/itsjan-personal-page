@@ -72,7 +72,7 @@ src/
   styles/                Font declarations and global design system
   middleware.ts          Markdown negotiation and response security headers
 public/
-  _headers               UTF-8 headers for static text resources
+  _headers               MIME and cache policy for static assets
 ```
 
 ## Architecture notes
@@ -105,13 +105,31 @@ public/
 
 ## Deployment
 
-Cloudflare configuration lives in [`wrangler.toml`](wrangler.toml). The
+Cloudflare configuration lives in [`wrangler.jsonc`](wrangler.jsonc). The
 PostHog values in that file are public browser configuration, not secrets.
+Run `bun run types:cloudflare` after changing bindings or variables; CI checks
+that the committed `src/worker-configuration.d.ts` still matches the config.
+
+Response policy has two explicit owners:
+
+- `src/middleware.ts` applies CSP, HSTS, other security headers, and `no-store`
+  to dynamic HTML and negotiated resources.
+- `public/_headers` defines MIME types and caching only for static assets.
+
+Fingerprint-named Astro assets use a one-year immutable cache. The stable
+ransom-letter set uses a one-week cache; mutable public image filenames use a
+one-day cache with stale-while-revalidate. No HTML route is cached.
 
 Build the Worker with:
 
 ```sh
 bun run build
+```
+
+Validate the generated deployment bundle without uploading it:
+
+```sh
+bun run check:deploy
 ```
 
 Deployment credentials and other secrets must be configured in Cloudflare or

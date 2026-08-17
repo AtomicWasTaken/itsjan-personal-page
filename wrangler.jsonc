@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "itsjan-personal-page",
+  "compatibility_date": "2026-03-10",
+  "vars": {
+    // These values are public browser configuration, not secrets.
+    "PUBLIC_POSTHOG_PROJECT_TOKEN": "phc_AjhL5JJU9TGMCGnMkDKSs9kprYPsRhr6WfxQwJZA5KNf",
+    "PUBLIC_POSTHOG_HOST": "https://t.itsjan.dev",
+    "PUBLIC_POSTHOG_UI_HOST": "https://eu.posthog.com",
+  },
+  "observability": {
+    // Ten percent is enough signal for this low-traffic site without retaining
+    // every request. Traces stay disabled until there is a concrete use case.
+    "enabled": true,
+    "head_sampling_rate": 0.1,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 0.1,
+      "persist": true,
+      "invocation_logs": true,
+    },
+    "traces": {
+      "enabled": false,
+      "persist": false,
+      "head_sampling_rate": 0.1,
+    },
+  },
+}

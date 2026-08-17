@@ -291,6 +291,16 @@ if (!headers.includes("Content-Type: text/markdown; charset=utf-8")) {
 if (!headers.includes("Content-Type: text/plain; charset=utf-8")) {
   errors.push("public/_headers must declare UTF-8 for text resources.");
 }
+if (!headers.includes("Cache-Control: public, max-age=31536000, immutable")) {
+  errors.push(
+    "public/_headers must cache fingerprinted Astro assets immutably.",
+  );
+}
+if (!headers.includes("/favicon.png")) {
+  errors.push(
+    "public/_headers must define an intentional public image policy.",
+  );
+}
 
 if (errors.length > 0) {
   console.error(errors.join("\n\n"));

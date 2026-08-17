@@ -78,6 +78,23 @@ try {
   previewStarted = true;
   await waitForServer();
 
+  const htmlResponse = await fetch(baseUrl);
+  assert.equal(htmlResponse.headers.get("cache-control"), "no-store");
+  assert.match(
+    htmlResponse.headers.get("content-security-policy") ?? "",
+    /frame-ancestors 'none'/,
+  );
+  assert.equal(
+    htmlResponse.headers.get("strict-transport-security"),
+    "max-age=31536000",
+  );
+
+  const staticImageResponse = await fetch(`${baseUrl}/favicon.png`);
+  assert.equal(
+    staticImageResponse.headers.get("cache-control"),
+    "public, max-age=86400, stale-while-revalidate=604800",
+  );
+
   const markdownResponse = await fetch(baseUrl, {
     headers: {
       Accept: "text/markdown",
