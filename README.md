@@ -109,6 +109,8 @@ Cloudflare configuration lives in [`wrangler.jsonc`](wrangler.jsonc). The
 PostHog values in that file are public browser configuration, not secrets.
 Run `bun run types:cloudflare` after changing bindings or variables; CI checks
 that the committed `src/worker-configuration.d.ts` still matches the config.
+The generator uses the intentionally empty `wrangler-types.env`, so local
+`.env` overrides cannot make the committed declarations machine-dependent.
 
 Response policy has two explicit owners:
 

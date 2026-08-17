@@ -29,7 +29,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "check": "bun run check:cloudflare && bun run typecheck && bun run lint && bun run format:check && bun run test && bun run check:content",
-    "check:cloudflare": "wrangler types src/worker-configuration.d.ts --include-runtime false --check",
+    "check:cloudflare": "wrangler types src/worker-configuration.d.ts --include-runtime false --env-file wrangler-types.env --check",
     "check:content": "bun scripts/check-content.mjs",
     "ci": "bun run check && bun run build && bun run check:deploy && bun run test:browser",
     "check:deploy": "wrangler deploy --config dist/server/wrangler.json --dry-run",
@@ -39,7 +39,7 @@
     "preview": "astro preview",
     "test": "bun test",
     "test:browser": "bun scripts/browser-smoke.mjs",
-    "types:cloudflare": "wrangler types src/worker-configuration.d.ts --include-runtime false",
+    "types:cloudflare": "wrangler types src/worker-configuration.d.ts --include-runtime false --env-file wrangler-types.env",
     "typecheck": "astro check",
     "astro": "astro"
   },
