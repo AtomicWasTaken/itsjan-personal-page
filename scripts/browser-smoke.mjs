@@ -191,10 +191,20 @@ try {
   ]) {
     const response = await fetch(`${baseUrl}${path}`);
     const html = await response.text();
+    const headingLevels = [
+      ...html.matchAll(/<h([1-6])(?:\s[^>]*)?>([\s\S]*?)<\/h\1>/g),
+    ].map(([, level]) => Number(level));
     const source = html.match(
       /<script type="application\/ld\+json">([^<]+)<\/script>/,
     )?.[1];
     assert.ok(source);
+    assert.equal(headingLevels.filter((level) => level === 1).length, 1);
+    assert.equal(
+      headingLevels.some(
+        (level, index) => index > 0 && level > headingLevels[index - 1] + 1,
+      ),
+      false,
+    );
     const schema = JSON.parse(source);
     assert.match(
       html,
@@ -287,9 +297,46 @@ try {
     "Jan-Marlon Leibl · Software developer from Bremen",
   );
   assert.equal(
-    (await page.locator("h1").first().textContent())?.trim(),
-    "Jan-Marlon Leibl",
+    (await page.locator("h1").first().textContent())
+      ?.replace(/\s+/g, " ")
+      .trim(),
+    "Jan-Marlon Leibl, software developer from Bremen",
   );
+  assert.equal(await page.locator("h1").count(), 1);
+  assert.deepEqual(await page.locator("#projects h3").allTextContents(), [
+    "Finny receipt and warranty app",
+    "Ventry expiring file sharing",
+  ]);
+  const semanticPage = await context.newPage();
+  for (const [path, expectedH1, expectedProjects] of [
+    [
+      "/en",
+      "Jan-Marlon Leibl, software developer from Bremen",
+      ["Finny receipt and warranty app", "Ventry expiring file sharing"],
+    ],
+    [
+      "/de",
+      "Jan-Marlon Leibl, Softwareentwickler aus Bremen",
+      [
+        "Finny für Belege und Garantien",
+        "Ventry für zeitlich begrenzte Dateifreigaben",
+      ],
+    ],
+  ]) {
+    await semanticPage.goto(`${baseUrl}${path}`);
+    assert.equal(await semanticPage.locator("h1").count(), 1);
+    assert.equal(
+      (await semanticPage.locator("h1").textContent())
+        ?.replace(/\s+/g, " ")
+        .trim(),
+      expectedH1,
+    );
+    assert.deepEqual(
+      await semanticPage.locator("#projects h3").allTextContents(),
+      expectedProjects,
+    );
+  }
+  await semanticPage.close();
   assert.equal(await page.locator(".activity-reveal").count(), 1);
   assert.equal(await page.locator(".activity-reveal [tabindex]").count(), 0);
   assert.ok(

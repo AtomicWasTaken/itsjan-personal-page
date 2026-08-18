@@ -28,6 +28,7 @@ interface Strings {
     privacy: string;
   };
   portfolio: {
+    headingContext: string;
     subtitle: (age: number) => string;
     subtitleStates: (age: number) => string[];
     avatar: {
@@ -94,6 +95,7 @@ interface Strings {
     };
     finny: {
       id: Extract<ProjectId, "finny">;
+      heading: string;
       linkAria: string;
       previewAria: string;
       receiptTitle: string;
@@ -115,6 +117,7 @@ interface Strings {
     };
     ventry: {
       id: Extract<ProjectId, "ventry">;
+      heading: string;
       linkAria: string;
       previewAria: string;
       panelTitle: string;
@@ -149,6 +152,7 @@ const en: Strings = {
     privacy: "Privacy policy",
   },
   portfolio: {
+    headingContext: "software developer from Bremen",
     subtitle: (age) => `${age}, software developer from Bremen`,
     subtitleStates: (age) => [
       `${age}, software developer from Bremen`,
@@ -262,6 +266,7 @@ const en: Strings = {
     },
     finny: {
       id: "finny",
+      heading: "Finny receipt and warranty app",
       linkAria: "Open Finny",
       previewAria: "Preview of Finny",
       receiptTitle: "RECEIPT",
@@ -283,6 +288,7 @@ const en: Strings = {
     },
     ventry: {
       id: "ventry",
+      heading: "Ventry expiring file sharing",
       linkAria: "Open Ventry",
       previewAria: "Preview of Ventry",
       panelTitle: "RECENT UPLOADS",
@@ -319,6 +325,7 @@ const de: Strings = {
     privacy: "Datenschutzerklärung",
   },
   portfolio: {
+    headingContext: "Softwareentwickler aus Bremen",
     subtitle: (age) => `${age}, Softwareentwickler aus Bremen`,
     subtitleStates: (age) => [
       `${age}, Softwareentwickler aus Bremen`,
@@ -432,6 +439,7 @@ const de: Strings = {
     },
     finny: {
       id: "finny",
+      heading: "Finny für Belege und Garantien",
       linkAria: "Finny öffnen",
       previewAria: "Vorschau von Finny",
       receiptTitle: "BELEG",
@@ -453,6 +461,7 @@ const de: Strings = {
     },
     ventry: {
       id: "ventry",
+      heading: "Ventry für zeitlich begrenzte Dateifreigaben",
       linkAria: "Ventry öffnen",
       previewAria: "Vorschau von Ventry",
       panelTitle: "LETZTE DATEIEN",
