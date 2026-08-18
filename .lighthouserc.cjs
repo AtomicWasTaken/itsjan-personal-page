@@ -11,7 +11,8 @@ module.exports = {
         "http://127.0.0.1:4327/",
         "http://127.0.0.1:4327/de",
         "http://127.0.0.1:4327/en",
-        "http://127.0.0.1:4327/privacy",
+        "http://127.0.0.1:4327/en/privacy",
+        "http://127.0.0.1:4327/de/datenschutz",
       ],
       numberOfRuns: 3,
       startServerCommand:

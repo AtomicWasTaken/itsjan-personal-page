@@ -6,6 +6,7 @@ import ConsoleEasterEgg from "../components/ConsoleEasterEgg.astro";
 import InteractionRuntime from "../components/InteractionRuntime.astro";
 import PostHog from "../components/posthog.astro";
 import { detectLocale, tr } from "../lib/i18n";
+import type { Locale } from "../lib/locale";
 import {
   CONTACT_EMAIL,
   OPEN_GRAPH_IMAGE_URL,
@@ -21,6 +22,8 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  alternatePaths?: Partial<Record<Locale | "x-default", string>>;
+  markdownPath?: string;
 }
 
 const props: Props = Astro.props;
@@ -41,14 +44,17 @@ const pathname = requestUrl.pathname.replace(/\/$/, "") || "/";
 const isPortfolioPage =
   pathname === "/" || pathname === "/de" || pathname === "/en";
 const url = new URL(pathname, SITE_ORIGIN).href;
-const markdownPath = isPortfolioPage
-  ? pathname === "/"
-    ? `/${locale}.md`
-    : `${pathname}.md`
-  : pathname === "/privacy"
-    ? `/privacy.${locale}.md`
-    : undefined;
+const markdownPath =
+  props.markdownPath ??
+  (isPortfolioPage
+    ? pathname === "/"
+      ? `/${locale}.md`
+      : `${pathname}.md`
+    : undefined);
 const markdownUrl = markdownPath ? `${SITE_ORIGIN}${markdownPath}` : undefined;
+const alternatePaths =
+  props.alternatePaths ??
+  (isPortfolioPage ? { en: "/en", de: "/de", "x-default": "/" } : undefined);
 
 if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
   Astro.response.headers.set("Link", '</llms.txt>; rel="describedby"');
@@ -95,13 +101,14 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
       )
     }
     {
-      isPortfolioPage && (
-        <>
-          <link rel="alternate" hreflang="en" href={`${SITE_ORIGIN}/en`} />
-          <link rel="alternate" hreflang="de" href={`${SITE_ORIGIN}/de`} />
-          <link rel="alternate" hreflang="x-default" href={SITE_ORIGIN} />
-        </>
-      )
+      alternatePaths &&
+        Object.entries(alternatePaths).map(([hreflang, path]) => (
+          <link
+            rel="alternate"
+            hreflang={hreflang}
+            href={new URL(path, SITE_ORIGIN).href}
+          />
+        ))
     }
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/jan-profile.jpg" />

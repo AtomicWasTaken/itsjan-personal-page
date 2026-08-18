@@ -32,7 +32,7 @@ const copy = tr(locale).privacyConsent;
     <InteractiveLink
       variant="text"
       class="hero-project-link privacy-consent__link"
-      href="/privacy"
+      href={locale === "de" ? "/de/datenschutz" : "/en/privacy"}
     >
       <span>{copy.privacy}</span>
       <ArrowIcon />

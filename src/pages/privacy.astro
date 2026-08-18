@@ -3,9 +3,13 @@ import Layout from "../layouts/Layout.astro";
 import EdgeBlur from "../components/EdgeBlur.astro";
 import InteractiveLink from "../components/InteractiveLink.astro";
 import ArrowIcon from "../components/icons/ArrowIcon.astro";
-import { detectLocale } from "../lib/i18n";
+import type { Locale } from "../lib/locale";
 
-const locale = detectLocale(Astro.request);
+interface Props {
+  locale?: Locale;
+}
+
+const locale = Astro.props.locale ?? "en";
 const de = locale === "de";
 const title = de
   ? "Datenschutzerklärung · Jan-Marlon Leibl"
@@ -15,7 +19,16 @@ const description = de
   : "How itsjan.dev handles personal data.";
 ---
 
-<Layout title={title} description={description}>
+<Layout
+  title={title}
+  description={description}
+  markdownPath={`/privacy.${locale}.md`}
+  alternatePaths={{
+    en: "/en/privacy",
+    de: "/de/datenschutz",
+    "x-default": "/en/privacy",
+  }}
+>
   <div class="privacy-shell">
     <EdgeBlur />
     <EdgeBlur edge="bottom" />
@@ -23,7 +36,7 @@ const description = de
       <InteractiveLink
         variant="text"
         class="hero-project-link privacy-back"
-        href="/"
+        href={de ? "/de" : "/en"}
       >
         <ArrowIcon direction="left" />
         <span>{de ? "Zurück zur Startseite" : "Back home"}</span>

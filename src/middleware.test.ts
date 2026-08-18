@@ -40,6 +40,35 @@ describe("contentResponseFor", () => {
     expect(response).toBeUndefined();
   });
 
+  test("redirects the legacy privacy URL to the stable English route", async () => {
+    const response = await contentResponseFor(
+      new Request("https://preview.example/privacy?source=footer"),
+    );
+
+    expect(response?.status).toBe(308);
+    expect(response?.headers.get("Location")).toBe(
+      "https://preview.example/en/privacy?source=footer",
+    );
+  });
+
+  test("serves both localized privacy Markdown routes explicitly", async () => {
+    const english = await contentResponseFor(
+      new Request("https://preview.example/en/privacy", {
+        headers: { Accept: "text/markdown", "Accept-Language": "de" },
+      }),
+    );
+    const german = await contentResponseFor(
+      new Request("https://preview.example/de/datenschutz", {
+        headers: { Accept: "text/markdown", "Accept-Language": "en" },
+      }),
+    );
+
+    expect(await english?.text()).toContain("# Privacy policy");
+    expect(await german?.text()).toContain("# Datenschutzerklärung");
+    expect(english?.headers.get("Vary")).toBe("Accept");
+    expect(german?.headers.get("Vary")).toBe("Accept");
+  });
+
   test("keeps x-default Markdown stable across language preferences", async () => {
     const response = await contentResponseFor(
       new Request("https://preview.example/", {
