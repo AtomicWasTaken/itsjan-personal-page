@@ -34,11 +34,7 @@ const title =
   (locale === "de"
     ? "Jan-Marlon Leibl · Softwareentwickler aus Bremen"
     : "Jan-Marlon Leibl · Software developer from Bremen");
-const description =
-  props.description ??
-  (locale === "de"
-    ? "Ich bin Jan-Marlon, Softwareentwickler aus Bremen und der Kopf hinter Finny, einer App für Belege und Garantiefristen."
-    : "I'm Jan-Marlon, a software developer from Bremen and the person behind Finny, an app for receipts and warranty reminders.");
+const description = props.description ?? copy.meta.description;
 const requestUrl = new URL(Astro.request.url);
 const pathname = requestUrl.pathname.replace(/\/$/, "") || "/";
 const isPortfolioPage =
