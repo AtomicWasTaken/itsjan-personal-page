@@ -16,6 +16,7 @@ interface Strings {
   meta: {
     imageAlt: string;
     jobTitle: string;
+    description: string;
   };
   privacyConsent: {
     title: string;
@@ -135,6 +136,8 @@ const en: Strings = {
   meta: {
     imageAlt: "Jan-Marlon Leibl's portfolio",
     jobTitle: "Software Developer",
+    description:
+      "Jan-Marlon Leibl is a software developer from Bremen building Finny, Ventry and modern web products with PHP, TypeScript, React, Next.js and Cloudflare.",
   },
   privacyConsent: {
     title: "Privacy settings",
@@ -303,6 +306,8 @@ const de: Strings = {
   meta: {
     imageAlt: "Portfolio von Jan-Marlon Leibl",
     jobTitle: "Softwareentwickler",
+    description:
+      "Jan-Marlon Leibl ist Softwareentwickler aus Bremen und entwickelt Finny, Ventry und moderne Webprojekte mit PHP, TypeScript, React, Next.js und Cloudflare.",
   },
   privacyConsent: {
     title: "Datenschutz-Einstellungen",

@@ -172,10 +172,22 @@ try {
   );
 
   const profileSchemas = [];
-  for (const [path, language] of [
-    ["/", "en"],
-    ["/en", "en"],
-    ["/de", "de"],
+  for (const [path, language, expectedDescription] of [
+    [
+      "/",
+      "en",
+      "Jan-Marlon Leibl is a software developer from Bremen building Finny, Ventry and modern web products with PHP, TypeScript, React, Next.js and Cloudflare.",
+    ],
+    [
+      "/en",
+      "en",
+      "Jan-Marlon Leibl is a software developer from Bremen building Finny, Ventry and modern web products with PHP, TypeScript, React, Next.js and Cloudflare.",
+    ],
+    [
+      "/de",
+      "de",
+      "Jan-Marlon Leibl ist Softwareentwickler aus Bremen und entwickelt Finny, Ventry und moderne Webprojekte mit PHP, TypeScript, React, Next.js und Cloudflare.",
+    ],
   ]) {
     const response = await fetch(`${baseUrl}${path}`);
     const html = await response.text();
@@ -184,6 +196,22 @@ try {
     )?.[1];
     assert.ok(source);
     const schema = JSON.parse(source);
+    assert.match(
+      html,
+      new RegExp(`<meta name="description" content="${expectedDescription}">`),
+    );
+    assert.match(
+      html,
+      new RegExp(
+        `<meta property="og:description" content="${expectedDescription}">`,
+      ),
+    );
+    assert.match(
+      html,
+      new RegExp(
+        `<meta name="twitter:description" content="${expectedDescription}">`,
+      ),
+    );
     const pageEntity = schema["@graph"].find(
       (entity) => entity["@type"] === "ProfilePage",
     );
