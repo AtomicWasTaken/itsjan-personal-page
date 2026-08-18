@@ -3,6 +3,7 @@ import {
   FINNY_CASE_STUDIES,
   PROJECT_INDEX_CONTENT,
   PROJECT_ROUTES,
+  VENTRY_CASE_STUDIES,
 } from "./project-content";
 
 describe("localized project content architecture", () => {
@@ -61,6 +62,35 @@ describe("localized project content architecture", () => {
       expect(caseStudy.role.length).toBeGreaterThan(0);
       expect(caseStudy.architecture.length).toBeGreaterThan(0);
       expect(caseStudy.technologies).toEqual(["typescript", "react", "nextjs"]);
+      expect(caseStudy.decisions.length).toBeGreaterThan(0);
+      expect(caseStudy.challenges.length).toBeGreaterThan(0);
+      expect(caseStudy.outcomes.length).toBeGreaterThan(0);
+      expect(caseStudy.visuals).toEqual([
+        expect.objectContaining({ kind: "diagram" }),
+      ]);
+    }
+  });
+
+  test("keeps both Ventry case studies complete, historical and localized", () => {
+    const english = VENTRY_CASE_STUDIES.en;
+    const german = VENTRY_CASE_STUDIES.de;
+
+    expect(english.route).toBe(PROJECT_ROUTES.en.ventry);
+    expect(german.route).toBe(PROJECT_ROUTES.de.ventry);
+    expect(english.alternateRoute).toBe(german.route);
+    expect(german.alternateRoute).toBe(english.route);
+    expect(english.metaDescription.length).toBeGreaterThanOrEqual(120);
+    expect(english.metaDescription.length).toBeLessThanOrEqual(160);
+    expect(german.metaDescription.length).toBeGreaterThanOrEqual(120);
+    expect(german.metaDescription.length).toBeLessThanOrEqual(160);
+    expect(english.summary).not.toBe(german.summary);
+
+    for (const caseStudy of [english, german]) {
+      expect(caseStudy.period).toBe("2023–2024");
+      expect(caseStudy.problem.length).toBeGreaterThan(0);
+      expect(caseStudy.role.length).toBeGreaterThan(0);
+      expect(caseStudy.architecture.length).toBeGreaterThan(0);
+      expect(caseStudy.technologies).toEqual(["typescript", "nextjs"]);
       expect(caseStudy.decisions.length).toBeGreaterThan(0);
       expect(caseStudy.challenges.length).toBeGreaterThan(0);
       expect(caseStudy.outcomes.length).toBeGreaterThan(0);

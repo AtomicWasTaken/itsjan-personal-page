@@ -110,10 +110,12 @@ try {
     "https://itsjan.dev/de/datenschutz",
     "https://itsjan.dev/de/projekte",
     "https://itsjan.dev/de/projekte/finny",
+    "https://itsjan.dev/de/projekte/ventry",
     "https://itsjan.dev/en",
     "https://itsjan.dev/en/privacy",
     "https://itsjan.dev/en/projects",
     "https://itsjan.dev/en/projects/finny",
+    "https://itsjan.dev/en/projects/ventry",
   ]);
 
   const legacyPrivacyResponse = await fetch(`${baseUrl}/privacy`, {
@@ -206,22 +208,51 @@ try {
     path,
     language,
     alternate,
+    xDefault,
     expectedTitle,
     expectedDescription,
+    productName,
+    productUrl,
   ] of [
     [
       "/en/projects/finny",
       "en",
       "/de/projekte/finny",
+      "/en/projects/finny",
       "Finny: turning receipts into timely warranty reminders",
       "How Jan-Marlon Leibl builds Finny, a TypeScript, React and Next.js web app that turns receipts into reviewable records and warranty reminders.",
+      "Finny",
+      "https://fnny.app",
     ],
     [
       "/de/projekte/finny",
       "de",
       "/en/projects/finny",
+      "/en/projects/finny",
       "Finny: Von Belegen zu rechtzeitigen Garantie-Erinnerungen",
       "Wie Jan-Marlon Leibl Finny entwickelt: eine Web-App mit TypeScript, React und Next.js für prüfbare Belegdaten und rechtzeitige Garantie-Erinnerungen.",
+      "Finny",
+      "https://fnny.app",
+    ],
+    [
+      "/en/projects/ventry",
+      "en",
+      "/de/projekte/ventry",
+      "/en/projects/ventry",
+      "Ventry: file sharing with an expiry built in",
+      "How Jan-Marlon Leibl built Ventry with TypeScript and Next.js: a 2023–2024 file-sharing project with expiring links and automatic file removal.",
+      "Ventry",
+      "https://ventry.host",
+    ],
+    [
+      "/de/projekte/ventry",
+      "de",
+      "/en/projects/ventry",
+      "/en/projects/ventry",
+      "Ventry: Filesharing mit eingebautem Ablaufdatum",
+      "Wie Jan-Marlon Leibl Ventry mit TypeScript und Next.js entwickelte: ein Filesharing-Projekt von 2023–2024 mit ablaufenden Links und automatischer Dateilöschung.",
+      "Ventry",
+      "https://ventry.host",
     ],
   ]) {
     const response = await fetch(`${baseUrl}${path}`);
@@ -242,7 +273,7 @@ try {
     );
     assert.ok(
       html.includes(
-        `hreflang="x-default" href="https://itsjan.dev/en/projects/finny"`,
+        `hreflang="x-default" href="https://itsjan.dev${xDefault}"`,
       ),
     );
     assert.ok(
@@ -262,8 +293,8 @@ try {
     assert.equal(article.image, "https://itsjan.dev/og.png");
     assert.deepEqual(article.about, {
       "@type": "SoftwareApplication",
-      name: "Finny",
-      url: "https://fnny.app",
+      name: productName,
+      url: productUrl,
     });
   }
 
@@ -439,7 +470,7 @@ try {
       "/en",
       "Jan-Marlon Leibl, software developer from Bremen",
       ["Finny receipt and warranty app", "Ventry expiring file sharing"],
-      ["/en/projects/finny", "/en/projects#ventry"],
+      ["/en/projects/finny", "/en/projects/ventry"],
     ],
     [
       "/de",
@@ -448,7 +479,7 @@ try {
         "Finny für Belege und Garantien",
         "Ventry für zeitlich begrenzte Dateifreigaben",
       ],
-      ["/de/projekte/finny", "/de/projekte#ventry"],
+      ["/de/projekte/finny", "/de/projekte/ventry"],
     ],
   ]) {
     await semanticPage.goto(`${baseUrl}${path}`);
@@ -498,11 +529,13 @@ try {
       await semanticPage.locator(".project-index-external").count(),
       2,
     );
-    assert.equal(
+    assert.deepEqual(
       await semanticPage
         .locator(".project-index-case-link")
-        .getAttribute("href"),
-      path === "/en/projects" ? "/en/projects/finny" : "/de/projekte/finny",
+        .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+      path === "/en/projects"
+        ? ["/en/projects/finny", "/en/projects/ventry"]
+        : ["/de/projekte/finny", "/de/projekte/ventry"],
     );
     assert.deepEqual(
       await semanticPage
@@ -511,7 +544,7 @@ try {
       ["https://fnny.app", "https://ventry.host"],
     );
   }
-  for (const [path, expectedH1, expectedSectionHeadings] of [
+  for (const [path, expectedH1, expectedSectionHeadings, productUrl] of [
     [
       "/en/projects/finny",
       "Finny: turning receipts into timely warranty reminders",
@@ -524,6 +557,7 @@ try {
         "Implementation challenges",
         "Current outcome",
       ],
+      "https://fnny.app",
     ],
     [
       "/de/projekte/finny",
@@ -537,6 +571,35 @@ try {
         "Herausforderungen bei der Umsetzung",
         "Aktueller Stand",
       ],
+      "https://fnny.app",
+    ],
+    [
+      "/en/projects/ventry",
+      "Ventry: file sharing with an expiry built in",
+      [
+        "The problem",
+        "My role",
+        "How the lifecycle is structured",
+        "Technologies used",
+        "Key decisions",
+        "Implementation challenges",
+        "Project status",
+      ],
+      "https://ventry.host",
+    ],
+    [
+      "/de/projekte/ventry",
+      "Ventry: Filesharing mit eingebautem Ablaufdatum",
+      [
+        "Das Problem",
+        "Meine Rolle",
+        "So ist der Lebenszyklus aufgebaut",
+        "Eingesetzte Technologien",
+        "Wichtige Entscheidungen",
+        "Herausforderungen bei der Umsetzung",
+        "Projektstatus",
+      ],
+      "https://ventry.host",
     ],
   ]) {
     await semanticPage.goto(`${baseUrl}${path}`);
@@ -552,7 +615,7 @@ try {
       await semanticPage
         .locator(".project-case-product-link")
         .getAttribute("href"),
-      "https://fnny.app",
+      productUrl,
     );
   }
   await semanticPage.close();
