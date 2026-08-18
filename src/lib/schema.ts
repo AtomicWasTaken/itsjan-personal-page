@@ -8,7 +8,8 @@ import {
   SOCIAL_LINKS,
 } from "./site";
 
-export type PageSchemaType = "ProfilePage" | "WebPage";
+export type PageSchemaType =
+  "Article" | "CollectionPage" | "ProfilePage" | "WebPage";
 
 interface PageSchemaInput {
   type: PageSchemaType;

@@ -4,7 +4,8 @@ import { buildPageSchema } from "./schema";
 const pageSchema = (
   locale: "en" | "de",
   path: string,
-  type: "ProfilePage" | "WebPage" = "ProfilePage",
+  type:
+    "Article" | "CollectionPage" | "ProfilePage" | "WebPage" = "ProfilePage",
 ) =>
   buildPageSchema({
     type,
@@ -50,5 +51,15 @@ describe("buildPageSchema", () => {
       "@id": "https://itsjan.dev/#person",
     });
     expect(page).not.toHaveProperty("mainEntity");
+  });
+
+  test("supports project indexes and case-study articles", () => {
+    for (const type of ["CollectionPage", "Article"] as const) {
+      const page = pageSchema("en", "/en/projects", type)["@graph"][2];
+      expect(page["@type"]).toBe(type);
+      expect(page).toHaveProperty("author", {
+        "@id": "https://itsjan.dev/#person",
+      });
+    }
   });
 });
