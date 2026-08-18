@@ -2,23 +2,24 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 const publicTextResources = [
-  { path: "../src/content/resources/auth.md", language: "en" },
-  { path: "../src/content/resources/de.md", language: "de" },
-  { path: "../src/content/resources/en.md", language: "en" },
-  { path: "../src/content/resources/index.md", language: "en" },
-  { path: "../src/content/resources/llms-full.txt", language: "en" },
-  { path: "../src/content/resources/llms.txt", language: "en" },
-  { path: "../src/content/resources/privacy.de.md", language: "de" },
-  { path: "../src/content/resources/privacy.en.md", language: "en" },
+  { path: "src/content/resources/auth.md", language: "en" },
+  { path: "src/content/resources/de.md", language: "de" },
+  { path: "src/content/resources/en.md", language: "en" },
+  { path: "src/content/resources/index.md", language: "en" },
+  { path: "src/content/resources/llms-full.txt", language: "en" },
+  { path: "src/content/resources/llms.txt", language: "en" },
+  { path: "src/content/resources/privacy.de.md", language: "de" },
+  { path: "src/content/resources/privacy.en.md", language: "en" },
   {
-    path: "../src/content/resources/skills/itsjan-profile/SKILL.md",
+    path: "src/content/resources/skills/itsjan-profile/SKILL.md",
     language: "en",
   },
   {
-    path: "../src/content/resources/.well-known/agent-skills/index.json",
+    path: "src/content/resources/.well-known/agent-skills/index.json",
     language: "en",
   },
 ];
+const projectRoot = new URL("../", import.meta.url);
 const skillPath = new URL(
   "../src/content/resources/skills/itsjan-profile/SKILL.md",
   import.meta.url,
@@ -37,7 +38,7 @@ const [skill, discoverySource, headers, privacyPage, ...publicTexts] =
     readFile(headersPath, "utf8"),
     readFile(privacyPagePath, "utf8"),
     ...publicTextResources.map(({ path }) =>
-      readFile(new URL(path, import.meta.url)),
+      readFile(new URL(path, projectRoot)),
     ),
   ]);
 
@@ -198,8 +199,7 @@ function findLanguageIssues(content, expectedLanguage) {
 }
 
 publicTexts.forEach((source, index) => {
-  const resource = publicTextResources[index];
-  const path = resource.path.replace("../", "");
+  const { path, language } = publicTextResources[index];
   let content;
   try {
     content = utf8.decode(source);
@@ -215,11 +215,11 @@ publicTexts.forEach((source, index) => {
     );
   }
 
-  const languageIssues = findLanguageIssues(content, resource.language);
+  const languageIssues = findLanguageIssues(content, language);
   if (languageIssues.length > 0) {
     errors.push(
       [
-        `${path} contains prose that does not look ${resource.language === "de" ? "German" : "English"}:`,
+        `${path} contains prose that does not look ${language === "de" ? "German" : "English"}:`,
         ...languageIssues,
       ].join("\n"),
     );
