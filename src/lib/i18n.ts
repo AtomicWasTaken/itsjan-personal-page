@@ -1,4 +1,4 @@
-// Bilingual content + locale detection from Accept-Language header.
+// Bilingual content keyed by explicit locale routes.
 
 import type {
   ExperienceId,

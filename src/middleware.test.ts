@@ -40,7 +40,7 @@ describe("contentResponseFor", () => {
     expect(response).toBeUndefined();
   });
 
-  test("negotiates localized Markdown and language-aware Vary headers", async () => {
+  test("keeps x-default Markdown stable across language preferences", async () => {
     const response = await contentResponseFor(
       new Request("https://preview.example/", {
         headers: {
@@ -54,9 +54,8 @@ describe("contentResponseFor", () => {
     expect(response?.headers.get("Content-Type")).toBe(
       "text/markdown; charset=utf-8",
     );
-    expect(response?.headers.get("Vary")).toContain("Accept");
-    expect(response?.headers.get("Vary")).toContain("Accept-Language");
-    expect(await response?.text()).toContain("Softwareentwickler");
+    expect(response?.headers.get("Vary")).toBe("Accept");
+    expect(await response?.text()).toContain("software developer");
   });
 
   test("serves explicit locale routes independently of Accept-Language", async () => {

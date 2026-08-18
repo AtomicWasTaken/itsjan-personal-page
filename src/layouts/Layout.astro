@@ -50,7 +50,6 @@ const markdownPath = isPortfolioPage
     : undefined;
 const markdownUrl = markdownPath ? `${SITE_ORIGIN}${markdownPath}` : undefined;
 
-Astro.response.headers.set("Vary", "Accept-Language");
 if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
   Astro.response.headers.set("Link", '</llms.txt>; rel="describedby"');
 }
