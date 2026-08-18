@@ -35,6 +35,7 @@
     "check:deploy": "wrangler deploy --config dist/server/wrangler.json --dry-run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "lighthouse:ci": "bun scripts/lighthouse-ci.mjs",
     "lint": "eslint . --max-warnings=0",
     "preview": "astro preview",
     "test": "bun test",
