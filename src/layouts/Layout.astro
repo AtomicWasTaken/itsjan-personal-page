@@ -7,11 +7,11 @@ import InteractionRuntime from "../components/InteractionRuntime.astro";
 import PostHog from "../components/posthog.astro";
 import { detectLocale, tr } from "../lib/i18n";
 import type { Locale } from "../lib/locale";
+import { buildPageSchema } from "../lib/schema";
 import {
   CONTACT_EMAIL,
   OPEN_GRAPH_IMAGE_URL,
   PERSON_NAME,
-  PROFILE_IMAGE_URL,
   SITE_ORIGIN,
   SITE_NAME,
   SOCIAL_HANDLES,
@@ -55,6 +55,13 @@ const markdownUrl = markdownPath ? `${SITE_ORIGIN}${markdownPath}` : undefined;
 const alternatePaths =
   props.alternatePaths ??
   (isPortfolioPage ? { en: "/en", de: "/de", "x-default": "/" } : undefined);
+const pageSchema = buildPageSchema({
+  type: isPortfolioPage ? "ProfilePage" : "WebPage",
+  url,
+  title,
+  description,
+  locale,
+});
 
 if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
   Astro.response.headers.set("Link", '</llms.txt>; rel="describedby"');
@@ -132,45 +139,7 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
     <script
       is:inline
       type="application/ld+json"
-      set:html={JSON.stringify({
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "Person",
-            "@id": `${SITE_ORIGIN}/#person`,
-            name: PERSON_NAME,
-            url: SITE_ORIGIN,
-            image: PROFILE_IMAGE_URL,
-            jobTitle: copy.meta.jobTitle,
-            email: CONTACT_EMAIL,
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: "Bremen",
-              addressCountry: "DE",
-            },
-            sameAs: Object.values(SOCIAL_LINKS),
-            knowsAbout: [
-              "PHP",
-              "TypeScript",
-              "React",
-              "Next.js",
-              "TYPO3",
-              "Symfony",
-              "Cloudflare",
-            ],
-            mainEntityOfPage: url,
-          },
-          {
-            "@type": "WebSite",
-            "@id": `${SITE_ORIGIN}/#website`,
-            name: SITE_NAME,
-            url: SITE_ORIGIN,
-            description,
-            inLanguage: copy.htmlLang,
-            publisher: { "@id": `${SITE_ORIGIN}/#person` },
-          },
-        ],
-      })}
+      set:html={JSON.stringify(pageSchema)}
     />
     <script
       is:inline
