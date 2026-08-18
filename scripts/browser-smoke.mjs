@@ -262,6 +262,7 @@ try {
     headless: true,
   });
   const context = await browser.newContext({
+    locale: "en-US",
     viewport: { width: 1440, height: 1000 },
   });
   let interceptedAnalyticsRequests = 0;
@@ -305,6 +306,7 @@ try {
   });
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
+  assert.equal(await page.locator("#language-suggestion").isHidden(), true);
   const analyticsHost = await page
     .locator('meta[name="posthog-api-host"]')
     .getAttribute("content");
@@ -361,6 +363,65 @@ try {
     );
   }
   await semanticPage.close();
+
+  const germanLocaleContext = await browser.newContext({
+    locale: "de-DE",
+    viewport: { width: 1440, height: 1000 },
+  });
+  const germanLocalePage = await germanLocaleContext.newPage();
+  await germanLocalePage.goto(`${baseUrl}/en`);
+  const languageSuggestion = germanLocalePage.locator("#language-suggestion");
+  await assert.doesNotReject(() =>
+    languageSuggestion.waitFor({ state: "visible" }),
+  );
+  assert.equal(
+    await germanLocalePage
+      .locator("#language-suggestion-accept")
+      .getAttribute("href"),
+    "/de",
+  );
+  await germanLocalePage.locator("#language-suggestion-dismiss").click();
+  await assert.doesNotReject(() =>
+    languageSuggestion.waitFor({ state: "hidden" }),
+  );
+  assert.equal(
+    await germanLocalePage.evaluate(() =>
+      globalThis.localStorage.getItem("itsjan-language-suggestion"),
+    ),
+    "dismissed",
+  );
+  await germanLocalePage.reload();
+  assert.equal(await languageSuggestion.isHidden(), true);
+
+  await germanLocalePage.evaluate(() =>
+    globalThis.localStorage.removeItem("itsjan-language-suggestion"),
+  );
+  await germanLocalePage.goto(`${baseUrl}/en/privacy`);
+  await assert.doesNotReject(() =>
+    languageSuggestion.waitFor({ state: "visible" }),
+  );
+  assert.equal(
+    await germanLocalePage
+      .locator("#language-suggestion-accept")
+      .getAttribute("href"),
+    "/de/datenschutz",
+  );
+  await Promise.all([
+    germanLocalePage.waitForURL(`${baseUrl}/de/datenschutz`),
+    germanLocalePage.locator("#language-suggestion-accept").click(),
+  ]);
+  assert.equal(
+    await germanLocalePage.evaluate(() =>
+      globalThis.localStorage.getItem("itsjan-language-suggestion"),
+    ),
+    "accepted",
+  );
+  assert.equal(
+    await germanLocalePage.locator("#language-suggestion").count(),
+    0,
+  );
+  await germanLocaleContext.close();
+
   assert.equal(await page.locator(".activity-reveal").count(), 1);
   assert.equal(await page.locator(".activity-reveal [tabindex]").count(), 0);
   assert.ok(
