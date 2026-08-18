@@ -109,9 +109,11 @@ try {
     "https://itsjan.dev/de",
     "https://itsjan.dev/de/datenschutz",
     "https://itsjan.dev/de/projekte",
+    "https://itsjan.dev/de/projekte/finny",
     "https://itsjan.dev/en",
     "https://itsjan.dev/en/privacy",
     "https://itsjan.dev/en/projects",
+    "https://itsjan.dev/en/projects/finny",
   ]);
 
   const legacyPrivacyResponse = await fetch(`${baseUrl}/privacy`, {
@@ -198,6 +200,71 @@ try {
     assert.equal(pageEntity.url, `https://itsjan.dev${path}`);
     assert.equal(pageEntity.inLanguage, language);
     assert.equal(pageEntity.author["@id"], "https://itsjan.dev/#person");
+  }
+
+  for (const [
+    path,
+    language,
+    alternate,
+    expectedTitle,
+    expectedDescription,
+  ] of [
+    [
+      "/en/projects/finny",
+      "en",
+      "/de/projekte/finny",
+      "Finny: turning receipts into timely warranty reminders",
+      "How Jan-Marlon Leibl builds Finny, a TypeScript, React and Next.js web app that turns receipts into reviewable records and warranty reminders.",
+    ],
+    [
+      "/de/projekte/finny",
+      "de",
+      "/en/projects/finny",
+      "Finny: Von Belegen zu rechtzeitigen Garantie-Erinnerungen",
+      "Wie Jan-Marlon Leibl Finny entwickelt: eine Web-App mit TypeScript, React und Next.js für prüfbare Belegdaten und rechtzeitige Garantie-Erinnerungen.",
+    ],
+  ]) {
+    const response = await fetch(`${baseUrl}${path}`);
+    const html = await response.text();
+    const schemaSource = html.match(
+      /<script type="application\/ld\+json">([^<]+)<\/script>/,
+    )?.[1];
+    assert.equal(response.status, 200);
+    assert.ok(schemaSource);
+    assert.ok(html.includes(`<html lang="${language}"`));
+    assert.ok(
+      html.includes(`rel="canonical" href="https://itsjan.dev${path}"`),
+    );
+    assert.ok(
+      html.includes(
+        `hreflang="${language === "en" ? "de" : "en"}" href="https://itsjan.dev${alternate}"`,
+      ),
+    );
+    assert.ok(
+      html.includes(
+        `hreflang="x-default" href="https://itsjan.dev/en/projects/finny"`,
+      ),
+    );
+    assert.ok(
+      html.includes(
+        `<meta name="description" content="${expectedDescription}"`,
+      ),
+    );
+    assert.ok(html.includes(expectedTitle));
+    const article = JSON.parse(schemaSource)["@graph"].find(
+      (entity) => entity["@type"] === "Article",
+    );
+    assert.equal(article.url, `https://itsjan.dev${path}`);
+    assert.equal(article.inLanguage, language);
+    assert.equal(article.author["@id"], "https://itsjan.dev/#person");
+    assert.equal(article.datePublished, "2026-08-18");
+    assert.equal(article.dateModified, "2026-08-18");
+    assert.equal(article.image, "https://itsjan.dev/og.png");
+    assert.deepEqual(article.about, {
+      "@type": "SoftwareApplication",
+      name: "Finny",
+      url: "https://fnny.app",
+    });
   }
 
   const staticImageResponse = await fetch(`${baseUrl}/favicon.png`);
@@ -367,12 +434,12 @@ try {
     "Ventry expiring file sharing",
   ]);
   const semanticPage = await context.newPage();
-  for (const [path, expectedH1, expectedProjects, projectIndexPath] of [
+  for (const [path, expectedH1, expectedProjects, expectedProjectPaths] of [
     [
       "/en",
       "Jan-Marlon Leibl, software developer from Bremen",
       ["Finny receipt and warranty app", "Ventry expiring file sharing"],
-      "/en/projects",
+      ["/en/projects/finny", "/en/projects#ventry"],
     ],
     [
       "/de",
@@ -381,7 +448,7 @@ try {
         "Finny für Belege und Garantien",
         "Ventry für zeitlich begrenzte Dateifreigaben",
       ],
-      "/de/projekte",
+      ["/de/projekte/finny", "/de/projekte#ventry"],
     ],
   ]) {
     await semanticPage.goto(`${baseUrl}${path}`);
@@ -400,7 +467,7 @@ try {
       await semanticPage
         .locator("#projects h3 a")
         .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
-      [`${projectIndexPath}#finny`, `${projectIndexPath}#ventry`],
+      expectedProjectPaths,
     );
   }
   for (const [path, expectedH1, expectedProjectTitles] of [
@@ -431,11 +498,61 @@ try {
       await semanticPage.locator(".project-index-external").count(),
       2,
     );
+    assert.equal(
+      await semanticPage
+        .locator(".project-index-case-link")
+        .getAttribute("href"),
+      path === "/en/projects" ? "/en/projects/finny" : "/de/projekte/finny",
+    );
     assert.deepEqual(
       await semanticPage
         .locator(".project-index-external")
         .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
       ["https://fnny.app", "https://ventry.host"],
+    );
+  }
+  for (const [path, expectedH1, expectedSectionHeadings] of [
+    [
+      "/en/projects/finny",
+      "Finny: turning receipts into timely warranty reminders",
+      [
+        "The problem",
+        "My role",
+        "How the workflow is structured",
+        "Technologies used",
+        "Key decisions",
+        "Implementation challenges",
+        "Current outcome",
+      ],
+    ],
+    [
+      "/de/projekte/finny",
+      "Finny: Von Belegen zu rechtzeitigen Garantie-Erinnerungen",
+      [
+        "Das Problem",
+        "Meine Rolle",
+        "So ist der Ablauf aufgebaut",
+        "Eingesetzte Technologien",
+        "Wichtige Entscheidungen",
+        "Herausforderungen bei der Umsetzung",
+        "Aktueller Stand",
+      ],
+    ],
+  ]) {
+    await semanticPage.goto(`${baseUrl}${path}`);
+    assert.equal(await semanticPage.locator("h1").textContent(), expectedH1);
+    assert.deepEqual(
+      await semanticPage
+        .locator(".project-case-section > h2")
+        .allTextContents(),
+      expectedSectionHeadings,
+    );
+    assert.equal(await semanticPage.locator(".project-flow li").count(), 4);
+    assert.equal(
+      await semanticPage
+        .locator(".project-case-product-link")
+        .getAttribute("href"),
+      "https://fnny.app",
     );
   }
   await semanticPage.close();

@@ -64,7 +64,10 @@ const linkedinUrl =
         heading={copy.projects}
         finny={copy.finny}
         ventry={copy.ventry}
-        projectIndexPath={PROJECT_ROUTES[locale].index}
+        projectPaths={{
+          finny: PROJECT_ROUTES[locale].finny,
+          ventry: `${PROJECT_ROUTES[locale].index}#ventry`,
+        }}
       />
       <WaveDivider />
       <TechnologiesSection

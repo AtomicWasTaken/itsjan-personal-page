@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { PROJECT_INDEX_CONTENT, PROJECT_ROUTES } from "./project-content";
+import {
+  FINNY_CASE_STUDIES,
+  PROJECT_INDEX_CONTENT,
+  PROJECT_ROUTES,
+} from "./project-content";
 
 describe("localized project content architecture", () => {
   test("uses stable, distinct route conventions", () => {
@@ -35,6 +39,34 @@ describe("localized project content architecture", () => {
       expect(project.summary).toBeTruthy();
       expect(project.technologies.length).toBeGreaterThan(0);
       expect(project.externalUrl).toMatch(/^https:\/\//);
+    }
+  });
+
+  test("keeps both Finny case studies complete and genuinely localized", () => {
+    const english = FINNY_CASE_STUDIES.en;
+    const german = FINNY_CASE_STUDIES.de;
+
+    expect(english.route).toBe(PROJECT_ROUTES.en.finny);
+    expect(german.route).toBe(PROJECT_ROUTES.de.finny);
+    expect(english.alternateRoute).toBe(german.route);
+    expect(german.alternateRoute).toBe(english.route);
+    expect(english.metaDescription.length).toBeGreaterThanOrEqual(120);
+    expect(english.metaDescription.length).toBeLessThanOrEqual(160);
+    expect(german.metaDescription.length).toBeGreaterThanOrEqual(120);
+    expect(german.metaDescription.length).toBeLessThanOrEqual(160);
+    expect(english.summary).not.toBe(german.summary);
+
+    for (const caseStudy of [english, german]) {
+      expect(caseStudy.problem.length).toBeGreaterThan(0);
+      expect(caseStudy.role.length).toBeGreaterThan(0);
+      expect(caseStudy.architecture.length).toBeGreaterThan(0);
+      expect(caseStudy.technologies).toEqual(["typescript", "react", "nextjs"]);
+      expect(caseStudy.decisions.length).toBeGreaterThan(0);
+      expect(caseStudy.challenges.length).toBeGreaterThan(0);
+      expect(caseStudy.outcomes.length).toBeGreaterThan(0);
+      expect(caseStudy.visuals).toEqual([
+        expect.objectContaining({ kind: "diagram" }),
+      ]);
     }
   });
 });

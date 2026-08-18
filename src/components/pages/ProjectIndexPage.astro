@@ -5,6 +5,7 @@ import ArrowIcon from "../icons/ArrowIcon.astro";
 import {
   PROJECT_INDEX_CONTENT,
   PROJECT_ROUTES,
+  type ProjectIndexContent,
 } from "../../data/project-content";
 import { ALL_TECHNOLOGIES } from "../../data/technologies";
 import Layout from "../../layouts/Layout.astro";
@@ -15,7 +16,7 @@ interface Props {
 }
 
 const { locale } = Astro.props;
-const content = PROJECT_INDEX_CONTENT[locale];
+const content: ProjectIndexContent = PROJECT_INDEX_CONTENT[locale];
 const alternatePaths = {
   en: PROJECT_ROUTES.en.index,
   de: PROJECT_ROUTES.de.index,
@@ -66,16 +67,28 @@ const technologyNames = new Map(
                   <li>{technologyNames.get(technologyId)}</li>
                 ))}
               </ul>
-              <InteractiveLink
-                variant="text"
-                class="project-index-external"
-                href={project.externalUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span>{project.externalLabel}</span>
-                <ArrowIcon direction="external" />
-              </InteractiveLink>
+              <div class="project-index-actions">
+                {project.caseStudyUrl && project.caseStudyLabel && (
+                  <InteractiveLink
+                    variant="text"
+                    class="project-index-case-link"
+                    href={project.caseStudyUrl}
+                  >
+                    <span>{project.caseStudyLabel}</span>
+                    <ArrowIcon />
+                  </InteractiveLink>
+                )}
+                <InteractiveLink
+                  variant="text"
+                  class="project-index-external"
+                  href={project.externalUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>{project.externalLabel}</span>
+                  <ArrowIcon direction="external" />
+                </InteractiveLink>
+              </div>
             </article>
           ))
         }

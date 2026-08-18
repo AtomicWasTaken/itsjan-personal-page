@@ -2,7 +2,7 @@
 import { Image } from "astro:assets";
 import finnyFavicon from "../../assets/finny-favicon.png";
 import ventryLogo from "../../assets/ventry-logo-white-56.png";
-import { PROJECTS } from "../../data/portfolio";
+import { PROJECTS, type ProjectId } from "../../data/portfolio";
 import type { PortfolioCopy } from "../../lib/i18n";
 import InteractiveLink from "../InteractiveLink.astro";
 
@@ -10,10 +10,10 @@ interface Props {
   heading: string;
   finny: PortfolioCopy["finny"];
   ventry: PortfolioCopy["ventry"];
-  projectIndexPath: string;
+  projectPaths: Record<ProjectId, string>;
 }
 
-const { heading, finny, ventry, projectIndexPath } = Astro.props;
+const { heading, finny, ventry, projectPaths } = Astro.props;
 ---
 
 <section id="projects">
@@ -53,7 +53,7 @@ const { heading, finny, ventry, projectIndexPath } = Astro.props;
           >
             <a
               class="project-preview-heading-link"
-              href={`${projectIndexPath}#${finny.id}`}>{finny.heading}</a
+              href={projectPaths[finny.id]}>{finny.heading}</a
             >
           </h3>
           <p
@@ -147,7 +147,7 @@ const { heading, finny, ventry, projectIndexPath } = Astro.props;
           >
             <a
               class="project-preview-heading-link"
-              href={`${projectIndexPath}#${ventry.id}`}>{ventry.heading}</a
+              href={projectPaths[ventry.id]}>{ventry.heading}</a
             >
           </h3>
           <p
