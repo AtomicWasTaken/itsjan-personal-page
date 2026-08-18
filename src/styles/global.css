@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./tokens.css";
+@import "./features/language-suggestion.css";
 @import "./features/privacy.css";
 
 * {
@@ -511,6 +512,8 @@ html.is-theme-changing .profile-avatar,
 html.is-theme-changing .experience-technology,
 html.is-theme-changing .project-preview,
 html.is-theme-changing .project-preview-surface,
+html.is-theme-changing .language-suggestion,
+html.is-theme-changing .language-suggestion__surface,
 html.is-theme-changing .project-preview-action::before {
   transition: none !important;
 }
@@ -702,6 +705,7 @@ html[data-theme="dark"]
 }
 
 .project-preview,
+.language-suggestion,
 .social-preview__viewport {
   padding: 8px;
   border-radius: 22px;
@@ -719,6 +723,7 @@ html[data-theme="dark"]
   transition-timing-function: var(--ease-smooth-out);
 }
 .project-preview-surface,
+.language-suggestion__surface,
 .social-preview__panel {
   overflow: hidden;
   border-radius: 14px;
@@ -1879,6 +1884,8 @@ html[data-theme="dark"] .social-card-linkedin-action {
   .project-preview,
   .project-preview-surface,
   .project-preview-image,
+  .language-suggestion,
+  .language-suggestion__surface,
   .social-preview__viewport,
   .social-preview__panel,
   .avatar-modal-content,
@@ -1888,6 +1895,7 @@ html[data-theme="dark"] .social-card-linkedin-action {
     corner-shape: squircle;
   }
   .project-preview,
+  .language-suggestion,
   .social-preview__viewport {
     border-radius: 22px;
   }
@@ -2126,6 +2134,8 @@ html[data-theme="dark"] .social-card-linkedin-action {
   .project-preview,
   .project-preview-surface,
   .project-preview-image,
+  .language-suggestion,
+  .language-suggestion__surface,
   .project-preview-action::before,
   .profile-avatar,
   .theme-toggle,

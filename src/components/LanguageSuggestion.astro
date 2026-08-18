@@ -1,0 +1,98 @@
+---
+import InteractiveButton from "./InteractiveButton.astro";
+import InteractiveLink from "./InteractiveLink.astro";
+
+interface Props {
+  germanPath?: string;
+}
+
+const { germanPath } = Astro.props;
+---
+
+{
+  germanPath && (
+    <aside
+      id="language-suggestion"
+      class="language-suggestion"
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby="language-suggestion-title"
+      hidden
+    >
+      <div class="language-suggestion__surface">
+        <p id="language-suggestion-title" class="language-suggestion__title">
+          Möchtest du diese Seite auf Deutsch ansehen?
+        </p>
+        <div class="language-suggestion__actions">
+          <InteractiveButton
+            id="language-suggestion-dismiss"
+            class="language-suggestion__dismiss"
+            variant="text"
+          >
+            Nein, danke
+          </InteractiveButton>
+          <InteractiveLink
+            id="language-suggestion-accept"
+            class="language-suggestion__accept"
+            variant="primary"
+            href={germanPath}
+          >
+            Deutsch anzeigen
+          </InteractiveLink>
+        </div>
+      </div>
+    </aside>
+  )
+}
+
+<script>
+  (() => {
+    const storageKey = "itsjan-language-suggestion";
+    const suggestion = document.getElementById("language-suggestion");
+    const accept = document.getElementById("language-suggestion-accept");
+    const dismiss = document.getElementById("language-suggestion-dismiss");
+    if (
+      !(suggestion instanceof HTMLElement) ||
+      !(accept instanceof HTMLAnchorElement) ||
+      !(dismiss instanceof HTMLButtonElement)
+    )
+      return;
+
+    const primaryLocale = navigator.languages?.[0] ?? navigator.language;
+    const prefersGerman = /^de(?:-|$)/i.test(primaryLocale);
+    let storedChoice = null;
+    try {
+      storedChoice = window.localStorage.getItem(storageKey);
+    } catch {
+      // The suggestion still works for this page when storage is unavailable.
+    }
+    if (!prefersGerman || storedChoice) return;
+
+    const saveChoice = (choice: "accepted" | "dismissed") => {
+      try {
+        window.localStorage.setItem(storageKey, choice);
+      } catch {
+        // Keep the in-page choice even when storage is unavailable.
+      }
+    };
+    const hide = () => {
+      suggestion.classList.remove("is-visible");
+      window.setTimeout(() => {
+        suggestion.hidden = true;
+      }, 180);
+    };
+    const dismissSuggestion = () => {
+      saveChoice("dismissed");
+      hide();
+    };
+
+    suggestion.hidden = false;
+    window.requestAnimationFrame(() => suggestion.classList.add("is-visible"));
+    accept.addEventListener("click", () => saveChoice("accepted"));
+    dismiss.addEventListener("click", dismissSuggestion);
+    suggestion.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      dismissSuggestion();
+    });
+  })();
+</script>

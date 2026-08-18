@@ -4,6 +4,7 @@ import "../styles/global.css";
 import CookieConsent from "../components/CookieConsent.astro";
 import ConsoleEasterEgg from "../components/ConsoleEasterEgg.astro";
 import InteractionRuntime from "../components/InteractionRuntime.astro";
+import LanguageSuggestion from "../components/LanguageSuggestion.astro";
 import PostHog from "../components/posthog.astro";
 import { detectLocale, tr } from "../lib/i18n";
 import type { Locale } from "../lib/locale";
@@ -182,6 +183,9 @@ if (requestUrl.pathname === "/" || requestUrl.pathname === "") {
   </head>
   <body>
     <slot />
+    <LanguageSuggestion
+      germanPath={locale === "en" ? alternatePaths?.de : undefined}
+    />
     <CookieConsent locale={locale} />
     <ConsoleEasterEgg locale={locale} />
     <InteractionRuntime />
