@@ -40,6 +40,25 @@ describe("contentResponseFor", () => {
     expect(response).toBeUndefined();
   });
 
+  test("consolidates www, HTTPS, path, and query in one redirect", async () => {
+    const response = await contentResponseFor(
+      new Request("http://www.itsjan.dev/en/?source=backlink"),
+    );
+
+    expect(response?.status).toBe(308);
+    expect(response?.headers.get("Location")).toBe(
+      "https://itsjan.dev/en?source=backlink",
+    );
+  });
+
+  test("does not redirect the canonical apex hostname", async () => {
+    const response = await contentResponseFor(
+      new Request("https://itsjan.dev/en"),
+    );
+
+    expect(response).toBeUndefined();
+  });
+
   test("redirects the legacy privacy URL to the stable English route", async () => {
     const response = await contentResponseFor(
       new Request("https://preview.example/privacy?source=footer"),

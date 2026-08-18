@@ -2,6 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "itsjan-personal-page",
   "compatibility_date": "2026-03-10",
+  "routes": [
+    {
+      "pattern": "itsjan.dev",
+      "custom_domain": true,
+    },
+    {
+      "pattern": "www.itsjan.dev",
+      "custom_domain": true,
+    },
+  ],
   "vars": {
     // These values are public browser configuration, not secrets.
     "PUBLIC_POSTHOG_PROJECT_TOKEN": "phc_AjhL5JJU9TGMCGnMkDKSs9kprYPsRhr6WfxQwJZA5KNf",

@@ -191,9 +191,15 @@ export async function contentResponseFor(
 ): Promise<Response | undefined> {
   const requestUrl = new URL(request.url);
   const pathname = requestUrl.pathname.replace(/\/+$/, "") || "/";
+  const usesCanonicalHost = requestUrl.hostname !== "www.itsjan.dev";
 
-  if (requestUrl.pathname !== pathname) {
+  if (requestUrl.pathname !== pathname || !usesCanonicalHost) {
     requestUrl.pathname = pathname;
+    if (!usesCanonicalHost) {
+      requestUrl.protocol = "https:";
+      requestUrl.hostname = "itsjan.dev";
+      requestUrl.port = "";
+    }
     return applyResponseHeaders(
       new Response(null, {
         status: 308,
