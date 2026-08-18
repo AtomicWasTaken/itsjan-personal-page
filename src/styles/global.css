@@ -1031,7 +1031,7 @@ html[data-theme="dark"] .ventry-file-row b {
   transition-duration: 180ms;
   transition-timing-function: var(--ease-smooth-out);
 }
-.project-preview-copy > p:first-child {
+.project-preview-copy > p {
   text-wrap: pretty;
 }
 
