@@ -189,7 +189,19 @@ export function applyResponseHeaders(
 export async function contentResponseFor(
   request: Request,
 ): Promise<Response | undefined> {
-  const pathname = new URL(request.url).pathname.replace(/\/$/, "") || "/";
+  const requestUrl = new URL(request.url);
+  const pathname = requestUrl.pathname.replace(/\/+$/, "") || "/";
+
+  if (requestUrl.pathname !== pathname) {
+    requestUrl.pathname = pathname;
+    return applyResponseHeaders(
+      new Response(null, {
+        status: 308,
+        headers: { Location: requestUrl.href },
+      }),
+    );
+  }
+
   const markdown = markdownFor(request, pathname);
   const textResource = textResources[pathname];
 

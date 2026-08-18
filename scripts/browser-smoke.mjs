@@ -89,6 +89,28 @@ try {
     "max-age=31536000",
   );
 
+  const trailingSlashResponse = await fetch(`${baseUrl}/en/?source=smoke`, {
+    redirect: "manual",
+  });
+  assert.ok([301, 308].includes(trailingSlashResponse.status));
+  assert.equal(
+    new URL(trailingSlashResponse.headers.get("location"), baseUrl).href,
+    `${baseUrl}/en?source=smoke`,
+  );
+
+  const sitemapResponse = await fetch(`${baseUrl}/sitemap-0.xml`);
+  assert.equal(sitemapResponse.status, 200);
+  const sitemap = await sitemapResponse.text();
+  const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+    ([, url]) => url,
+  );
+  assert.deepEqual(sitemapUrls, [
+    "https://itsjan.dev",
+    "https://itsjan.dev/de",
+    "https://itsjan.dev/en",
+    "https://itsjan.dev/privacy",
+  ]);
+
   const staticImageResponse = await fetch(`${baseUrl}/favicon.png`);
   assert.equal(
     staticImageResponse.headers.get("cache-control"),
