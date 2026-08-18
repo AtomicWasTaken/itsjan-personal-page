@@ -4,8 +4,7 @@ import { buildPageSchema } from "./schema";
 const pageSchema = (
   locale: "en" | "de",
   path: string,
-  type:
-    "Article" | "CollectionPage" | "ProfilePage" | "WebPage" = "ProfilePage",
+  type: "ProfilePage" | "WebPage" = "ProfilePage",
 ) =>
   buildPageSchema({
     type,
@@ -51,41 +50,5 @@ describe("buildPageSchema", () => {
       "@id": "https://itsjan.dev/#person",
     });
     expect(page).not.toHaveProperty("mainEntity");
-  });
-
-  test("supports project indexes and case-study articles", () => {
-    for (const type of ["CollectionPage", "Article"] as const) {
-      const page = pageSchema("en", "/en/projects", type)["@graph"][2];
-      expect(page["@type"]).toBe(type);
-      expect(page).toHaveProperty("author", {
-        "@id": "https://itsjan.dev/#person",
-      });
-    }
-  });
-
-  test("describes the software covered by a case-study article", () => {
-    const schema = buildPageSchema({
-      type: "Article",
-      url: "https://itsjan.dev/en/projects/finny",
-      title: "Finny case study",
-      description: "How Finny works.",
-      locale: "en",
-      about: { name: "Finny", url: "https://fnny.app" },
-      publishedAt: "2026-08-18",
-    });
-    const article = schema["@graph"][2];
-
-    expect(article).toMatchObject({
-      "@type": "Article",
-      headline: "Finny case study",
-      image: "https://itsjan.dev/og.png",
-      datePublished: "2026-08-18",
-      dateModified: "2026-08-18",
-      about: {
-        "@type": "SoftwareApplication",
-        name: "Finny",
-        url: "https://fnny.app",
-      },
-    });
   });
 });

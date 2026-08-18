@@ -54,20 +54,14 @@ baseline.
 Inspection was performed on 18 August 2026 after the sitemap submission.
 “Unknown” means Search Console returned no crawl or canonical detail yet.
 
-| URL                   | Google state             | Canonical or follow-up note                                                                                                                   |
-| --------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`                   | On Google                | Indexed root and current `x-default`.                                                                                                         |
-| `/en`                 | Not on Google            | Last crawled 10 August 2026. User canonical: `/en`; Google selected `/`. Recheck after Google crawls the new self-canonical and hreflang set. |
-| `/de`                 | Not on Google — unknown  | No crawl detail reported yet.                                                                                                                 |
-| `/privacy`            | Not on Google — expected | Legacy redirect to `/en/privacy`; it must remain absent from the sitemap.                                                                     |
-| `/en/privacy`         | Not on Google — unknown  | No crawl detail reported yet.                                                                                                                 |
-| `/de/datenschutz`     | Not on Google — unknown  | No crawl detail reported yet.                                                                                                                 |
-| `/en/projects`        | Not on Google — unknown  | Newly published canonical route.                                                                                                              |
-| `/de/projekte`        | Not on Google — unknown  | Newly published canonical route.                                                                                                              |
-| `/en/projects/finny`  | Not on Google — unknown  | Newly published canonical route.                                                                                                              |
-| `/de/projekte/finny`  | Not on Google — unknown  | Newly published canonical route.                                                                                                              |
-| `/en/projects/ventry` | Not on Google — unknown  | Newly published canonical route.                                                                                                              |
-| `/de/projekte/ventry` | Not on Google — unknown  | Newly published canonical route.                                                                                                              |
+| URL               | Google state             | Canonical or follow-up note                                                                                                                   |
+| ----------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`               | On Google                | Indexed root and current `x-default`.                                                                                                         |
+| `/en`             | Not on Google            | Last crawled 10 August 2026. User canonical: `/en`; Google selected `/`. Recheck after Google crawls the new self-canonical and hreflang set. |
+| `/de`             | Not on Google — unknown  | No crawl detail reported yet.                                                                                                                 |
+| `/privacy`        | Not on Google — expected | Legacy redirect to `/en/privacy`; it must remain absent from the sitemap.                                                                     |
+| `/en/privacy`     | Not on Google — unknown  | No crawl detail reported yet.                                                                                                                 |
+| `/de/datenschutz` | Not on Google — unknown  | No crawl detail reported yet.                                                                                                                 |
 
 Do not treat “not on Google” as an implementation failure by itself. Confirm
 that the route returns `200`, is in the sitemap, self-canonicalizes, and is
@@ -82,13 +76,10 @@ Inspection does not provide a complete hreflang report. Every row below returns
 `200`, self-canonicalizes without a trailing slash, and declares reciprocal
 `en`, `de`, and `x-default` links.
 
-| Page group    | English route         | German route          | `x-default`           |
-| ------------- | --------------------- | --------------------- | --------------------- |
-| Homepage      | `/en`                 | `/de`                 | `/`                   |
-| Privacy       | `/en/privacy`         | `/de/datenschutz`     | `/en/privacy`         |
-| Project index | `/en/projects`        | `/de/projekte`        | `/en/projects`        |
-| Finny         | `/en/projects/finny`  | `/de/projekte/finny`  | `/en/projects/finny`  |
-| Ventry        | `/en/projects/ventry` | `/de/projekte/ventry` | `/en/projects/ventry` |
+| Page group | English route | German route      | `x-default`   |
+| ---------- | ------------- | ----------------- | ------------- |
+| Homepage   | `/en`         | `/de`             | `/`           |
+| Privacy    | `/en/privacy` | `/de/datenschutz` | `/en/privacy` |
 
 The root also self-canonicalizes to `/` and points to `/en`, `/de`, and `/` as
 its `en`, `de`, and `x-default` alternates. A language switcher is intentionally
@@ -117,7 +108,7 @@ API key, OAuth response, or exported webmaster data to the repository.
 ## Monthly review checklist
 
 Review monthly, and additionally 30, 60, and 90 days after publishing a new
-case study or technical article.
+public page or technical article.
 
 - [ ] Search Console sitemap remains `Successful`; record recognized pages and
       the last-read date.
@@ -148,3 +139,4 @@ case study or technical article.
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2026-08-18 | Verified Search Console ownership, submitted the sitemap successfully, recorded the initial performance/index/CWV baseline, and inspected all current canonical route groups. |
 | 2026-08-18 | Added only `itsjan.dev` to Bing through the Search Console import and submitted the sitemap index directly; Bing accepted it for processing without an error.                 |
+| 2026-08-18 | Removed the internal project indexes and project detail routes; Finny and Ventry remain external links on the localized portfolio pages.                                      |
