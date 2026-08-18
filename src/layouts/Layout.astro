@@ -7,7 +7,7 @@ import InteractionRuntime from "../components/InteractionRuntime.astro";
 import PostHog from "../components/posthog.astro";
 import { detectLocale, tr } from "../lib/i18n";
 import type { Locale } from "../lib/locale";
-import { buildPageSchema, type PageSchemaType } from "../lib/schema";
+import { buildPageSchema } from "../lib/schema";
 import {
   CONTACT_EMAIL,
   OPEN_GRAPH_IMAGE_URL,
@@ -24,9 +24,6 @@ interface Props {
   noindex?: boolean;
   alternatePaths?: Partial<Record<Locale | "x-default", string>>;
   markdownPath?: string;
-  schemaType?: PageSchemaType;
-  schemaAbout?: { name: string; url: string };
-  schemaPublishedAt?: string;
 }
 
 const props: Props = Astro.props;
@@ -55,13 +52,11 @@ const alternatePaths =
   props.alternatePaths ??
   (isPortfolioPage ? { en: "/en", de: "/de", "x-default": "/" } : undefined);
 const pageSchema = buildPageSchema({
-  type: props.schemaType ?? (isPortfolioPage ? "ProfilePage" : "WebPage"),
+  type: isPortfolioPage ? "ProfilePage" : "WebPage",
   url,
   title,
   description,
   locale,
-  about: props.schemaAbout,
-  publishedAt: props.schemaPublishedAt,
 });
 
 if (requestUrl.pathname === "/" || requestUrl.pathname === "") {

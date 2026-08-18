@@ -2,7 +2,7 @@
 import { Image } from "astro:assets";
 import finnyFavicon from "../../assets/finny-favicon.png";
 import ventryLogo from "../../assets/ventry-logo-white-56.png";
-import { PROJECTS, type ProjectId } from "../../data/portfolio";
+import { PROJECTS } from "../../data/portfolio";
 import type { PortfolioCopy } from "../../lib/i18n";
 import InteractiveLink from "../InteractiveLink.astro";
 
@@ -10,10 +10,9 @@ interface Props {
   heading: string;
   finny: PortfolioCopy["finny"];
   ventry: PortfolioCopy["ventry"];
-  projectPaths: Record<ProjectId, string>;
 }
 
-const { heading, finny, ventry, projectPaths } = Astro.props;
+const { heading, finny, ventry } = Astro.props;
 ---
 
 <section id="projects">
@@ -51,10 +50,7 @@ const { heading, finny, ventry, projectPaths } = Astro.props;
           <h3
             class="mb-2 text-base leading-6 font-medium tracking-tight text-[var(--text)]"
           >
-            <a
-              class="project-preview-heading-link"
-              href={projectPaths[finny.id]}>{finny.heading}</a
-            >
+            {finny.heading}
           </h3>
           <p
             class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"
@@ -145,10 +141,7 @@ const { heading, finny, ventry, projectPaths } = Astro.props;
           <h3
             class="mb-2 text-base leading-6 font-medium tracking-tight text-[var(--text)]"
           >
-            <a
-              class="project-preview-heading-link"
-              href={projectPaths[ventry.id]}>{ventry.heading}</a
-            >
+            {ventry.heading}
           </h3>
           <p
             class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"
