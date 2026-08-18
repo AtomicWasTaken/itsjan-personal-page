@@ -13,6 +13,7 @@ const optimizeDepsExclude = [
 export default defineConfig({
   site: "https://itsjan.dev",
   output: "server",
+  trailingSlash: "never",
   adapter: cloudflare(),
   integrations: [sitemap()],
   vite: {

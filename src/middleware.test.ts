@@ -21,6 +21,25 @@ describe("acceptsMarkdown", () => {
 });
 
 describe("contentResponseFor", () => {
+  test("redirects trailing slashes to the canonical URL in one hop", async () => {
+    const response = await contentResponseFor(
+      new Request("https://preview.example/en/?source=test"),
+    );
+
+    expect(response?.status).toBe(308);
+    expect(response?.headers.get("Location")).toBe(
+      "https://preview.example/en?source=test",
+    );
+  });
+
+  test("keeps the root URL unchanged", async () => {
+    const response = await contentResponseFor(
+      new Request("https://preview.example/"),
+    );
+
+    expect(response).toBeUndefined();
+  });
+
   test("negotiates localized Markdown and language-aware Vary headers", async () => {
     const response = await contentResponseFor(
       new Request("https://preview.example/", {
