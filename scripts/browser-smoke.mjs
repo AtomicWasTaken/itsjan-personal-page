@@ -107,9 +107,39 @@ try {
   assert.deepEqual(sitemapUrls, [
     "https://itsjan.dev",
     "https://itsjan.dev/de",
+    "https://itsjan.dev/de/datenschutz",
     "https://itsjan.dev/en",
-    "https://itsjan.dev/privacy",
+    "https://itsjan.dev/en/privacy",
   ]);
+
+  const legacyPrivacyResponse = await fetch(`${baseUrl}/privacy`, {
+    redirect: "manual",
+  });
+  assert.equal(legacyPrivacyResponse.status, 308);
+  assert.equal(
+    new URL(legacyPrivacyResponse.headers.get("location"), baseUrl).href,
+    `${baseUrl}/en/privacy`,
+  );
+
+  for (const [path, language, canonical, alternate] of [
+    ["/en/privacy", "en", "/en/privacy", "/de/datenschutz"],
+    ["/de/datenschutz", "de", "/de/datenschutz", "/en/privacy"],
+  ]) {
+    const response = await fetch(`${baseUrl}${path}`);
+    const html = await response.text();
+    assert.equal(response.status, 200);
+    assert.match(html, new RegExp(`<html lang="${language}"`));
+    assert.match(
+      html,
+      new RegExp(`rel="canonical" href="https://itsjan.dev${canonical}"`),
+    );
+    assert.match(
+      html,
+      new RegExp(
+        `hreflang="${language === "en" ? "de" : "en"}" href="https://itsjan.dev${alternate}"`,
+      ),
+    );
+  }
 
   const staticImageResponse = await fetch(`${baseUrl}/favicon.png`);
   assert.equal(

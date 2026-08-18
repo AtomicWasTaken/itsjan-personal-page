@@ -15,7 +15,11 @@ export default defineConfig({
   output: "server",
   trailingSlash: "never",
   adapter: cloudflare(),
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      filter: (page) => new URL(page).pathname !== "/privacy",
+    }),
+  ],
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {

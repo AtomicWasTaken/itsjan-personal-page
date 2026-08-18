@@ -9,12 +9,17 @@ import llmsText from "./content/resources/llms.txt?raw";
 import privacyDeMarkdown from "./content/resources/privacy.de.md?raw";
 import privacyEnMarkdown from "./content/resources/privacy.en.md?raw";
 import profileSkillMarkdown from "./content/resources/skills/itsjan-profile/SKILL.md?raw";
-import { detectLocale } from "./lib/locale";
 import { SITE_ORIGIN } from "./lib/site";
 
 const markdownRoutes: Record<string, string> = {
   "/en": enMarkdown,
   "/de": deMarkdown,
+  "/en/privacy": privacyEnMarkdown,
+  "/de/datenschutz": privacyDeMarkdown,
+};
+
+const permanentRedirects: Record<string, string> = {
+  "/privacy": "/en/privacy",
 };
 
 const textResources: Record<string, { body: string; contentType: string }> = {
@@ -56,14 +61,9 @@ const textResources: Record<string, { body: string; contentType: string }> = {
   },
 };
 
-function markdownFor(request: Request, pathname: string): string | undefined {
+function markdownFor(pathname: string): string | undefined {
   if (pathname === "/") {
-    return detectLocale(request) === "de" ? deMarkdown : indexMarkdown;
-  }
-  if (pathname === "/privacy") {
-    return detectLocale(request) === "de"
-      ? privacyDeMarkdown
-      : privacyEnMarkdown;
+    return indexMarkdown;
   }
   return markdownRoutes[pathname];
 }
@@ -202,7 +202,18 @@ export async function contentResponseFor(
     );
   }
 
-  const markdown = markdownFor(request, pathname);
+  const redirectPath = permanentRedirects[pathname];
+  if (redirectPath) {
+    requestUrl.pathname = redirectPath;
+    return applyResponseHeaders(
+      new Response(null, {
+        status: 308,
+        headers: { Location: requestUrl.href },
+      }),
+    );
+  }
+
+  const markdown = markdownFor(pathname);
   const textResource = textResources[pathname];
 
   if (pathname === "/.well-known/agent-skills/index.json") {
