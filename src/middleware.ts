@@ -224,7 +224,6 @@ export async function contentResponseFor(
   if (acceptsMarkdown(request.headers.get("Accept")) && markdown) {
     return applyResponseHeaders(
       textResponse(request, markdown, "text/markdown; charset=utf-8"),
-      pathname === "/" || pathname === "/privacy",
     );
   }
 

@@ -12,13 +12,14 @@ describe("detectLocale", () => {
     expect(detectLocale(request("/en", "de-DE"))).toBe("en");
   });
 
-  test("respects quality values and ignores rejected languages", () => {
-    expect(detectLocale(request("/", "de-DE;q=0.4, en-US;q=0.9"))).toBe("en");
-    expect(detectLocale(request("/", "de;q=0"))).toBe("en");
+  test("keeps the x-default route English regardless of Accept-Language", () => {
+    expect(detectLocale(request("/", "de-DE,de;q=0.9"))).toBe("en");
+    expect(detectLocale(request("/", "en-US;q=0.2,de;q=1"))).toBe("en");
   });
 
-  test("defaults to English for unsupported or missing languages", () => {
+  test("defaults unprefixed routes to English", () => {
     expect(detectLocale(request("/", "fr-FR"))).toBe("en");
     expect(detectLocale(request("/"))).toBe("en");
+    expect(detectLocale(request("/privacy", "de-DE"))).toBe("en");
   });
 });

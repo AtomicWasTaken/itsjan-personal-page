@@ -125,8 +125,21 @@ try {
   });
   assert.equal(markdownResponse.status, 200);
   assert.match(markdownResponse.headers.get("content-type") ?? "", /markdown/);
-  assert.match(markdownResponse.headers.get("vary") ?? "", /Accept-Language/);
-  assert.match(await markdownResponse.text(), /Softwareentwickler/);
+  assert.doesNotMatch(
+    markdownResponse.headers.get("vary") ?? "",
+    /Accept-Language/,
+  );
+  assert.match(await markdownResponse.text(), /software developer/);
+
+  const germanPreferenceResponse = await fetch(baseUrl, {
+    headers: { "Accept-Language": "de-DE,de;q=0.9" },
+  });
+  const germanPreferenceHtml = await germanPreferenceResponse.text();
+  assert.match(germanPreferenceHtml, /<html lang="en"/);
+  assert.match(
+    germanPreferenceHtml,
+    /Jan-Marlon Leibl · Software developer from Bremen/,
+  );
 
   browser = await chromium.launch({
     executablePath: browserExecutable,
