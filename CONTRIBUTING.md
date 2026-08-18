@@ -18,7 +18,9 @@ performance improvements are welcome.
 3. Make a focused change.
 4. Add or update tests when behavior changes.
 5. Run `bun run ci`.
-6. Open a pull request with a concise explanation and screenshots for visual changes.
+6. For changes that can affect rendering or page weight, also run
+   `bun run lighthouse:ci` after `bun run build`.
+7. Open a pull request with a concise explanation and screenshots for visual changes.
 
 Do not commit `.env`, credentials, analytics secrets, build output, or editor
 configuration.

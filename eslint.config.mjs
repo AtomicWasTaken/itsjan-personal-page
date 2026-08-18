@@ -14,7 +14,7 @@ export default [
   })),
   ...astro.configs.recommended,
   {
-    files: ["**/*.{js,mjs,ts,astro}"],
+    files: ["**/*.{cjs,js,mjs,ts,astro}"],
     languageOptions: {
       globals: {
         ...globals.browser,
