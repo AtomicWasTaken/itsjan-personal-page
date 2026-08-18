@@ -16,6 +16,7 @@ module.exports = {
         "http://127.0.0.1:4327/en/projects",
         "http://127.0.0.1:4327/de/projekte",
         "http://127.0.0.1:4327/en/projects/finny",
+        "http://127.0.0.1:4327/en/projects/ventry",
       ],
       numberOfRuns: 3,
       startServerCommand:
