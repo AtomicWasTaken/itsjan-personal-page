@@ -171,6 +171,36 @@ try {
     /Jan-Marlon Leibl · Software developer from Bremen/,
   );
 
+  const profileSchemas = [];
+  for (const [path, language] of [
+    ["/", "en"],
+    ["/en", "en"],
+    ["/de", "de"],
+  ]) {
+    const response = await fetch(`${baseUrl}${path}`);
+    const html = await response.text();
+    const source = html.match(
+      /<script type="application\/ld\+json">([^<]+)<\/script>/,
+    )?.[1];
+    assert.ok(source);
+    const schema = JSON.parse(source);
+    const pageEntity = schema["@graph"].find(
+      (entity) => entity["@type"] === "ProfilePage",
+    );
+    assert.equal(pageEntity.inLanguage, language);
+    assert.equal(pageEntity.mainEntity["@id"], "https://itsjan.dev/#person");
+    assert.equal(pageEntity.isPartOf["@id"], "https://itsjan.dev/#website");
+    profileSchemas.push(schema);
+  }
+  assert.deepEqual(
+    profileSchemas.map((schema) => schema["@graph"][0]),
+    Array(3).fill(profileSchemas[0]["@graph"][0]),
+  );
+  assert.deepEqual(
+    profileSchemas.map((schema) => schema["@graph"][1]),
+    Array(3).fill(profileSchemas[0]["@graph"][1]),
+  );
+
   browser = await chromium.launch({
     executablePath: browserExecutable,
     headless: true,
