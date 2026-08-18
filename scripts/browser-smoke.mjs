@@ -108,8 +108,10 @@ try {
     "https://itsjan.dev",
     "https://itsjan.dev/de",
     "https://itsjan.dev/de/datenschutz",
+    "https://itsjan.dev/de/projekte",
     "https://itsjan.dev/en",
     "https://itsjan.dev/en/privacy",
+    "https://itsjan.dev/en/projects",
   ]);
 
   const legacyPrivacyResponse = await fetch(`${baseUrl}/privacy`, {
@@ -139,6 +141,63 @@ try {
         `hreflang="${language === "en" ? "de" : "en"}" href="https://itsjan.dev${alternate}"`,
       ),
     );
+  }
+
+  for (const [
+    path,
+    language,
+    alternate,
+    expectedTitle,
+    expectedDescription,
+  ] of [
+    [
+      "/en/projects",
+      "en",
+      "/de/projekte",
+      "Software projects by Jan-Marlon Leibl",
+      "Explore Jan-Marlon Leibl's Finny warranty app and Ventry file-sharing project, including their purpose, development period and technologies.",
+    ],
+    [
+      "/de/projekte",
+      "de",
+      "/en/projects",
+      "Softwareprojekte von Jan-Marlon Leibl",
+      "Entdecke Jan-Marlon Leibls Garantie-App Finny und das Filesharing-Projekt Ventry mit Zweck, Entwicklungszeitraum und Technologien.",
+    ],
+  ]) {
+    const response = await fetch(`${baseUrl}${path}`);
+    const html = await response.text();
+    const schemaSource = html.match(
+      /<script type="application\/ld\+json">([^<]+)<\/script>/,
+    )?.[1];
+    assert.equal(response.status, 200);
+    assert.ok(schemaSource);
+    assert.ok(html.includes(`<html lang="${language}"`));
+    assert.ok(
+      html.includes(`rel="canonical" href="https://itsjan.dev${path}"`),
+    );
+    assert.ok(
+      html.includes(
+        `hreflang="${language === "en" ? "de" : "en"}" href="https://itsjan.dev${alternate}"`,
+      ),
+    );
+    assert.ok(
+      html.includes(
+        `hreflang="x-default" href="https://itsjan.dev/en/projects"`,
+      ),
+    );
+    assert.ok(
+      html.includes(
+        `<meta name="description" content="${expectedDescription}"`,
+      ),
+    );
+    assert.ok(html.includes(expectedTitle));
+    const pageEntity = JSON.parse(schemaSource)["@graph"].find(
+      (entity) => entity["@type"] === "CollectionPage",
+    );
+    assert.equal(pageEntity.url, `https://itsjan.dev${path}`);
+    assert.equal(pageEntity.inLanguage, language);
+    assert.equal(pageEntity.author["@id"], "https://itsjan.dev/#person");
   }
 
   const staticImageResponse = await fetch(`${baseUrl}/favicon.png`);
@@ -308,11 +367,12 @@ try {
     "Ventry expiring file sharing",
   ]);
   const semanticPage = await context.newPage();
-  for (const [path, expectedH1, expectedProjects] of [
+  for (const [path, expectedH1, expectedProjects, projectIndexPath] of [
     [
       "/en",
       "Jan-Marlon Leibl, software developer from Bremen",
       ["Finny receipt and warranty app", "Ventry expiring file sharing"],
+      "/en/projects",
     ],
     [
       "/de",
@@ -321,6 +381,7 @@ try {
         "Finny für Belege und Garantien",
         "Ventry für zeitlich begrenzte Dateifreigaben",
       ],
+      "/de/projekte",
     ],
   ]) {
     await semanticPage.goto(`${baseUrl}${path}`);
@@ -334,6 +395,47 @@ try {
     assert.deepEqual(
       await semanticPage.locator("#projects h3").allTextContents(),
       expectedProjects,
+    );
+    assert.deepEqual(
+      await semanticPage
+        .locator("#projects h3 a")
+        .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+      [`${projectIndexPath}#finny`, `${projectIndexPath}#ventry`],
+    );
+  }
+  for (const [path, expectedH1, expectedProjectTitles] of [
+    [
+      "/en/projects",
+      "Software projects by Jan-Marlon Leibl",
+      [
+        "Finny — receipts and warranty reminders",
+        "Ventry — expiring file sharing",
+      ],
+    ],
+    [
+      "/de/projekte",
+      "Softwareprojekte von Jan-Marlon Leibl",
+      [
+        "Finny — Belege und Garantie-Erinnerungen",
+        "Ventry — zeitlich begrenztes Filesharing",
+      ],
+    ],
+  ]) {
+    await semanticPage.goto(`${baseUrl}${path}`);
+    assert.equal(await semanticPage.locator("h1").textContent(), expectedH1);
+    assert.deepEqual(
+      await semanticPage.locator(".project-index-card h2").allTextContents(),
+      expectedProjectTitles,
+    );
+    assert.equal(
+      await semanticPage.locator(".project-index-external").count(),
+      2,
+    );
+    assert.deepEqual(
+      await semanticPage
+        .locator(".project-index-external")
+        .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+      ["https://fnny.app", "https://ventry.host"],
     );
   }
   await semanticPage.close();

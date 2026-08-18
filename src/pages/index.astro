@@ -19,6 +19,7 @@ import {
   createStickerLayout,
   createTechnologyCollections,
 } from "../lib/portfolio";
+import { PROJECT_ROUTES } from "../data/project-content";
 
 const locale = detectLocale(Astro.request);
 const copy = tr(locale).portfolio;
@@ -63,6 +64,7 @@ const linkedinUrl =
         heading={copy.projects}
         finny={copy.finny}
         ventry={copy.ventry}
+        projectIndexPath={PROJECT_ROUTES[locale].index}
       />
       <WaveDivider />
       <TechnologiesSection

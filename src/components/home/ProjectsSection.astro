@@ -10,9 +10,10 @@ interface Props {
   heading: string;
   finny: PortfolioCopy["finny"];
   ventry: PortfolioCopy["ventry"];
+  projectIndexPath: string;
 }
 
-const { heading, finny, ventry } = Astro.props;
+const { heading, finny, ventry, projectIndexPath } = Astro.props;
 ---
 
 <section id="projects">
@@ -50,7 +51,10 @@ const { heading, finny, ventry } = Astro.props;
           <h3
             class="mb-2 text-base leading-6 font-medium tracking-tight text-[var(--text)]"
           >
-            {finny.heading}
+            <a
+              class="project-preview-heading-link"
+              href={`${projectIndexPath}#${finny.id}`}>{finny.heading}</a
+            >
           </h3>
           <p
             class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"
@@ -141,7 +145,10 @@ const { heading, finny, ventry } = Astro.props;
           <h3
             class="mb-2 text-base leading-6 font-medium tracking-tight text-[var(--text)]"
           >
-            {ventry.heading}
+            <a
+              class="project-preview-heading-link"
+              href={`${projectIndexPath}#${ventry.id}`}>{ventry.heading}</a
+            >
           </h3>
           <p
             class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"

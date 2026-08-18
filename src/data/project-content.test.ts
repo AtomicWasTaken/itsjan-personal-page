@@ -1,0 +1,40 @@
+import { describe, expect, test } from "bun:test";
+import { PROJECT_INDEX_CONTENT, PROJECT_ROUTES } from "./project-content";
+
+describe("localized project content architecture", () => {
+  test("uses stable, distinct route conventions", () => {
+    expect(PROJECT_ROUTES.en).toEqual({
+      index: "/en/projects",
+      finny: "/en/projects/finny",
+      ventry: "/en/projects/ventry",
+    });
+    expect(PROJECT_ROUTES.de).toEqual({
+      index: "/de/projekte",
+      finny: "/de/projekte/finny",
+      ventry: "/de/projekte/ventry",
+    });
+    expect(
+      new Set(Object.values(PROJECT_ROUTES).flatMap(Object.values)).size,
+    ).toBe(6);
+  });
+
+  test("keeps complete translated index entries aligned by stable ID", () => {
+    const english = PROJECT_INDEX_CONTENT.en;
+    const german = PROJECT_INDEX_CONTENT.de;
+
+    expect(english.metaDescription.length).toBeGreaterThanOrEqual(120);
+    expect(english.metaDescription.length).toBeLessThanOrEqual(160);
+    expect(german.metaDescription.length).toBeGreaterThanOrEqual(120);
+    expect(german.metaDescription.length).toBeLessThanOrEqual(160);
+    expect(english.introduction).not.toBe(german.introduction);
+    expect(english.projects.map(({ id }) => id)).toEqual(["finny", "ventry"]);
+    expect(german.projects.map(({ id }) => id)).toEqual(["finny", "ventry"]);
+
+    for (const project of [...english.projects, ...german.projects]) {
+      expect(project.title).toBeTruthy();
+      expect(project.summary).toBeTruthy();
+      expect(project.technologies.length).toBeGreaterThan(0);
+      expect(project.externalUrl).toMatch(/^https:\/\//);
+    }
+  });
+});
