@@ -25,6 +25,8 @@ interface Props {
   alternatePaths?: Partial<Record<Locale | "x-default", string>>;
   markdownPath?: string;
   schemaType?: PageSchemaType;
+  schemaAbout?: { name: string; url: string };
+  schemaPublishedAt?: string;
 }
 
 const props: Props = Astro.props;
@@ -58,6 +60,8 @@ const pageSchema = buildPageSchema({
   title,
   description,
   locale,
+  about: props.schemaAbout,
+  publishedAt: props.schemaPublishedAt,
 });
 
 if (requestUrl.pathname === "/" || requestUrl.pathname === "") {

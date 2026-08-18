@@ -1,6 +1,7 @@
 import type { Locale } from "./locale";
 import {
   CONTACT_EMAIL,
+  OPEN_GRAPH_IMAGE_URL,
   PERSON_NAME,
   PROFILE_IMAGE_URL,
   SITE_NAME,
@@ -17,6 +18,8 @@ interface PageSchemaInput {
   title: string;
   description: string;
   locale: Locale;
+  about?: { name: string; url: string };
+  publishedAt?: string;
 }
 
 export function buildPageSchema({
@@ -25,6 +28,8 @@ export function buildPageSchema({
   title,
   description,
   locale,
+  about,
+  publishedAt,
 }: PageSchemaInput) {
   const personId = `${SITE_ORIGIN}/#person`;
   const websiteId = `${SITE_ORIGIN}/#website`;
@@ -74,6 +79,24 @@ export function buildPageSchema({
         description,
         inLanguage: locale,
         isPartOf: { "@id": websiteId },
+        ...(about
+          ? {
+              about: {
+                "@type": "SoftwareApplication",
+                name: about.name,
+                url: about.url,
+              },
+            }
+          : {}),
+        ...(type === "Article"
+          ? {
+              headline: title,
+              image: OPEN_GRAPH_IMAGE_URL,
+              ...(publishedAt
+                ? { datePublished: publishedAt, dateModified: publishedAt }
+                : {}),
+            }
+          : {}),
         ...(type === "ProfilePage"
           ? { mainEntity: personReference }
           : { author: personReference }),
