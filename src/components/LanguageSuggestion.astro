@@ -19,25 +19,27 @@ const { germanPath } = Astro.props;
       aria-labelledby="language-suggestion-title"
       hidden
     >
-      <p id="language-suggestion-title" class="language-suggestion__title">
-        Möchtest du diese Seite auf Deutsch ansehen?
-      </p>
-      <div class="language-suggestion__actions">
-        <InteractiveButton
-          id="language-suggestion-dismiss"
-          class="language-suggestion__dismiss"
-          variant="text"
-        >
-          Nein, danke
-        </InteractiveButton>
-        <InteractiveLink
-          id="language-suggestion-accept"
-          class="language-suggestion__accept"
-          variant="primary"
-          href={germanPath}
-        >
-          Deutsch anzeigen
-        </InteractiveLink>
+      <div class="language-suggestion__surface">
+        <p id="language-suggestion-title" class="language-suggestion__title">
+          Möchtest du diese Seite auf Deutsch ansehen?
+        </p>
+        <div class="language-suggestion__actions">
+          <InteractiveButton
+            id="language-suggestion-dismiss"
+            class="language-suggestion__dismiss"
+            variant="text"
+          >
+            Nein, danke
+          </InteractiveButton>
+          <InteractiveLink
+            id="language-suggestion-accept"
+            class="language-suggestion__accept"
+            variant="primary"
+            href={germanPath}
+          >
+            Deutsch anzeigen
+          </InteractiveLink>
+        </div>
       </div>
     </aside>
   )
