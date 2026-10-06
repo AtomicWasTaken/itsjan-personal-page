@@ -105,7 +105,7 @@ try {
     ([, url]) => url,
   );
   assert.deepEqual(sitemapUrls, [
-    "https://itsjan.dev",
+    "https://itsjan.dev/",
     "https://itsjan.dev/de",
     "https://itsjan.dev/de/datenschutz",
     "https://itsjan.dev/en",
