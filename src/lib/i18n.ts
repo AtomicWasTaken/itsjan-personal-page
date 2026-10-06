@@ -40,8 +40,8 @@ interface Strings {
       afterBremen: string;
       apprenticeship: string;
       afterApprenticeship: string;
-      finny: string;
-      afterFinny: string;
+      isly: string;
+      afterIsly: string;
     };
     tech: {
       aria: string;
@@ -93,6 +93,16 @@ interface Strings {
       copyEmail: string;
       emailCopied: string;
     };
+    isly: {
+      id: Extract<ProjectId, "isly">;
+      heading: string;
+      linkAria: string;
+      previewAria: string;
+      nowPlayingTitle: string;
+      nowPlayingArtist: string;
+      description: { lead: string; keyword: string; end: string };
+      cta: { prefix: string; label: string };
+    };
     finny: {
       id: Extract<ProjectId, "finny">;
       heading: string;
@@ -140,7 +150,7 @@ const en: Strings = {
     imageAlt: "Jan-Marlon Leibl's portfolio",
     jobTitle: "Software Developer",
     description:
-      "Jan-Marlon Leibl is a software developer from Bremen building Finny, Ventry and modern web products with PHP, TypeScript, React, Next.js and Cloudflare.",
+      "Jan-Marlon Leibl is a software developer from Bremen building Isly, Finny, Ventry and modern web products with PHP, TypeScript, React, Next.js and Cloudflare.",
   },
   privacyConsent: {
     title: "Privacy settings",
@@ -156,7 +166,7 @@ const en: Strings = {
     subtitle: (age) => `${age}, software developer from Bremen`,
     subtitleStates: (age) => [
       `${age}, software developer from Bremen`,
-      "Building Finny",
+      "Building Isly",
       "Mostly PHP, TypeScript and React",
       "Home server tinkerer",
     ],
@@ -170,9 +180,9 @@ const en: Strings = {
       apprenticeship: "three-year apprenticeship",
       afterApprenticeship:
         " here, I started building the tools I wanted for myself. My current project is ",
-      finny: "Finny",
-      afterFinny:
-        ", an app that keeps receipts and purchase details in one place and warns me before a warranty expires. Most days I work with PHP, TypeScript and React. Away from that, I run a Proxmox server and usually find something else to fix in my home network.",
+      isly: "Isly",
+      afterIsly:
+        ", a Mac app that turns the MacBook notch into a Dynamic Island for music, timers and my calendar. Most days I work with PHP, TypeScript and React. Away from that, I run a Proxmox server and usually find something else to fix in my home network.",
     },
     tech: {
       aria: "Tools and technologies I use",
@@ -185,14 +195,26 @@ const en: Strings = {
       heading: "Experience",
       items: [
         {
-          id: "building-finny",
+          id: "building-isly",
           period: "Since 2026",
           title: "Building",
+          organizationId: "isly",
+          organization: "Isly",
+          location: "Bremen",
+          bullets: [
+            "I'm building Isly, a Mac app that turns the notch into a Dynamic Island with music controls, live activities, a timer and my calendar.",
+          ],
+          technologies: ["swift", "macos"],
+        },
+        {
+          id: "built-finny",
+          period: "2026",
+          title: "Built",
           organizationId: "finny",
           organization: "Finny",
           location: "Bremen",
           bullets: [
-            "I'm building Finny to keep receipts and purchase details in one place, with a reminder before each warranty expires.",
+            "I built Finny to keep receipts and purchase details in one place, with a reminder before each warranty expires.",
           ],
           technologies: ["typescript", "react", "nextjs"],
         },
@@ -264,6 +286,20 @@ const en: Strings = {
       copyEmail: "Copy my email",
       emailCopied: "Copied",
     },
+    isly: {
+      id: "isly",
+      heading: "Isly Dynamic Island for Mac",
+      linkAria: "Open Isly",
+      previewAria: "Preview of Isly",
+      nowPlayingTitle: "Now playing",
+      nowPlayingArtist: "Album · 2:14",
+      description: {
+        lead: "Isly turns the MacBook ",
+        keyword: "notch",
+        end: " into a Dynamic Island for music, timers, my calendar and the volume and brightness HUDs.",
+      },
+      cta: { prefix: "", label: "Open Isly ↗" },
+    },
     finny: {
       id: "finny",
       heading: "Finny receipt and warranty app",
@@ -313,7 +349,7 @@ const de: Strings = {
     imageAlt: "Portfolio von Jan-Marlon Leibl",
     jobTitle: "Softwareentwickler",
     description:
-      "Jan-Marlon Leibl ist Softwareentwickler aus Bremen und entwickelt Finny, Ventry und moderne Webprojekte mit PHP, TypeScript, React, Next.js und Cloudflare.",
+      "Jan-Marlon Leibl ist Softwareentwickler aus Bremen und entwickelt Isly, Finny, Ventry und Webprojekte mit PHP, TypeScript, React, Next.js und Cloudflare.",
   },
   privacyConsent: {
     title: "Datenschutz-Einstellungen",
@@ -329,7 +365,7 @@ const de: Strings = {
     subtitle: (age) => `${age}, Softwareentwickler aus Bremen`,
     subtitleStates: (age) => [
       `${age}, Softwareentwickler aus Bremen`,
-      "Ich baue Finny",
+      "Ich baue Isly",
       "Meistens PHP, TypeScript und React",
       "Homelab-Bastler",
     ],
@@ -343,9 +379,9 @@ const de: Strings = {
       apprenticeship: "dreijährigen Ausbildung",
       afterApprenticeship:
         " hier habe ich angefangen, die Tools zu bauen, die mir selbst gefehlt haben. Aktuell arbeite ich an ",
-      finny: "Finny",
-      afterFinny:
-        ", einer App, die Belege und Kaufdetails an einem Ort sammelt und mich rechtzeitig vor dem Ende einer Garantie erinnert. Im Alltag arbeite ich vor allem mit PHP, TypeScript und React. Wenn noch Zeit bleibt, betreibe ich einen Proxmox-Server und finde in meinem Heimnetzwerk meistens das nächste Problem zum Lösen.",
+      isly: "Isly",
+      afterIsly:
+        ", einer Mac-App, die die Notch des MacBooks in eine Dynamic Island für Musik, Timer und meinen Kalender verwandelt. Im Alltag arbeite ich vor allem mit PHP, TypeScript und React. Wenn noch Zeit bleibt, betreibe ich einen Proxmox-Server und finde in meinem Heimnetzwerk meistens das nächste Problem zum Lösen.",
     },
     tech: {
       aria: "Tools und Technologien, mit denen ich arbeite",
@@ -358,14 +394,26 @@ const de: Strings = {
       heading: "Erfahrung",
       items: [
         {
-          id: "building-finny",
+          id: "building-isly",
           period: "Seit 2026",
           title: "Ich entwickle",
+          organizationId: "isly",
+          organization: "Isly",
+          location: "Bremen",
+          bullets: [
+            "Ich baue Isly, eine Mac-App, die die Notch in eine Dynamic Island mit Musiksteuerung, Live-Aktivitäten, Timer und Kalender verwandelt.",
+          ],
+          technologies: ["swift", "macos"],
+        },
+        {
+          id: "built-finny",
+          period: "2026",
+          title: "Entwickelt",
           organizationId: "finny",
           organization: "Finny",
           location: "Bremen",
           bullets: [
-            "Ich baue Finny, damit Belege und Kaufdetails nicht mehr an verschiedenen Orten liegen. Vor Ablauf einer Garantie gibt die App rechtzeitig Bescheid.",
+            "Finny entstand, damit Belege und Kaufdetails nicht mehr an verschiedenen Orten liegen. Vor Ablauf einer Garantie gibt die App rechtzeitig Bescheid.",
           ],
           technologies: ["typescript", "react", "nextjs"],
         },
@@ -436,6 +484,20 @@ const de: Strings = {
       linkCopied: "Kopiert",
       copyEmail: "E-Mail kopieren",
       emailCopied: "Kopiert",
+    },
+    isly: {
+      id: "isly",
+      heading: "Isly, die Dynamic Island für den Mac",
+      linkAria: "Isly öffnen",
+      previewAria: "Vorschau von Isly",
+      nowPlayingTitle: "Läuft gerade",
+      nowPlayingArtist: "Album · 2:14",
+      description: {
+        lead: "Isly macht aus der ",
+        keyword: "Notch",
+        end: " des MacBooks eine Dynamic Island für Musik, Timer, meinen Kalender sowie Lautstärke- und Helligkeitsanzeigen.",
+      },
+      cta: { prefix: "", label: "Isly öffnen ↗" },
     },
     finny: {
       id: "finny",

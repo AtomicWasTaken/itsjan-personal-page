@@ -1,6 +1,6 @@
 ---
 name: itsjan-profile
-description: Public profile and project context for Jan-Marlon Leibl, a software developer from Bremen and founder of Finny.
+description: Public profile and project context for Jan-Marlon Leibl, a software developer from Bremen and developer of Isly.
 ---
 
 # Jan-Marlon Leibl
@@ -10,7 +10,7 @@ Use this skill when an agent needs accurate public context about Jan-Marlon Leib
 ## Identity
 
 - Name: Jan-Marlon Leibl
-- Role: Software developer and founder of Finny
+- Role: Software developer building Isly
 - Location: Bremen, Germany
 - Languages: German and English
 - Website: https://itsjan.dev
@@ -20,20 +20,23 @@ Jan started programming at 11 with C#. His main application stack is PHP, TypeSc
 
 ## Current work
 
-Jan is building Finny, an app that keeps receipts, purchase details and warranty dates in one place and reminds the user before a warranty expires.
+Jan is building Isly, a macOS app that turns the MacBook notch into a Dynamic Island with music controls, live activities, timers, a calendar and system HUDs.
 
-- Finny: https://fnny.app
-- Main stack: TypeScript, React, Next.js
+- Isly: https://isly.app
+- Main stack: Swift
+- Platform: macOS 14 and later
 
 ## Experience
 
-- Since 2026: Building Finny in Bremen.
+- Since 2026: Building Isly in Bremen.
+- 2026: Built Finny with TypeScript, React and Next.js to keep receipts, purchase details and warranty dates in one place.
 - 2023 to 2026: Completed a three-year software development apprenticeship at team neusta in Bremen and worked on client projects with PHP, TypeScript and TYPO3. He attended vocational school at Schulzentrum SII Utbremen during the same period.
 - 2023 to 2024: Built Ventry with TypeScript and Next.js to share files through links that expire and remove the file automatically.
 - Personal: Runs a Proxmox node and home network, works with Linux and Windows, upgrades hardware and troubleshoots infrastructure problems.
 
 ## Projects
 
+- Isly: https://isly.app
 - Finny: https://fnny.app
 - Ventry: https://ventry.host
 - Portfolio source: https://github.com/AtomicWasTaken/itsjan-personal-page

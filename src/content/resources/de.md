@@ -1,18 +1,24 @@
 # Jan-Marlon Leibl
 
-Ich bin Jan-Marlon, Softwareentwickler aus Bremen und Gründer von Finny. Mit dem Programmieren habe ich mit 11 Jahren und C# angefangen. Heute arbeite ich hauptsächlich mit PHP, TypeScript, React und Next.js.
+Ich bin Jan-Marlon, Softwareentwickler aus Bremen und Entwickler von Isly. Mit dem Programmieren habe ich mit 11 Jahren und C# angefangen. Heute arbeite ich hauptsächlich mit PHP, TypeScript, React und Next.js.
 
 ## Woran ich arbeite
 
-Mein aktuelles Projekt ist [Finny](https://fnny.app), eine App für Belege, Kaufdetails und Garantiefristen. Ich entwickle sie, weil ich Kaufunterlagen einfacher wiederfinden und rechtzeitig vor dem Ende einer Garantie erinnert werden möchte.
+Mein aktuelles Projekt ist [Isly](https://isly.app), eine macOS-App, die die Notch des MacBooks in eine Dynamic Island verwandelt. Sie zeigt Musiksteuerung, Live-Aktivitäten wie Timer und Meetings, meinen Kalender sowie Lautstärke- und Helligkeitsanzeigen genau dort, wo ich ohnehin hinschaue. Isly läuft ab macOS 14 und ist in Swift geschrieben.
+
+Vor Isly habe ich [Finny](https://fnny.app) fertiggestellt, eine App für Belege, Kaufdetails und Garantiefristen, die rechtzeitig vor dem Ende einer Garantie erinnert.
 
 Wenn ich gerade nicht an einer Anwendung arbeite, gibt es meistens etwas im Homelab zu tun. Ich betreibe einen Proxmox-Node, halte mein Heimnetz am Laufen, rüste Hardware auf und suche heraus, was diesmal nicht funktioniert.
 
 ## Erfahrung
 
-### Finny, seit 2026
+### Isly, seit 2026
 
-Ich konzipiere und entwickle Finny in Bremen. Die Anwendung entsteht mit TypeScript, React und Next.js.
+Ich konzipiere und entwickle Isly in Bremen. Die native macOS-App entsteht mit Swift.
+
+### Finny, 2026
+
+Ich habe Finny in Bremen konzipiert und entwickelt. Die Anwendung entstand mit TypeScript, React und Next.js.
 
 ### team neusta, 2023 bis 2026
 
@@ -28,13 +34,14 @@ Ich betreibe einen Proxmox-Server und ein kleines Heimnetz. Dort beschäftige ic
 
 ## Projekte
 
+- [Isly](https://isly.app) verwandelt die Notch des MacBooks in eine Dynamic Island für Musik, Live-Aktivitäten, Timer, Kalender und Systemanzeigen.
 - [Finny](https://fnny.app) sammelt Belege, Kaufdetails und Garantiefristen und erinnert vor dem Ablauf einer Garantie.
 - [Ventry](https://ventry.host) teilt Dateien über zeitlich begrenzte Links und entfernt die Datei nach Ablauf des Links.
 - [Dieses Portfolio](https://github.com/AtomicWasTaken/itsjan-personal-page) ist eine quelloffene Astro-Website, die auf Cloudflare Workers läuft.
 
 ## Tools und Technologien
 
-Mein wichtigster Anwendungs-Stack besteht aus PHP, TypeScript, React, Next.js, Symfony und TYPO3. Außerdem nutze ich Git, Docker, Cloudflare, Astro, Bun und Tailwind CSS. Im Homelab arbeite ich mit Proxmox, Linux und Windows.
+Mein wichtigster Anwendungs-Stack besteht aus PHP, TypeScript, React, Next.js, Symfony und TYPO3. Für macOS-Apps nutze ich Swift. Außerdem nutze ich Git, Docker, Cloudflare, Astro, Bun und Tailwind CSS. Im Homelab arbeite ich mit Proxmox, Linux und Windows.
 
 Weitere Erfahrung habe ich mit Angular, Vue, GitHub, GitLab, Gitea, macOS, VS Code und PhpStorm. Bei der KI-gestützten Entwicklung nutze ich unter anderem Claude, Codex, Cursor, Gemini und Perplexity.
 

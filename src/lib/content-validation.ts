@@ -12,6 +12,7 @@ type TranslationContent = Record<
           technologies: string[];
         }>;
       };
+      isly: { id: string };
       finny: { id: string };
       ventry: { id: string };
     };
@@ -76,7 +77,11 @@ export const validatePortfolioContent = (
       });
     });
 
-    const projectIds = [portfolio.finny.id, portfolio.ventry.id];
+    const projectIds = [
+      portfolio.isly.id,
+      portfolio.finny.id,
+      portfolio.ventry.id,
+    ];
     compareIds(
       projectIds,
       Object.keys(PROJECTS),

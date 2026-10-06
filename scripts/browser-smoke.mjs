@@ -194,17 +194,17 @@ try {
     [
       "/",
       "en",
-      "Jan-Marlon Leibl is a software developer from Bremen building Finny, Ventry and modern web products with PHP, TypeScript, React, Next.js and Cloudflare.",
+      "Jan-Marlon Leibl is a software developer from Bremen building Isly, Finny, Ventry and modern web products with PHP, TypeScript, React, Next.js and Cloudflare.",
     ],
     [
       "/en",
       "en",
-      "Jan-Marlon Leibl is a software developer from Bremen building Finny, Ventry and modern web products with PHP, TypeScript, React, Next.js and Cloudflare.",
+      "Jan-Marlon Leibl is a software developer from Bremen building Isly, Finny, Ventry and modern web products with PHP, TypeScript, React, Next.js and Cloudflare.",
     ],
     [
       "/de",
       "de",
-      "Jan-Marlon Leibl ist Softwareentwickler aus Bremen und entwickelt Finny, Ventry und moderne Webprojekte mit PHP, TypeScript, React, Next.js und Cloudflare.",
+      "Jan-Marlon Leibl ist Softwareentwickler aus Bremen und entwickelt Isly, Finny, Ventry und Webprojekte mit PHP, TypeScript, React, Next.js und Cloudflare.",
     ],
   ]) {
     const response = await fetch(`${baseUrl}${path}`);
@@ -324,6 +324,7 @@ try {
   );
   assert.equal(await page.locator("h1").count(), 1);
   assert.deepEqual(await page.locator("#projects h3").allTextContents(), [
+    "Isly Dynamic Island for Mac",
     "Finny receipt and warranty app",
     "Ventry expiring file sharing",
   ]);
@@ -331,19 +332,24 @@ try {
     await page
       .locator("#projects a")
       .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
-    ["https://fnny.app", "https://ventry.host"],
+    ["https://isly.app", "https://fnny.app", "https://ventry.host"],
   );
   const semanticPage = await context.newPage();
   for (const [path, expectedH1, expectedProjects] of [
     [
       "/en",
       "Jan-Marlon Leibl, software developer from Bremen",
-      ["Finny receipt and warranty app", "Ventry expiring file sharing"],
+      [
+        "Isly Dynamic Island for Mac",
+        "Finny receipt and warranty app",
+        "Ventry expiring file sharing",
+      ],
     ],
     [
       "/de",
       "Jan-Marlon Leibl, Softwareentwickler aus Bremen",
       [
+        "Isly, die Dynamic Island für den Mac",
         "Finny für Belege und Garantien",
         "Ventry für zeitlich begrenzte Dateifreigaben",
       ],

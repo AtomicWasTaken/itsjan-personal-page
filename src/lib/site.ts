@@ -7,6 +7,7 @@ export const PROFILE_IMAGE_URL = `${SITE_ORIGIN}/jan-profile.jpg`;
 export const OPEN_GRAPH_IMAGE_URL = `${SITE_ORIGIN}/og.png`;
 export const SOURCE_REPOSITORY_URL =
   "https://github.com/AtomicWasTaken/itsjan-personal-page";
+export const ISLY_URL = "https://isly.app";
 export const FINNY_URL = "https://fnny.app";
 export const VENTRY_URL = "https://ventry.host";
 

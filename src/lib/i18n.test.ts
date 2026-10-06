@@ -16,6 +16,7 @@ describe("localized metadata", () => {
       tr("en").meta.description,
       tr("de").meta.description,
     ]) {
+      expect(description).toContain("Isly");
       expect(description).toContain("Finny");
       expect(description).toContain("Ventry");
       expect(description).toContain("PHP");

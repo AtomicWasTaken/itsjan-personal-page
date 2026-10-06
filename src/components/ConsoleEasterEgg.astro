@@ -2,7 +2,7 @@
 import type { Locale } from "../lib/locale";
 import {
   CONTACT_EMAIL,
-  FINNY_URL,
+  ISLY_URL,
   PERSON_NAME,
   SOURCE_REPOSITORY_URL,
 } from "../lib/site";
@@ -49,7 +49,7 @@ const copy =
   define:vars={{
     contactEmail: CONTACT_EMAIL,
     copy,
-    finnyUrl: FINNY_URL,
+    islyUrl: ISLY_URL,
     personName: PERSON_NAME,
     sourceUrl: SOURCE_REPOSITORY_URL,
   }}
@@ -63,7 +63,7 @@ const copy =
       [copy.labels.name]: personName,
       [copy.labels.role]: copy.role,
       [copy.labels.location]: copy.location,
-      [copy.labels.building]: `Finny (${finnyUrl})`,
+      [copy.labels.building]: `Isly (${islyUrl})`,
       [copy.labels.source]: sourceUrl,
       [copy.labels.contact]: `mailto:${contactEmail}`,
     });

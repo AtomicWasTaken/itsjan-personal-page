@@ -1,6 +1,6 @@
 # Jan-Marlon Leibl
 
-> Jan-Marlon Leibl is a software developer from Bremen, Germany, and the founder of Finny. He works mainly with PHP, TypeScript, React and Next.js. This file indexes the public, machine-readable resources on the current site.
+> Jan-Marlon Leibl is a software developer from Bremen, Germany, and the developer behind Isly. He works mainly with PHP, TypeScript, React and Next.js. This file indexes the public, machine-readable resources on the current site.
 
 ## Profile resources
 
@@ -11,7 +11,8 @@
 
 ## Current work
 
-- [Finny](https://fnny.app): An app that keeps receipts, purchase details and warranty dates in one place, then reminds the user before a warranty expires.
+- [Isly](https://isly.app): A macOS app that turns the MacBook notch into a Dynamic Island with music controls, live activities, timers, a calendar and system HUDs.
+- [Finny](https://fnny.app): A finished app that keeps receipts, purchase details and warranty dates in one place, then reminds the user before a warranty expires.
 - [Ventry](https://ventry.host): A file-sharing project built around expiring links that remove the shared file automatically.
 - [Portfolio source](https://github.com/AtomicWasTaken/itsjan-personal-page): Source code for itsjan.dev, built with Astro and deployed on Cloudflare Workers.
 

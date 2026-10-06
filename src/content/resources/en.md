@@ -1,18 +1,24 @@
 # Jan-Marlon Leibl
 
-I'm Jan-Marlon, a software developer from Bremen, Germany, and the founder of Finny. I started programming at 11 with C#. Today I mainly work with PHP, TypeScript, React and Next.js.
+I'm Jan-Marlon, a software developer from Bremen, Germany, and the developer behind Isly. I started programming at 11 with C#. Today I mainly work with PHP, TypeScript, React and Next.js.
 
 ## What I am working on
 
-My current project is [Finny](https://fnny.app), an app that keeps receipts, purchase details and warranty dates in one place. I am building it because I wanted a simpler way to find purchase information and get a reminder before a warranty expires.
+My current project is [Isly](https://isly.app), a macOS app that turns the MacBook notch into a Dynamic Island. It shows music controls, live activities such as timers and meetings, my calendar and the volume and brightness HUDs right where I already look. Isly runs on macOS 14 and later and is written in Swift.
+
+Before Isly, I finished [Finny](https://fnny.app), an app that keeps receipts, purchase details and warranty dates in one place and sends a reminder before a warranty expires.
 
 When I am not working on an application, I usually have something to do in my homelab. I run a Proxmox node, maintain my home network, upgrade hardware and troubleshoot whatever stopped working.
 
 ## Experience
 
-### Finny, since 2026
+### Isly, since 2026
 
-I design and develop Finny in Bremen. The application uses TypeScript, React and Next.js.
+I design and develop Isly in Bremen. It is a native macOS app built with Swift.
+
+### Finny, 2026
+
+I designed and built Finny in Bremen. The application uses TypeScript, React and Next.js.
 
 ### team neusta, 2023 to 2026
 
@@ -28,13 +34,14 @@ I operate a Proxmox server and a small home network. This is where I work with L
 
 ## Projects
 
+- [Isly](https://isly.app) turns the MacBook notch into a Dynamic Island for music, live activities, timers, the calendar and system HUDs.
 - [Finny](https://fnny.app) stores receipts, purchase details and warranty dates, then sends a reminder before a warranty expires.
 - [Ventry](https://ventry.host) shares files through expiring links and removes the file when the link runs out.
 - [This portfolio](https://github.com/AtomicWasTaken/itsjan-personal-page) is an open-source Astro site deployed on Cloudflare Workers.
 
 ## Tools and technologies
 
-My main application stack is PHP, TypeScript, React, Next.js, Symfony and TYPO3. I also use Git, Docker, Cloudflare, Astro, Bun and Tailwind CSS. My homelab work involves Proxmox, Linux and Windows.
+My main application stack is PHP, TypeScript, React, Next.js, Symfony and TYPO3. For macOS apps, I use Swift. I also use Git, Docker, Cloudflare, Astro, Bun and Tailwind CSS. My homelab work involves Proxmox, Linux and Windows.
 
 I have also worked with Angular, Vue, GitHub, GitLab, Gitea, macOS, VS Code and PhpStorm. For AI-assisted development, I use tools including Claude, Codex, Cursor, Gemini and Perplexity.
 

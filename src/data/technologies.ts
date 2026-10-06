@@ -21,6 +21,7 @@ import phpLogo from "../assets/logos/php.svg";
 import phpstormLogo from "../assets/logos/phpstorm.svg";
 import proxmoxLogo from "../assets/logos/proxmox.svg";
 import reactLogo from "../assets/logos/react.svg";
+import swiftLogo from "../assets/logos/swift.svg";
 import symfonyLogo from "../assets/logos/symfony.svg";
 import tailwindLogo from "../assets/logos/tailwindcss.svg";
 import typescriptLogo from "../assets/logos/typescript.svg";
@@ -59,6 +60,7 @@ export type TechnologyId =
   | "phpstorm"
   | "proxmox"
   | "react"
+  | "swift"
   | "symfony"
   | "tailwindcss"
   | "typescript"
@@ -76,6 +78,12 @@ export const TECHNOLOGIES: Technology[] = [
     href: "https://www.typescriptlang.org/",
   },
   { id: "react", name: "React", logo: reactLogo, href: "https://react.dev/" },
+  {
+    id: "swift",
+    name: "Swift",
+    logo: swiftLogo,
+    href: "https://www.swift.org/",
+  },
   {
     id: "nextjs",
     name: "Next.js",

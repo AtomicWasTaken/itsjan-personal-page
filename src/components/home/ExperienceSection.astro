@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import finnyFavicon from "../../assets/finny-favicon.png";
+import islyLogo from "../../assets/isly-logo.svg";
 import teamNeustaLogo from "../../assets/team-neusta-orb.svg";
 import ventryLogo from "../../assets/ventry-logo-white-56.png";
 import type { Technology } from "../../data/technologies";
@@ -42,6 +43,15 @@ const technologiesById = new Map(
                   "experience-organization--with-logo",
               ]}
             >
+              {item.organizationId === "isly" && (
+                <img
+                  src={islyLogo.src}
+                  alt=""
+                  width="20"
+                  height="20"
+                  class="experience-organization-mark"
+                />
+              )}
               {item.organizationId === "finny" && (
                 <Image
                   src={finnyFavicon}

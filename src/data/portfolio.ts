@@ -1,6 +1,7 @@
-import { FINNY_URL, VENTRY_URL } from "../lib/site";
+import { FINNY_URL, ISLY_URL, VENTRY_URL } from "../lib/site";
 
 export const PROJECTS = {
+  isly: { id: "isly", href: ISLY_URL },
   finny: { id: "finny", href: FINNY_URL },
   ventry: { id: "ventry", href: VENTRY_URL },
 } as const;
@@ -8,6 +9,7 @@ export const PROJECTS = {
 export type ProjectId = keyof typeof PROJECTS;
 
 export const ORGANIZATION_IDS = [
+  "isly",
   "finny",
   "team-neusta",
   "ventry",
@@ -17,7 +19,8 @@ export const ORGANIZATION_IDS = [
 export type OrganizationId = (typeof ORGANIZATION_IDS)[number];
 
 export const EXPERIENCE_IDS = [
-  "building-finny",
+  "building-isly",
+  "built-finny",
   "team-neusta-apprenticeship",
   "built-ventry",
   "homelab",
