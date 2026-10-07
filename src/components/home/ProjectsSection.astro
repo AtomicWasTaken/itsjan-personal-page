@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import finnyFavicon from "../../assets/finny-favicon.png";
+import islyLogo from "../../assets/isly-logo.svg";
 import ventryLogo from "../../assets/ventry-logo-white-56.png";
 import { PROJECTS } from "../../data/portfolio";
 import type { PortfolioCopy } from "../../lib/i18n";
@@ -8,11 +9,12 @@ import InteractiveLink from "../InteractiveLink.astro";
 
 interface Props {
   heading: string;
+  isly: PortfolioCopy["isly"];
   finny: PortfolioCopy["finny"];
   ventry: PortfolioCopy["ventry"];
 }
 
-const { heading, finny, ventry } = Astro.props;
+const { heading, isly, finny, ventry } = Astro.props;
 ---
 
 <section id="projects">
@@ -20,6 +22,54 @@ const { heading, finny, ventry } = Astro.props;
     {heading}
   </h2>
   <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <article
+      class="project-preview project-preview--featured w-full overflow-visible sm:col-span-2"
+    >
+      <div class="project-preview-surface">
+        <div
+          class="project-preview-image project-preview-image--isly"
+          role="img"
+          aria-label={isly.previewAria}
+        >
+          <span class="preview-brand preview-brand--isly"
+            ><img src={islyLogo.src} alt="" width="28" height="28" />Isly</span
+          >
+          <span class="isly-island" aria-hidden="true">
+            <span class="isly-island-art"></span>
+            <span class="isly-island-track"
+              ><b>{isly.nowPlayingTitle}</b><i>{isly.nowPlayingArtist}</i></span
+            >
+            <span class="isly-island-wave"><i></i><i></i><i></i><i></i></span>
+          </span>
+        </div>
+        <div class="project-preview-copy p-4">
+          <h3
+            class="mb-2 text-base leading-6 font-medium tracking-tight text-[var(--text)]"
+          >
+            {isly.heading}
+          </h3>
+          <p
+            class="text-[15px] leading-6 font-normal text-[var(--text-secondary)]"
+          >
+            {isly.description.lead}<span class="keyword"
+              >{isly.description.keyword}</span
+            >{isly.description.end}
+          </p>
+          <div class="project-preview-action">
+            <InteractiveLink
+              variant="primary"
+              href={PROJECTS[isly.id].href}
+              target="_blank"
+              rel="noreferrer"
+              class="project-preview-cta"
+              data-analytics-event="project_cta_clicked"
+              data-analytics-project={isly.id}>{isly.cta.label}</InteractiveLink
+            >
+          </div>
+        </div>
+      </div>
+    </article>
+
     <article class="project-preview w-full overflow-visible">
       <div class="project-preview-surface">
         <div

@@ -769,6 +769,92 @@ html[data-theme="dark"]
   background: var(--accent-strong);
   color: #fff;
 }
+@media (min-width: 640px) {
+  .project-preview--featured .project-preview-image {
+    aspect-ratio: 40 / 13;
+  }
+}
+.project-preview-image--isly {
+  background: linear-gradient(180deg, #3b7bff, #2459e6);
+  color: #fff;
+}
+.preview-brand--isly {
+  color: #fff;
+}
+.preview-brand--isly img {
+  filter: drop-shadow(0 4px 10px rgba(10, 30, 90, 0.3));
+}
+.isly-island {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(300px, 68%);
+  padding: 10px 14px 10px 10px;
+  border-radius: 0 0 22px 22px;
+  background: #000;
+  box-shadow: 0 10px 24px rgba(10, 30, 90, 0.35);
+  color: #fff;
+  transform: translateX(-50%);
+}
+@media (max-width: 639px) {
+  .isly-island {
+    right: 16px;
+    left: auto;
+    width: min(300px, 60%);
+    transform: none;
+  }
+}
+.isly-island-art {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ff8a5c, #c2309a 55%, #3b7bff);
+}
+.isly-island-track {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 2px;
+  font-size: 11px;
+  line-height: 1.2;
+}
+.isly-island-track b {
+  font-weight: 600;
+}
+.isly-island-track i {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: "Geist Mono", ui-monospace, monospace;
+  font-size: 9px;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+}
+.isly-island-wave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 16px;
+}
+.isly-island-wave i {
+  width: 3px;
+  border-radius: 2px;
+  background: #3b7bff;
+}
+.isly-island-wave i:nth-child(1) {
+  height: 7px;
+}
+.isly-island-wave i:nth-child(2) {
+  height: 14px;
+}
+.isly-island-wave i:nth-child(3) {
+  height: 10px;
+}
+.isly-island-wave i:nth-child(4) {
+  height: 5px;
+}
 .preview-brand {
   position: absolute;
   top: 16px;
@@ -2029,7 +2115,8 @@ html[data-theme="dark"] .social-card-linkedin-action {
     aspect-ratio: auto;
   }
   .project-preview-image .preview-receipt,
-  .project-preview-image .ventry-file-panel {
+  .project-preview-image .ventry-file-panel,
+  .project-preview-image .isly-island {
     display: none;
   }
   .activity-grid {

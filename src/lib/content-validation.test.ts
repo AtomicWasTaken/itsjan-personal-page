@@ -6,7 +6,12 @@ const validTranslation = () => ({
     experience: {
       items: [
         {
-          id: "building-finny",
+          id: "building-isly",
+          organizationId: "isly",
+          technologies: ["swift", "macos"],
+        },
+        {
+          id: "built-finny",
           organizationId: "finny",
           technologies: ["typescript", "react", "nextjs"],
         },
@@ -27,6 +32,7 @@ const validTranslation = () => ({
         },
       ],
     },
+    isly: { id: "isly" },
     finny: { id: "finny" },
     ventry: { id: "ventry" },
   },
