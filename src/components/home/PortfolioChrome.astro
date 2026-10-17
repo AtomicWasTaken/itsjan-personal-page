@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import profile320 from "../../assets/jan-profile-320.avif";
+import avatar from "../../assets/jan-avatar.svg";
 import type { Technology } from "../../data/technologies";
 import type { StickerPlacement } from "../../lib/portfolio";
 import { toStickerStyle } from "../../lib/portfolio";
@@ -78,7 +78,7 @@ const { technologies, stickerLayout, labels } = Astro.props;
       <span aria-hidden="true">×</span>
     </InteractiveButton>
     <Image
-      src={profile320}
+      src={avatar}
       alt={PERSON_NAME}
       width={320}
       height={320}

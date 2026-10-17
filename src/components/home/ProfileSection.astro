@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import profile160 from "../../assets/jan-profile-160.avif";
+import avatar from "../../assets/jan-avatar.svg";
 import type { PortfolioCopy } from "../../lib/i18n";
 import type { Locale } from "../../lib/locale";
 import { CONTACT_MAILTO, PERSON_NAME } from "../../lib/site";
@@ -37,7 +37,7 @@ const { copy, locale, currentAge } = Astro.props;
       aria-controls="avatar-modal"
     >
       <Image
-        src={profile160}
+        src={avatar}
         alt={PERSON_NAME}
         width={160}
         height={160}
