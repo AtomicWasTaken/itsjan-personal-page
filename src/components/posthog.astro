@@ -52,6 +52,7 @@ const uiHost = analyticsEnabled
     loadPromise = Promise.all([
       import("posthog-js/dist/module.no-external"),
       import("posthog-js/dist/exception-autocapture"),
+      import("posthog-js/dist/web-vitals"),
     ])
       .then(([{ default: posthog }]) => {
         if (!consentGranted) {
@@ -69,6 +70,9 @@ const uiHost = analyticsEnabled
           advanced_disable_flags: true,
           disable_external_dependency_loading: true,
           disable_session_recording: true,
+          capture_performance: {
+            web_vitals: true,
+          },
           capture_exceptions: {
             capture_unhandled_errors: true,
             capture_unhandled_rejections: true,
